@@ -1,0 +1,179 @@
+/*去除默认样式*/
+
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+pre,
+form,
+fieldset,
+input,
+textarea,
+blockquote,
+th,
+td {
+  margin: 0px;
+  padding: 0px;
+}
+
+img {
+  border: 0px;
+  display: block;
+}
+
+button {
+  outline: none;
+  border: none;
+  -webkit-tap-highlight-color:transparent;
+
+}
+
+
+ol,
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: #a5a5a5;
+}
+
+html {
+  font-size: 533.3% !important;
+}
+
+@media only screen and (min-width: 360px) {
+  html {
+    font-size: 600% !important;
+  }
+}
+
+@media only screen and (min-width: 375px) {
+  html {
+    font-size: 625% !important;
+  }
+}
+
+@media only screen and (min-width: 414px) {
+  html {
+    font-size: 690% !important;
+  }
+}
+
+body {
+  font-size: 14px;
+  background: #f2f2f2;
+}
+
+input {
+  -webkit-appearance: none;
+  background: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: normal;
+}
+
+i {
+  font-style: normal
+}
+
+:global svg {
+  width: .24rem;
+  height: .24rem;
+  fill: grey;
+  vertical-align: middle;
+}
+
+:global .mdc-checkbox__checkmark {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+:global .Popover-body {
+  padding: 10px;
+  background: #fff;
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+}
+
+:global .clearfix:after {
+  display: block;
+  visibility: hidden;
+  clear: both;
+  height: 0;
+  content: '.';
+}
+:global .recharts-legend-wrapper{
+  width: 100% !important;
+  svg{
+    width: .24rem !important;
+  height: .24rem !important;
+  }
+}
+:global .clearfix {
+  zoom: 1;
+}
+
+// 按钮
+:global .bigBtn {
+  text-align: center;
+  padding-bottom: .1rem;
+  button {
+    box-shadow: 0px 4px 14px 0 rgba(58, 185, 254, .7);
+    width: 1.81rem;
+    height: .44rem;
+    color: #fff;
+    font-size: .15rem;
+    line-height: .44rem;
+    border-radius: 10%;
+    outline: none;
+    border: none;
+    border-radius: .5rem;
+    background: -webkit-linear-gradient(left, #508eff, #39bafe);
+    /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #508eff, #39bafe);
+    /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #508eff, #39bafe);
+    /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #508eff, #39bafe);
+  }
+}
+
+:global .smallBtn {
+  text-align: center;
+  button {
+    width: 1.4rem;
+    height: .4rem;
+    color: #fff;
+    font-size: .15rem;
+    line-height: .44rem;
+    border-radius: 10%;
+    outline: none;
+    border: none;
+    border-radius: .5rem;
+  }
+  button.red {
+    background-color: #F33A50;
+  }
+  button.blue {
+    background-color: #4B97FF;
+  }
+}
+

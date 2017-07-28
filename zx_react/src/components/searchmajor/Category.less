@@ -1,0 +1,127 @@
+.categoryBox {
+  margin-bottom: .15rem;
+}
+
+.categoryTitle {
+  margin-bottom: .1rem;
+}
+
+.bigCateBox, .smallCateBox {
+  margin-top: .15rem;
+}
+
+.bigCateBox,
+.smallCateBox {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  transition: all 1s;
+}
+
+.bigCateBox div,
+.smallCateBox div {
+  width: 30%;
+  height: .4rem;
+  background-color: #fff;
+  border: 1px solid #EEE;
+  margin-bottom: .1rem;
+  float: left;
+  text-align: center;
+  line-height: .4rem;
+  font-size: .14rem;
+  color: #A5A5A5;
+  -webkit-border-radius: .08rem;
+  -moz-border-radius: .08rem;
+  border-radius: .08rem;
+  overflow: hidden;
+}
+
+.active {
+  border: 1px solid #4B97FF !important;
+  color: #323232 !important;
+}
+
+.bigCateBox div:nth-child(4),
+.bigCateBox div:nth-child(8),
+.smallCateBox div:nth-child(4),
+.smallCateBox div:nth-child(8) {
+  border: 1px solid #EEE;
+  margin-right: .01rem;
+}
+
+.openAll {
+  padding: .1rem;
+  text-align: center;
+  color:#a5a5a5;
+}
+
+/*专业*/
+.majorName {
+  li {
+    border-bottom: 1px solid #F2F2F2;
+    line-height: .5rem;
+    .titleName {
+      .specialtyTypes {
+        display: inline-block;
+        font-size: .14rem;
+      }
+
+      .viewDetails {
+        float: right;
+        font-size: .14rem;
+      }
+    }
+    .olYearScore {
+      background-color: #F2F2F2;
+      width: 100%;
+      padding-bottom: .1rem;
+      ul {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        li {
+          font-size: .12rem;
+          color: #A5A5A5;
+          //flex:1;
+          float: left;
+          span {
+            color: #323232;
+          }
+        }
+        li:nth-child(2){
+          //flex:1.3;
+        }
+        .secureLine {
+          float: left;
+        }
+
+        .scoreBox {
+          display: flex;
+          flex-direction: column;
+          padding: 0 0 .1rem .1rem;
+        }
+
+        .scoreBox span {
+          color: #323232;
+          margin-bottom: -.19rem;
+        }
+      }
+      .btnBox{
+        display: flex;
+        justify-content: space-around;
+        button{
+          width: 1.4rem;
+          box-shadow: none;
+        }
+        button:nth-child(1){
+          background-color: #F23A4F;
+        }
+      }
+    }
+  }
+}
+
+
+
+
+

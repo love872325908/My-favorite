@@ -1,0 +1,31 @@
+.displayBtnBox {
+  padding: .1rem .1rem;
+  margin-bottom:.1rem;
+}
+
+.displayBtnBox h3 {
+  font-size: .16rem;
+  line-height: .4rem
+}
+
+.displayBtn {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.displayBtn button {
+  background-color: #fff;
+  border: .01px solid #1898e1;
+  padding: .05rem .1rem;
+  float: left;
+  margin-bottom:.1rem;
+  border-radius: .05rem;
+  min-width: .7rem;
+}
+
+.displayBtn button:nth-child(4),
+.displayBtn button:nth-child(7) {
+  border: 1px solid #EEE;
+  margin-right: 0;
+}

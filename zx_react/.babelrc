@@ -1,0 +1,17 @@
+{
+  "presets": [
+    [
+      "es2015",
+      {
+        "modules": false
+      }
+    ],
+    "stage-2",
+    "react"
+  ],
+  "plugins": [
+    "dva-hmr",
+    "add-module-exports",
+    "recharts"
+  ]
+}

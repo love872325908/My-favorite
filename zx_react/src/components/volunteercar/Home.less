@@ -1,0 +1,288 @@
+body{
+   background-color: #fff;
+}
+// 顶部样式
+.vtCarBox {
+  position:relative;
+  .banner {
+    height: 2.2rem;
+    background-image: url(../../assets/images/carimg.png);
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    padding: 0 .15rem;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    .closeLog {
+      flex: 1;
+      use{
+        fill: #fff;
+      }
+    }
+    .titleBox {
+      flex: 1;
+      .title {
+        float: left;
+        h3 {
+          font-size: .3rem;
+        }
+        span {
+          font-size: .2rem;
+        }
+      }
+    }
+    .menryBox {
+      flex: 1;
+      line-height: .83rem;
+      .money {
+        float: right;
+        font-size: .28rem;
+        .moneyLogo {
+          font-size: .24rem;
+        }
+      }
+    }
+  }
+  .VcatMainBox {
+    background-color: #fff;
+    overflow: hidden;
+    .xuanze {
+      width: 100%;
+      border-bottom: 1px solid #f2f2f2;
+      .active {
+        color: #323232;
+      }
+      li {
+         background: #fff;
+        font-size: .12rem;
+        width: 49%;
+        display: inline-block;
+        border-left: 1px solid #F2F2F2;
+        a {
+          padding: .115rem .05rem .11rem .05rem;
+          display: block;
+          color: #a5a5a5;
+          text-align: center;
+        }
+      }
+      span {
+        width: 1.85rem;
+        height: 0.02rem;
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: -.01rem;
+        transition: all .35s;
+        background: -webkit-linear-gradient(left, #508eff, #39bafe);
+        /* Safari 5.1 - 6.0 */
+        background: -o-linear-gradient(right, #508eff, #39bafe);
+        /* Opera 11.1 - 12.0 */
+        background: -moz-linear-gradient(right, #508eff, #39bafe);
+        /* Firefox 3.6 - 15 */
+        background: linear-gradient(to right, #508eff, #39bafe);
+      }
+    }
+  }
+}
+
+// 产品介绍
+.itdBox {
+  padding: .1rem;
+  padding-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  .itdTopBox {
+    flex:2;
+    padding-bottom: .3rem;
+    border-bottom: 1px solid #F2F2F2;
+    line-height: .24rem;
+  }
+  .hintInfoBox {
+    flex:3;
+    padding: .2rem 0;
+    color: #A5A5A5;
+    line-height: .24rem;
+    font-size: .12rem;
+  }
+  .submitBtn{
+    flex:1;
+  }
+  .buyPopuy{
+    .shade{
+      width: 100%;
+      height: 100%;
+      background-color:#858585;
+      overflow: hidden;
+      position:absolute;
+      top:0;
+      left:0;
+      opacity:.5;
+    }
+    .buyComptBox{
+
+    }
+  }
+}
+
+// 用户评价
+.userEl {
+  padding-bottom: .17rem;
+  ul {
+    padding-left: .1rem;
+    li {
+      border-bottom: 1px solid #f1f1f1;
+      padding: .2rem .1rem 0 0;
+      .ComHeadBox {
+        .avatar {
+          width: .35rem;
+          height: .35rem;
+          float: left;
+          border-radius: 100%;
+          background-size: cover;
+        }
+        .uName span {
+          margin-left: .1rem;
+          line-height: .35rem;
+        }
+      }
+      .ComContent {
+        margin-top: .1rem;
+        span {
+          line-height: .2rem;
+        }
+      }
+      .ComTime {
+        float: right;
+        font-size: .12rem;
+        color: #A5A5A5;
+      }
+    }
+    li:last-child {
+      border: none;
+    }
+  }
+}
+
+// 按钮
+.submitBtn {
+  text-align: center;
+  padding-bottom: .1rem;
+  button {
+    box-shadow: 0px 4px 14px 0 rgba(58, 185, 254, .7);
+    width: 1.81rem;
+    height: .44rem;
+    color: #fff;
+    font-size: .15rem;
+    line-height: .44rem;
+    border-radius: 10%;
+    outline: none;
+    border: none;
+    border-radius: .5rem;
+    background: -webkit-linear-gradient(left, #508eff, #39bafe);
+    /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #508eff, #39bafe);
+    /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #508eff, #39bafe);
+    /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #508eff, #39bafe);
+  }
+}
+
+// 购买弹出框
+.buyPopuy{
+  background-color:rgba(0,0,0,.6);
+  width: 100%;
+  height: 100%;
+  .shade{
+    width: 100%;
+    height: 100%;
+    background-color:#858585;
+    overflow: hidden;
+    position:absolute;
+    top:0;
+    left:0;
+    opacity:.5;
+  }
+  .buyBox {
+    display: flex;
+    flex-direction: column;
+    position:absolute;
+    bottom: 0;
+    left: 0;
+    background-color:#fff;
+    width: 100%;
+    div {
+      border-top: 1px solid #F2F2F2;
+      padding: 0 .1rem;
+    }
+    .title {
+      flex: 1;
+      line-height: .73rem;
+      position: relative;
+      text-align: center;
+      svg {
+        position: absolute;
+        left: .1rem;
+        top: .25rem;
+        font-size: .25rem;
+        color: #A5A5A5;
+      }
+      span {
+        font-size: .16rem;
+      }
+    }
+    .recharge {
+      flex: 1;
+      line-height: .73rem;
+      span:nth-child(1) {
+        float: left;
+        color: #a5a5a5;
+      }
+      span:nth-child(2) {
+        float: right;
+      }
+    }
+    .payment {
+      flex: 2.5;
+      h3 {
+        color: #a5a5a5;
+        line-height: .5rem;
+      }
+      .buyMethod {
+        padding: .2rem 0;
+        display: flex;
+        justify-content: space-around;
+        svg {
+          padding: .1rem;
+          background-color: #fff;
+          border: 1px solid #F2F2F2;
+          width: 45%;
+          border-radius: .1rem;
+          height: .5rem;
+        }
+        svg:nth-child(2){
+          padding: 0;
+        }
+        button:nth-child(1){
+          margin-right:.12rem;
+        }
+      }
+    }
+    .money {
+      flex: 1;
+      line-height: .73rem;
+      span:nth-child(1){
+        float:left;
+        color:#a5a5a5;
+      }
+      span:nth-child(2){
+        float:right;
+        font-size:20px;
+      }
+    }
+  }
+}
+
+
+

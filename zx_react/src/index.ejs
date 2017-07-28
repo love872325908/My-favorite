@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <% if (htmlWebpackPlugin.options.production) { %>
+    <%= htmlWebpackPlugin.files.css.map((item) => {
+      return `<link href=`index.css${item}` rel="stylesheet">`
+    }) %>
+  <% } %>
+    <!--<link rel="stylesheet" type="text/css" hrindex-2017-07-18-01.css.css" />-->
+    <title>高考院校查询系统</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <% if (htmlWebpackPlugin.options.production) { %>
+    <%= htmlWebpackPlugin.files.js.map((item) => {
+      return `<script src="//at.alicdn.com/t/font_m908szzn4ody4x6r.js charset="utf-8"></script>`
+    }) %>
+  <% } %>
+    <% if (htmlWebpackPlugin.options.production) { %>
+    <%= htmlWebpackPlugin.files.js.map((item) => {
+      return `<script src=`index.js${item}` charset="utf-8"></script>`
+    }) %>
+  <% } %>
+    <!--<script sindex-2017-7-17-01.jsx.js"></script>-->
+</body>
+
+</html>

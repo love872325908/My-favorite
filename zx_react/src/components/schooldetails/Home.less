@@ -1,0 +1,475 @@
+.faterBox {
+  padding-left: .1rem;
+}
+
+/*滑动栏样式*/
+
+.wrap {
+  margin-top: .4rem;
+  background-color: #fff;
+  overflow: hidden;
+  .xuanze {
+    position: relative;
+    width: 160%;
+    border-bottom: 1px solid #f2f2f2;
+    .active {
+      color: #323232;
+    }
+    li {
+      float: left;
+      font-size: .12rem;
+      width: 9%;
+      a {
+        padding: .115rem .05rem .11rem .05rem;
+        display: block;
+        color: #a5a5a5;
+        text-align: center;
+      }
+    }
+    span {
+      width: .84rem;
+      height: 0.02rem;
+      display: block;
+      position: absolute;
+      left: 0;
+      bottom: -.01rem;
+      transition: all .35s;
+      background: -webkit-linear-gradient(left, #508eff, #39bafe);
+      /* Safari 5.1 - 6.0 */
+      background: -o-linear-gradient(right, #508eff, #39bafe);
+      /* Opera 11.1 - 12.0 */
+      background: -moz-linear-gradient(right, #508eff, #39bafe);
+      /* Firefox 3.6 - 15 */
+      background: linear-gradient(to right, #508eff, #39bafe);
+    }
+  }
+}
+
+/*学校概况*/
+
+.schoolBox {
+  background-color: #fff;
+  .schoolMsgBox {
+    background-color: #fff;
+    padding: .1rem;
+    display: flex;
+    .msgImgBox {
+      flex: 1;
+      border-radius: 100%;
+      img {
+        width: 100%;
+      }
+    }
+    .schoolNameBox {
+      flex: 4;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-left: .1rem;
+      h3 {
+        font-size: .14rem;
+        margin-bottom: .08rem;
+      }
+      div {
+        span {
+          font-size: .12rem;
+          color: #A5A5A5;
+        }
+      }
+    }
+  }
+  .schoolInfo {
+    background-color: #fff;
+    padding: .1rem;
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      li {
+        width: 33%;
+        line-height: .3rem;
+        span:nth-child(1) {
+          color: #A5A5A5;
+        }
+      }
+      li:last-child {
+        width: 100%;
+      }
+    }
+  }
+  .InfoContent {
+    ul {
+      li {
+        margin-top: .2rem;
+        h3 {
+          line-height: .3rem;
+          border-bottom: 1px solid #F1F1F1;
+          padding: .1rem;
+        }
+        div {
+          padding: .1rem;
+          display: -webkit-box;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          -webkit-line-clamp: 10;
+          -webkit-box-orient: vertical;
+          background-clip: content-box;
+          line-height: .25rem;
+          p {
+            overflow: hidden;
+            img {
+              width: 100%;
+            }
+          }
+        }
+        div:last-child {
+          text-align: center;
+          span {
+            color: #A5A5A5;
+          }
+        }
+      }
+      li:first-of-type {
+        margin-top: 0;
+      }
+    }
+  }
+}
+
+/*专业分数线*/
+
+.cutoffScoreBox {
+  background-color: #fff;
+}
+
+/*历史分数线*/
+
+.historyScore {
+  background-color: #fff;
+  overflow: hidden;
+  .xuanze1 {
+    width: 360%;
+    .xuanze {
+      position: relative;
+      width: 100%;
+      border-bottom: 1px solid #f2f2f2;
+      .active {
+        color: #323232;
+      }
+      li {
+        float: left;
+        font-size: .12rem;
+        padding: .115rem 0 .11rem;
+        display: block;
+        color: #a5a5a5;
+        text-align: center;
+        width: 6%;
+      }
+      span {
+        width: .788rem;
+        height: 0.02rem;
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: -.01rem;
+        transition: all .35s;
+        background: -webkit-linear-gradient(left, #508eff, #39bafe);
+        /* Safari 5.1 - 6.0 */
+        background: -o-linear-gradient(right, #508eff, #39bafe);
+        /* Opera 11.1 - 12.0 */
+        background: -moz-linear-gradient(right, #508eff, #39bafe);
+        /* Firefox 3.6 - 15 */
+        background: linear-gradient(to right, #508eff, #39bafe);
+      }
+    }
+  }
+}
+
+.bigbtn {
+  margin-top: .1rem;
+}
+
+/*分数线下拉框*/
+.setGradeLine {
+  padding: .1rem;
+  h4 {
+    color: #A5A5A5;
+    line-height: .2rem;
+  }
+  .pushList {
+    margin-top: .15rem;
+    display: flex;
+    justify-content: space-between;
+    .opt {
+      overflow: hidden;
+      margin-bottom: .19rem;
+      float: left;
+      width: 50%;
+      span {
+        padding-right: 0.055rem;
+        float: left;
+        line-height: .3rem;
+      }
+      p {
+        display: inline-block;
+        color: #323232;
+        width: .97rem;
+        border-radius: 4px;
+        outline: none;
+        height: .3rem;
+        border: 1px solid #f2f2f2;
+        text-indent: .07rem;
+        line-height: .3rem;
+        overflow: hidden;
+      }
+    }
+
+  }
+  .MajorList {
+    ul {
+      li {
+        border-bottom: 1px solid #F2F2F2;
+        line-height: .5rem;
+        .titleName {
+          .specialtyTypes {
+            display: inline-block;
+            font-size: .14rem;
+          }
+
+          .viewDetails {
+            float: right;
+            font-size: .14rem;
+          }
+        }
+        .olYearScore {
+          background-color: #F2F2F2;
+          width: 100%;
+          padding-bottom: .1rem;
+          ul:nth-child(1) {
+            display: flex;
+            flex-wrap: wrap;
+            padding-left: .1rem;
+            li {
+              font-size: .12rem;
+              color: #A5A5A5;
+              float: left;
+              margin-left: .1rem;
+              span {
+                color: #323232;
+              }
+            }
+            li:nth-child(1) {
+              margin-left: 0;
+            }
+            .secureLine {
+              float: left;
+            }
+          }
+          ul:nth-child(2) {
+            display: flex;
+            flex-wrap: wrap;
+            padding-left: .1rem;
+            li {
+              font-size: .12rem;
+              color: #A5A5A5;
+              width: 33%;
+              span {
+                color: #323232;
+              }
+            }
+            .secureLine {
+              float: left;
+            }
+          }
+          .btn {
+            padding: 0 .25rem;
+            button {
+              width: 45%;
+              margin-left: 0;
+            }
+            button:nth-child(1) {
+              float: left;
+              box-shadow: none;
+              background: none;
+              background-color: #F33A50;
+            }
+            button:nth-child(2) {
+              float: right;
+              box-shadow: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.ScopeInfo {
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    padding: .15rem .1rem;
+    li {
+      width: 33%;
+      line-height: .3rem;
+      text-align: center;
+      span:nth-child(1) {
+        color: #a5a5a5;
+      }
+    }
+  }
+}
+
+/*曲线图样式*/
+
+.graphBox {
+  margin-top: .3rem;
+  ul {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    li {
+      float: left;
+      margin-right: .2rem;
+      i {
+        display: inline-block;
+        width: .1rem;
+        height: .1rem;
+        border-radius: 50%;
+      }
+      span {
+        font-size: .1rem;
+        margin-left: .1rem;
+      }
+    }
+    li:nth-child(1) i {
+      background-color: #5688C1;
+    }
+    li:nth-child(2) i {
+      background-color: #CA7AA3;
+    }
+    li:nth-child(3) i {
+      background-color: #AF9FCA;
+    }
+  }
+  .backImg {
+    margin-top: .3rem;
+    width: 100%;
+    height: 1.8rem;
+    background-size: contain;
+    background-image: url(../../assets/images/graph.gif);
+  }
+}
+
+/*院校全景样式*/
+
+.schoolImgBox {
+  ul {
+    padding: 0 .1rem;
+    li {
+      margin-top: .1rem;
+      height: 1.8rem;
+      background-size: cover;
+
+    }
+  }
+}
+
+/*招生专业*/
+.SchoolML {
+  padding-right: .1rem;
+  .pushList {
+    margin-top: .15rem;
+    display: flex;
+    justify-content: space-between;
+    .opt {
+      overflow: hidden;
+      margin-bottom: .19rem;
+      float: left;
+      width: 50%;
+      span {
+        padding-right: 0.055rem;
+        float: left;
+        line-height: .3rem;
+      }
+      p {
+        display: inline-block;
+        color: #323232;
+        width: .97rem;
+        border-radius: 4px;
+        outline: none;
+        height: .3rem;
+        border: 1px solid #f2f2f2;
+        text-indent: .07rem;
+        line-height: .3rem;
+        overflow: hidden;
+      }
+    }
+  }
+  .VcatMainBox {
+    background-color: #fff;
+    overflow: hidden;
+    .xuanze {
+      width: 100%;
+      border-bottom: 1px solid #f2f2f2;
+      display: flex;
+      .active {
+        color: #323232;
+      }
+      li {
+        background: #fff;
+        font-size: .12rem;
+        width: 50%;
+        display: inline-block;
+        border-left: 1px solid #F2F2F2;
+        padding: .115rem .05rem .11rem .05rem;
+        display: block;
+        color: #a5a5a5;
+        text-align: center;
+      }
+      span {
+        width: 1.76rem;
+        height: 0.02rem;
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: -.01rem;
+        transition: all .35s;
+        background: -webkit-linear-gradient(left, #508eff, #39bafe);
+        /* Safari 5.1 - 6.0 */
+        background: -o-linear-gradient(right, #508eff, #39bafe);
+        /* Opera 11.1 - 12.0 */
+        background: -moz-linear-gradient(right, #508eff, #39bafe);
+        /* Firefox 3.6 - 15 */
+        background: linear-gradient(to right, #508eff, #39bafe);
+      }
+    }
+  }
+}
+
+.major_his_line {
+  display: flex;
+  flex-wrap: wrap;
+  //padding-left: .1rem;
+  li {
+    width: 100%;
+    font-size: .14rem;
+    float: left;
+    margin-left: .1rem;
+    margin-top: .1rem;
+    div {
+      font-size: .14rem;
+    }
+    .titleYear {
+      display: flex;
+      line-height: .3rem;
+      li {
+        flex: 1;
+      }
+    }
+    span {
+      color: #323232;
+    }
+  }
+}

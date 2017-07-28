@@ -1,0 +1,42 @@
+.toast{
+
+
+
+      display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  position: fixed;
+  top: 50%;
+  z-index: 9999;
+  animation: show 1.8s;
+  animation-fill-mode: forwards;
+
+  div{
+    padding: 0 .15rem;
+    height: .25rem;
+    background: rgba(0, 0, 0, 0.85);
+  border-radius:8px;
+  display: flex;
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+  }
+}
+@keyframes show{
+  from{
+    opacity: 0;
+    display: block;
+  }
+  30%{
+    opacity: 1;
+  }
+  50%{
+    opacity: 1;
+  }
+  to{
+    opacity: 0;
+    z-index: 0;
+  }
+}
+
