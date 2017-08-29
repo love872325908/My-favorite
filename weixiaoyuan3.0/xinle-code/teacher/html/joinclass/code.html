@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title></title>
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/cssrem.js"></script>
+    <script src="../../js/common.js"></script>
+    <style type="text/css">
+    html {
+        height: 100%;
+    }
+    
+    body {
+        background: url(../../images/code-bg.png) top left no-repeat;
+        min-height: 100%;
+        height: auto !important;
+    }
+    </style>
+</head>
+
+<body style="position: relative;">
+    <div class="code" id="content_box">
+        <h3>请输入学校暗号</h3>
+        <div class="code-num">
+            <div>
+                <input id="code1" @keyup="next($event,1)" type="tel" maxlength="1" v-model="code1" tabindex="1" />
+            </div>
+            <div>
+                <input id="code2" @keyup="next($event,2)" type="tel" maxlength="1" v-model="code2" tabindex="2" />
+            </div>
+            <div>
+                <input id="code3" @keyup="next($event,3)" type="tel" maxlength="1" v-model="code3" tabindex="3" />
+            </div>
+            <div>
+                <input id="code4" @keyup="next($event,4)" type="tel" maxlength="1" v-model="code4" tabindex="4" />
+            </div>
+        </div>
+        <button id="confirmBtn" @click="queren" class="btn-border btn-border-no">确认</button>
+    </div>
+    <div class="confirmBtn" @click="customService">联系学校管理员</div>
+</body>
+<script src="../../js/mui.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+var app = new Vue({
+    el: '#content_box',
+    data: {
+        code1: "",
+        code2: "",
+        code3: "",
+        code4: "",
+        class_id: 0
+    },
+    created: function() {
+        $("#code1").focus();
+        document.title = GetQueryString("school_name");
+        var class_id = GetQueryString("class_id");
+        if (!isEmpty(class_id) && class_id != 'null') {
+            this.class_id = class_id;
+        }
+    },
+    methods: {
+        queren: function() {
+            var _self = this;
+            if (_self.code1.length == 0 || _self.code2.length == 0 || _self.code3.length == 0 || _self.code4.length == 0) {
+                mui.toast("请输入正确的4位数学校暗号！");
+                return;
+            }
+
+            if (isEmpty(_self.class_id)) { // 把人加入学校
+                var btnArray = ['确定'];
+
+                var _data = {};
+                _data.user_id = getCookie("user_id");
+                _data.school_id = GetQueryString("school_id");
+                _data.code = _self.code1 + _self.code2 + _self.code3 + _self.code4;
+                _data.token = getCookie("token");
+                $.ajax({
+                    url: site_url + '/peony/wx/organize/useraddschool',
+                    data: _data,
+                    type: "POST",
+                    dataType: "JSON",
+                    cache: false,
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            setCookie('school_id', GetQueryString("school_id"), 3600 * 7 * 24);
+                            setCookie('school_name', GetQueryString("school_name"), 3600 * 7 * 24);
+                            mui.confirm('', '加入学校成功！', btnArray, function(e) {
+                                if (e.index == 0) {
+                                    location.href = goto_url + "/view/html/workbench/goodteacher.html?class_id=" + _self.class_id;
+                                }
+                            });
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+
+            } else { // 把班级加入学校
+                var btnArray = ['暂不', '这就去'];
+                var _data = {};
+                _data.token = getCookie("token");
+                _data.id = _self.class_id;
+                _data.school_id = GetQueryString("school_id");
+                _data.school_code = _self.code1 + _self.code2 + _self.code3 + _self.code4;
+                $.ajax({
+                    url: site_url + '/peony/wx/teacher/updateclass',
+                    data: _data,
+                    type: "POST",
+                    dataType: "JSON",
+                    cache: false,
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            setCookie('school_id', GetQueryString("school_id"), 3600 * 7 * 24);
+                            setCookie('school_name', GetQueryString("school_name"), 3600 * 7 * 24);
+                            mui.confirm('', '加入成功赶快邀请家长老师们加入你的班级吧', btnArray, function(e) {
+                                if (e.index == 0) {
+                                    history.go(-4);
+                                } else {
+                                    location.href = goto_url + "/view/html/invite/invite.html?class_id=" + _self.class_id + "&user_id=" + getCookie("user_id");
+                                }
+                            });
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+            }
+        },
+        next: function(e, i) {
+            var _self = this;
+            var keycode = e.keyCode;
+
+            if (keycode == 8 || keycode == 46) {
+                if (i == 1) {
+                    return;
+                } else {
+                    i--;
+                    $("#code" + i).focus();
+                }
+            } else {
+                if (i == 4) {
+                    return;
+                } else {
+                    i++;
+                    $("#code" + i).focus();
+
+                }
+            }
+
+        },
+
+        customService: function() {
+            location.href = "tel:400-800-110";
+        }
+    }
+})
+</script>
+
+</html>

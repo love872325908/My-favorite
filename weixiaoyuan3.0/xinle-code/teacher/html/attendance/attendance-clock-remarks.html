@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>考勤打卡</title>
+    <link rel="stylesheet" type="text/css" href="../../css/attendance.css">
+    <link rel="stylesheet" type="text/css" href="../../css/mui.css">
+
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/jssdkwx.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="heade-nav center-float-left">
+            <a href="javascript:history.go(-1);" class="heade-nav_btn"><img src="../../images/return.png" alt=""></a>
+            <div class="heade-nav_name flex-1">备注</div>
+            <div class="heade-nav_btn" @click="setAttendanceRemark()">确定</div>
+        </div>
+        <div class="attendance-clock">
+          <div class="attendance-clock-con">
+            <div class="textarea-bar">
+               <textarea id="textarea" rows="5" cols="20" placeholder="填写备注" v-model="attendanceRecordDetails.remark" :maxlength="_self.max_word_count" @keyup="getWordCount()">
+                   {{ attendanceRecordDetails.remark }}
+               </textarea>
+            </div>
+            <div class="img-bar">
+                <ul>
+                   <li v-for="img in imgs" ><a href="" v-bind:style="{backgroundImage:'url(' + img + ')'}"></a></li>
+                    <li><a class="add-img" href="javascript:void(0);"  id="img_button"><i class="iconfont icon-xiangji"></i><h6>添加图片</h6></a></li>
+                </ul>
+            </div>
+            <div class="text-prompt">{{ word_count }}/50</div>
+          </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var app = new Vue({
+          el:'#app',
+          data:{
+            getAttendanceRecordDetail_url:site_url + '/peony/wx/attendance/getAttendanceRecordDetail',
+            setAttendanceRemark_url:site_url + '/peony/wx/attendance/setAttendanceRemark',
+            token : '',
+            come_from:2,             
+            serverId:[],             
+            site_url:site_url,             
+            attendance_record_details_id:0,             
+            attendanceRecordDetails:{},           
+            imgs : [],  // 图片存储数组
+            upload_type : 0,  // 0 不及时上传  1 及时上传
+            img_count : 1,  // 总共上传总数
+            img_upload_count : 0, // 还能上传总数
+            word_count : 0, // 已写入字数
+            max_word_count : 50, // 最大可写入字数
+          },
+          created:function(){
+            _self = this;
+            _self.token = getCookie("token");
+            _self.attendance_record_details_id = GetQueryString('attendance_record_details_id');
+            _self.getAttendanceRecordDetail();
+          },
+          mounted:function(){
+            _self = this;
+          },
+          methods: {
+            backDetails:function(){
+              location.href="./attendance-clock-details.html?id="+_self.attendance_record_details_id;
+            },
+            getAttendanceRecordDetail:function(){
+                var _self = this;
+                var _url = _self.getAttendanceRecordDetail_url;
+                var _data = {
+                    "token" : _self.token,
+                    "attendance_record_details_id":_self.attendance_record_details_id,
+                };
+                _self.httpurl(_url , _data ,'GET' , 'JSON' , function(obj){
+                   if (obj.code === 0) {
+                        _self.attendanceRecordDetails = obj.data.list;
+                        var attachments_arr = obj.data.list.attendance_attachments;
+                        $.each(attachments_arr,function(index,item){
+                            //设置最大允许显示图片
+                            if( _self.imgs.length<_self.img_count ){
+                                _self.imgs.push(site_url + item.attach_url);
+                            }
+                        });
+                        //设置上传限制
+                        if( _self.site_url.length ){
+                            _self.img_upload_count = _self.img_count-_self.imgs.length;
+                        }
+                        //设置字数限制
+                        _self.getWordCount();
+                        // console.log(_self);
+                    } else {
+                        mui.toast(obj.msg);
+                    }
+                });
+            },
+            setAttendanceRemark:function(){
+                var _self = this;
+                var _url = _self.setAttendanceRemark_url;
+                var _data = {
+                    "token" : _self.token,
+                    "come_from" : _self.come_from,
+                    "serverId" : images.serverId,
+                    "attendance_record_details_id":_self.attendance_record_details_id,
+                    "remark":_self.attendanceRecordDetails.remark,
+                };
+
+                _self.httpurl(_url , _data ,'POST' , 'JSON' , function(obj){
+                    if (obj.code === 0) {
+                        // mui.toast(obj.msg);
+                        _self.backDetails();
+                    } else {
+                        mui.toast(obj.msg);
+                    }
+                });
+            },
+            getWordCount:function(){
+                var _self = this;
+                if( _self.word_count >= _self.max_word_count ){
+                    mui.toast("已达到字数最大限制");
+                    return;
+                }
+                _self.word_count = _self.attendanceRecordDetails.remark.length;
+                // console.log(_self.word_count);
+            },
+            httpurl:function( url , data , type , datatype , closure ){
+               $.ajax({
+                   url : url,
+                   data : data,
+                   type : type,
+                   dataType : datatype,
+                   success : function(obj){
+                       if(obj.code == 0){
+                           closure(obj);
+                       }else{
+                           mui.toast(obj.msg);
+                       }
+                   },
+                   error : function(e){
+                       console.log(e);
+                   }
+               });
+            }
+          }
+        })
+      </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>投票详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/teachersay.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+</head>
+
+<body>
+    <div id="content_box">
+        <div class="vote_title">
+            <div class="vote_title_l">{{vote_config.content }}</div>
+            <span class="vote_title_r">阅读 ：{{vote_config.read_count}}</span>
+        </div>
+        <div class="vote_complete">
+            <ul>
+                <li v-for="voteoptions in options">
+                    <p>{{ voteoptions.content }}</p>
+                    <div class="vote_complete_persent">
+                        <div><span v-bind:style="{ width:voteoptions.rate + '%'}"></span></div>
+                        <span>{{voteoptions.rate}}%</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script src="../../js/mui.min.js"></script>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            vote_config:{},
+            options: []
+        },
+        created: function() {
+            var _data = {};
+            _data.token = getCookie("token");
+            _data.vote_id = GetQueryString("vote_id");
+            _data.is_result = 1;
+            var _self = this;
+            $.ajax({
+                url: site_url + "/peony/wx/teachersay/getvote",
+                type: "GET",
+                dataType: "json",
+                data: _data,
+
+                success: function(obj) {
+                  _self.vote_config = obj.data.list[0];
+                  _self.options = obj.data.list[0].voteoptions;
+                    console.log(obj);
+                }
+            })
+        }
+
+    });
+    </script>
+</body>
+
+</html>

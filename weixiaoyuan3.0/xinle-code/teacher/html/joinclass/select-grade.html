@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+	<title>加入班级</title>
+
+    <!--标准mui.css-->
+	<link rel="stylesheet" href="../../css/mui.css">
+	<link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+
+	<script src="../../js/common.js"></script>
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/jquery-1.8.3.min.js"></script>
+	<script src="../../js/mui.min.js"></script>
+
+
+</head>
+<body >
+<div id="content_box">
+	<div class="grade-box align-c" >
+		<h3>请选择年级</h3>
+		<small>{{school_name}}</small>
+		<ul>
+			<template v-for="g in gradelist">
+		    <li class="bg-gray"   v-on:click="select_grade(g)">
+		    <span>{{ g.name }}</span>
+		    </li>
+		    </template>
+		    
+		 </ul>
+		
+	</div>
+
+	<div class="new-class" v-on:click="redirect">
+	   <a href="javascript:void();" ><i class="iconfont icon-xinzeng"></i> 新建班级</a>
+	</div>
+
+</div>
+</body>
+</html>
+<script>
+var app = new Vue({
+	el:'#content_box',
+	created: function () {
+		this.school_name = GetQueryString("school_name");
+		var _data = {};
+		_data.school_id = GetQueryString("school_id");;
+		var url =  site_url+"/peony/wx/grade/getgradelist?token="+getCookie('token')+"&school_id="+_data.school_id;
+		var _self =  this;
+		$.ajax({
+			url : url,
+			type : "get",
+			dataType : "JSON",
+			success : function(obj){
+
+				_self.gradelist = obj.data.list;
+
+			}
+		});			
+	},
+	data: {
+		gradelist:[],
+		selected_gradeid: 0,  
+	},
+	methods: {
+		select_grade: function (item) {
+			var  urlParam = window.location.search.substr(1);
+		     var url = site_url+"/view/html/joinclass/select-class.html?"+urlParam+"&grade_id="+item.id;
+		     location.href = url;
+		},
+		redirect : function(){
+			var school_id = GetQueryString("school_id");
+			location.href = site_url+"/view/html/joinclass/new-class.html?school_id="+school_id;
+		}
+	}
+    
+});
+</script> 

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+	<title>选择发送范围</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/jquery-1.8.3.min.js"></script>
+	<script src="../../js/common.js"></script>
+
+</head>
+<body class="bg-light-gray">
+<div id="content_box">
+    <div class="people-list" id="content_box">
+    <ul>
+        <li class="wei-input-box" v-for="item in items">
+            <h5>{{item.name}}</h5>
+            <input name="checkbox1" value="Item 3" type="checkbox" >
+        </li>
+    </ul>
+    
+    </div>
+    <div class="mlr15 bottom" ><a href="javascript:;" class="btn cl-white">确定</a></div>
+</div>
+<script src="../../js/mui.min.js"></script>
+<script type="text/javascript">
+	var app = new Vue({
+        el:'#content_box',
+        data: {
+            items:[
+                {
+                    name:"高一二班"
+                }, {
+                    name:"高三二班"
+                }, {
+                    name:"初一二班"
+                }, {
+                   name:"高一二班"
+                }
+            ]      
+        },
+        methods: {
+           
+        }
+    })
+</script>
+</body>
+</html>

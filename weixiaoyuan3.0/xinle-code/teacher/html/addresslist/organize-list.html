@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"   content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>组织架构</title>
+  <link rel="stylesheet" type="text/css" href="../../css/mui.css">
+  <link rel="stylesheet" type="text/css" href="../../css/base.css">
+  <link rel="stylesheet" type="text/css" href="../../css/searchbar.css">
+  <link rel="stylesheet" type="text/css" href="../../css/addresslist.css">
+
+  <script src="../../js/vue.js"></script>
+  <script src="../../js/jquery-1.8.3.min.js"></script>
+  <script src="../../js/mui.min.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../js/jquery.charfirst.pinyin.js"></script>
+</head>
+<body>
+   <div id="app">
+      <div class="address-trun">
+         <!--搜索开始-->
+         <div class="search-bar" id="searchBar">
+             <div class="search-bar_form">
+                <div class="search-bar_box">
+                    <i class="iconfont icon-sousuo icon-search" @click="search"></i>
+                    <input v-model="keywords" type="search" class="search-bar_input" id="searchInput" placeholder="搜索" required="">
+                    <a href="javascript:" class="icon-clear" id="searchClear"></a>
+                </div>
+                <label class="search-bar_label" id="searchText" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
+                    <i class="iconfont icon-sousuo icon-search" @click="search"></i>
+                    <span >搜索</span>
+                </label>
+             </div>
+             <a href="javascript:" class="search-bar_cancel-btn" id="searchCancel">取消</a>
+         </div>
+         <!--搜索结束-->
+
+         <div class="organize-tips" v-if="orgTips">
+             <span @click="getInitDepart(2)" > <a class="blue">{{ school_name }}</a>
+             <i class="iconfont icon-zhishi cl-light-gray"></i></span>
+             <span @click="clickDepartment(item,index,2)" v-for="(item,index) in orglist"> <a :class="item.active">{{ item.name }} </a><i v-if="item.is_arrow" class="iconfont icon-zhishi cl-light-gray"></i></span>
+
+         </div>
+         
+         
+         <div class="organize-box">
+            <!--部门-->
+             <div class="organize-section" v-for="(item,index) in organizeist" v-if="item.org_type == 1"  @click="clickDepartment(item,index,1)">
+                  <h5>{{item.name}}</h5>
+                  <i class="iconfont icon-zhishi cl-light-gray"></i>
+             </div>
+
+            <!--人-->
+             <div class="organize-peo"  v-for="peo in peolist" v-if="peo.org_type == 2" >
+                  <label>
+                      <div class="artvarimg" @click="clickPersonal(peo)"><img :src="peo.headimgurl ? peo.headimgurl : '../../images/touxiang.png'"  alt=""></div>
+                      <h5>{{peo.realname}}</h5>
+                  </label>
+                  <!--
+                  <div class="right">
+                      <a @click="call(peo)"><i class="iconfont icon-dianhua"></i></a> 
+                      <input name="radio1" value="" type="radio">
+                  </div>
+                  -->
+                  
+             </div>
+         </div>
+      </div>
+      <!--电话弹窗-->
+      <div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+         <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+               <a href="#">私信</a>
+            </li>
+            <li class="mui-table-view-cell">
+               <a :href="'tel:' + phone">打电话：{{phone}}</a>
+            </li>
+         </ul>
+         <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+               <a class="cl-gray" href="#picture">取消</a>
+            </li>
+         </ul>
+      </div>
+   </div>
+   <script type="text/javascript">
+        var app = new Vue({
+          el:'#app',
+          data:{
+            orglist : [],        //部门导航列表
+            orgTips:false,       //部门导航列表是否显示
+            is_arrow : "" ,      //部门导航列表箭头是否显示
+            active :"",          //部门导航列表部门显示颜色
+            keywords : '',          
+            organizeist : [] ,   //部门列表
+            name : "",           //部门名称
+            peolist : [] ,       //教职工列表
+            realname : "" ,      //教职工姓名
+            org_type : "",       //1 是获取部门  2 是获取教职工
+            phone:"",            //教职工电话
+            site_url : site_url, //页头
+            school_name : getCookie('school_name'),
+            
+
+          },
+          created : function(){
+             this.getInitDepart(1);
+          },
+          methods: {
+            search:function(){
+               
+            },
+            getInitDepart : function(type){
+               var _self = this;
+               var _data = {};
+                _data.token = getCookie("token");
+                _data.id = GetQueryString("school_id");
+                _data.type = 1;
+                $.ajax({
+                    url : site_url+'/peony/wx/department/get-organizational',
+                    data : _data,
+                    type : "GET",
+                    dataType : "JSON",
+                    success:function(obj){
+                      if(obj.code == 0){
+                           var organizeist = [];
+                            $.each(obj.data.list,function(i,e){
+                                 if(e.org_type == 1){
+                                    organizeist.push(e);
+                                 }
+                            });
+                            _self.organizeist = organizeist;
+                            _self.peolist = [];
+
+                            if(type == 2){
+                              _self.orglist = [];
+                              _self.orgTips = false;
+                            }
+                      }else{
+                            mui.toast(JSON.stringify(obj.msg));
+                      }
+                    }
+                })
+            },
+            clickDepartment:function(item,index,type){ //部门
+               var _self = this;
+               var _data = {};
+                _data.token = getCookie("token");
+                _data.id = item.id;
+                _data.type = 2;
+                $.ajax({
+                    url : site_url+'/peony/wx/department/get-organizational',
+                    data : _data,
+                    type : "GET",
+                    dataType : "JSON",
+                    success:function(obj){
+
+                      if(obj.code == 0){
+                           var organizeist = [];
+                           var peolist = [];
+
+                             $.each(obj.data.list,function(i,e){
+                              if(e.org_type == 1){
+                                 organizeist.push(e);
+                                 
+                              }else{
+                                 peolist.push(e);
+                              }
+                           });
+                           _self.organizeist = organizeist;
+                           _self.peolist = peolist;
+                           _self.orgTips = true;
+
+                           if(type == 2){
+                              _self.orglist.splice(index+1,_self.orglist.length-1);
+                              Vue.set(item,'is_arrow',false);
+                              Vue.set(item,'active','cl-light-gray');
+                           }else{
+                               var org = {};
+                              org.name = item.name;
+                              org.id = item.id;
+                              org.active = 'cl-light-gray';
+                              org.is_arrow = false;
+                              _self.orglist.forEach(function(item){
+                                 Vue.set(item,'is_arrow',true);
+                                 Vue.set(item,'active','blue');
+                              });
+                              _self.orglist.push(org);
+                           }
+                          
+                      }else{
+                            mui.toast(JSON.stringify(obj.msg));
+                      }
+                    }
+                })
+
+            },
+            clickPersonal:function(peo){//点击教职工跳转
+               var url = goto_url + '/view/html/myclass/teacher-card.html?teacher_id=' + peo.id;
+               location.href = url;
+            },
+            call:function(peo){//打电话
+               mui('#picture').popover('show');
+               this.phone = peo.phone;
+            }
+         } 
+        });
+        $(function(){
+        var $searchBar = $('#searchBar'),
+            $searchResult = $('#searchResult'),
+            $searchText = $('#searchText'),
+            $searchInput = $('#searchInput'),
+            $searchClear = $('#searchClear'),
+            $searchCancel = $('#searchCancel');
+
+        function hideSearchResult(){
+            $searchResult.hide();
+            $searchInput.val('');
+        }
+        function cancelSearch(){
+            hideSearchResult();
+            $searchBar.removeClass('search-bar_focusing');
+            $searchText.show();
+        }
+
+        $searchText.on('click', function(){
+            $searchBar.addClass('search-bar_focusing');
+            $searchInput.focus();
+        });
+        $searchInput
+            .on('blur', function () {
+                if(!this.value.length) cancelSearch();
+            })
+            .on('input', function(){
+                if(this.value.length) {
+                    $searchResult.show();
+                } else {
+                    $searchResult.hide();
+                }
+            })
+        ;
+        $searchClear.on('click', function(){
+            hideSearchResult();
+            $searchInput.focus();
+        });
+        $searchCancel.on('click', function(){
+            cancelSearch();
+            $searchInput.blur();
+        });
+    });
+   </script>
+</body>
+</html>

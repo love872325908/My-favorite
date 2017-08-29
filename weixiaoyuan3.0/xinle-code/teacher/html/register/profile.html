@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>编辑资料</title>
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../../css/mui.css">
+    <!--App自定义的css-->
+    <link href="../../css/app.css" rel="stylesheet" type="text/css" />
+    <link href="../../css/mui.picker.css" rel="stylesheet" />
+    <link href="../../css/mui.poppicker.css" rel="stylesheet" />
+    <link href="../../css/mui.picker.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/cssrem.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <!-- <script src="../js/mui.poppicker.js"></script> -->
+    <script src="../../js/mui.picker.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/jssdkwx.js"></script>
+</head>
+
+<body>
+    <div class="profile-boxs" id="content_box">
+        <a class="touxiang" href="javascript:void(0);"><img :src="avatar_img" id="img_button"></a>
+        <div class="profile-box">
+            <div class="wei-cells">
+                <label>姓名</label>
+                <input type="text" v-model="realname" placeholder="未填写">
+            </div>
+            <div @tap="showGender" class="wei-cells sanjiao">
+                <label>性别</label>
+                <div id="userResult">{{genderText}}</div>
+            </div>
+            <div class="wei-cells wei-cells1 sanjiao xuanze" @tap="showDate">
+                <label>出生日期</label>
+                <div id="months">{{birth}}</div>
+            </div>
+            <div class="wei-cells wei-cells1 sanjiao" @tap="showJobTime">
+                <label>从业时间(不能更改)</label>
+                <div id="jobTime">{{job_time}}</div>
+            </div>
+        </div>
+        <a href="javascript:;" @click="jinru" class="btn light-blue">进入</a>
+    </div>
+    <div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+        <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+                <a href="#">拍照或录像</a>
+            </li>
+            <li class="mui-table-view-cell">
+                <a href="javascript:void(0);">选取现有的</a>
+            </li>
+        </ul>
+        <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+                <a href="#picture"><b>取消</b></a>
+            </li>
+        </ul>
+    </div>
+    <script>
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            filePath: '',
+            genderText: '女',
+            realname: '',
+            gender: 2,
+            birth: '1980-01',
+            job_time: '2010-01',
+            avatar_img: '',
+            img_count: 1,
+            upload_type: 0
+        },
+        created: function() {
+            var self = this;
+            var id = getCookie("user_id");
+            $.ajax({
+                url: site_url + '/peony/wx/user/getuserinfo',
+                data: {
+                    "user_id": id,
+                    "token": getCookie("token"),
+                    "come_from": 2
+                },
+                type: "GET",
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        self.realname = obj.data.result.realname;
+                        self.gender = obj.data.result.gender;
+                        self.genderText = obj.data.result.gender == 1 ? '男' : '女';
+                        var birth = obj.data.result.birth;
+                        birth = birth.replace(/-/g, "/");
+                        var job_time = obj.data.result.job_time;
+                        var date_birth = new Date(birth);
+                        var date_job_time = new Date(job_time);
+                        var birthYear = date_birth.getFullYear();
+                        var birthMonth = date_birth.getMonth() + 1;
+                        var birthMonth = birthMonth < 10 ? "0" + birthMonth : birthMonth;
+                        var jobMonth = date_job_time.getMonth() + 1;
+                        var jobMonth = jobMonth < 10 ? "0" + jobMonth : jobMonth;
+                        var job_time_year = date_job_time.getFullYear() + "-" + jobMonth;
+                        self.birth = birthYear + '-' + birthMonth;
+                        self.job_time = job_time_year;
+                        self.avatar_img = isEmpty(obj.data.result.artvar_img) ? obj.data.result.headimgurl : obj.data.result.artvar_img;
+                    } else {
+                        mui.toast(obj.msg);
+                    }
+                }
+            });
+        },
+        methods: {
+            injectImgs: function() {
+                this.avatar_img = images.showlocalId[0];
+            },
+            jinru: function() {
+                if (this.realname == "") {
+                    mui.toast("姓名不能为空");
+                    return;
+                } else if (this.realname.length > 11) {
+                    mui.toast("姓名最多输入10个汉字");
+                    return;
+                }
+                var _data = {};
+                _data.id = getCookie("user_id");
+                _data.realname = this.realname;
+                _data.token = getCookie("token");
+                _data.come_from = 2;
+                _data.gender = this.gender;
+                _data.birth = this.birth;
+                _data.job_time = this.job_time;
+
+
+
+                if (images.serverId.length > 0)
+                    _data.serverId = images.serverId[0];
+
+                /*var file = event.target.files[0];
+                var formData = new FormData();
+                _data.append('photo', file);*/
+
+                $.ajax({
+                    url: site_url + '/peony/wx/user/updateuser',
+                    data: _data,
+                    type: "POST",
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            mui.toast("绑定注册成功!");
+                            var url = goto_url + "/view/html/workbench/goodteacher.html";
+                            location.href = url;
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+            },
+            showDate: function() {
+                var date = new Date();
+                var nowYear = date.getFullYear();
+                var dtPicker = new mui.DtPicker({
+                    'type': 'month',
+                    'beginYear': '1920',
+                    'endYear': nowYear,
+                    'value': "1900-01",
+                });
+                dtPicker.show(function(selectItems) {
+                    app.birth = selectItems.text;
+                    dtPicker.dispose();
+                })
+            },
+            showGender: function() {
+                var picker = new mui.PopPicker();
+                picker.setData([{
+                    value: '1',
+                    text: '男'
+                }, {
+                    value: '2',
+                    text: '女'
+                }]);
+                picker.show(function(selectItems) {
+                    app.gender = selectItems[0].value;
+                    app.genderText = selectItems[0].text;
+                    picker.dispose();
+                })
+            },
+            showJobTime: function() {
+                var date = new Date();
+                var nowYear = date.getFullYear();
+                var dtPicker = new mui.DtPicker({
+                    'type': 'month',
+                    'beginYear': '1900',
+                    'endYear': nowYear,
+                    'value': this.job_time,
+                });
+                dtPicker.show(function(selectItems) {
+                    app.job_time = selectItems.text;
+                    dtPicker.dispose();
+                })
+            }
+
+        }
+    })
+    </script>
+</body>
+
+</html>

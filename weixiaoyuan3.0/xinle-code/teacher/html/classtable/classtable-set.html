@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>课表设置</title>
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/searchbar.css">
+    <link rel="stylesheet" type="text/css" href="../../css/classtable.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link href="../../css/mui.picker.css" rel="stylesheet" />
+    <link href="../../css/mui.poppicker.css" rel="stylesheet" />
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+</head>
+
+<body class="bg-light-gray" style="overflow:hidden">
+    <div id="content_box">
+        <div class="list" @click="showSubject(0)">
+            <span>第一节</span>
+            <div>
+                <span>{{ subjectText[0] }}</span>
+                <i class="iconfont icon-zhishi"></i>
+            </div>
+        </div>
+        <div class="list" @click="showSubject(1)">
+            <span>第二节</span>
+            <div>
+                <span>{{subjectText[1]}}</span>
+                <i class="iconfont icon-zhishi"></i>
+            </div>
+        </div>
+        <div class="list" @click="showSubject(2)">
+            <span>第三节</span>
+            <div>
+                <span>{{subjectText[2]}}</span>
+                <i class="iconfont icon-zhishi"></i>
+            </div>
+        </div>
+        <div class="list" @click="showSubject(3)">
+            <span>第四节</span>
+            <div>
+                <span>{{subjectText[3]}}</span>
+                <i class="iconfont icon-zhishi"></i>
+            </div>
+        </div>
+        <div class="list" @click="showSubject(4)">
+            <span>第五节</span>
+            <div>
+                <span>{{subjectText[4]}}</span>
+                <i class="iconfont icon-zhishi"></i>
+            </div>
+        </div>
+        <div class="list" @click="showSubject(5)">
+            <span>第六节</span>
+            <div>
+                <span>{{subjectText[5]}}</span>
+                <i class="iconfont icon-zhishi"></i>
+            </div>
+        </div>
+        <div class="list" @click="showSubject(6)">
+            <span>第七节</span>
+            <div>
+                <span>{{subjectText[6]}}</span>
+                <i class="iconfont icon-zhishi"></i>
+            </div>
+        </div>
+        <div class="list" @click="showSubject(7)">
+            <span>第八节</span>
+            <div>
+                <span>{{subjectText[7]}}</span>
+                <i class="iconfont icon-zhishi"></i>
+            </div>
+        </div>
+        <footer @click="submit">
+            保存
+        </footer>
+    </div>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/mui.poppicker.js"></script>
+    <script src="../../js/mui.picker.js"></script>
+</body>
+<script>
+var app = new Vue({
+    el: '#content_box',
+    data: {
+        subject_url:"/peony/wx/subject/get-all",
+        lesson_url : '/peony/wx/lesson/getlesson',
+        day:'',
+        class_id : 0,
+        subject:[],
+        picker : null,
+        lesson : [],
+        subjectText : [],
+        subject_id : [],
+    },
+    created : function() {
+        var self = this;
+        self.picker = new mui.PopPicker();          //初始化选择器插件
+        self.class_id = GetQueryString("class_id");
+        self.day = GetQueryString("day");
+        self.getSubject();
+        self.getlesson();
+    },
+    methods: {
+        getText : function(id){
+            return this.subjectText[id];
+        },
+        getSubject: function() {
+            var self = this;
+            var url = site_url+self.subject_url;
+            var subject_data = {
+                "token" : getCookie("token"),
+                "create_id":getCookie("user_id")
+            };
+            self.httpurl(url , subject_data ,'get' , function(obj){
+                var getsubs = obj.data.list;
+                for (var subs in getsubs) {
+                    var current = {};
+                    current.value = getsubs[subs].id;
+                    current.text = getsubs[subs].name;
+                    self.subject.push(current);
+                }
+                console.log(self.subject);
+            });
+        },
+        getlesson : function(){
+            var self = this;
+            var url = site_url+self.lesson_url;
+            var lesson_data = {
+                "token" : getCookie("token"),
+                "class_id":self.class_id,
+                "user_id":getCookie("user_id")
+            };
+            // console.log(_data);
+            $.get(url,lesson_data,function(obj){
+                if (obj.code == 0) {
+                    self.lesson = obj.data.list.week[self.day].data;
+                } else {
+                    mui.toast(JSON.stringify(obj.msg));
+                }
+            })
+        },
+        showSubject: function( id ) {
+            var self = this;
+            self.picker.setData(self.subject);
+            self.picker.show(function(selectItems) {
+                Vue.set(self.subjectText, id , selectItems[0].text );
+                self.subject_id[id] = selectItems[0].value;
+            })
+        },
+        httpurl:function( url , data , type , closure ){
+            $.ajax({
+                url : url,
+                data : data,
+                type : type,
+                dataType : "JSON",
+                success : function(obj){
+                    if(obj.code == 0){
+                        closure(obj);
+                    }else{
+                        mui.toast(obj.msg);
+                    }
+                },
+                error : function(e){
+                    console.log(e);
+                }
+            });
+        },
+        submit : function(){
+            location.href = goto_url + "/view/html/classtable/classtable.html";
+        },
+        aa:function(){
+            console.log(this.subjectText);
+        }
+    },
+    watch:{
+        "subjectText":'aa'
+    }
+})
+</script>
+
+</html>

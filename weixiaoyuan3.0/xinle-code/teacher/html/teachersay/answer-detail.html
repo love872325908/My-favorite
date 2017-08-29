@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+
+    <title>回答详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/teachersay.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+</head>
+
+<body>
+    <div id="content_box">
+
+        <div class="answer-people">
+            <div class="answer-people-image">
+                <img src="../../images/touxiang.jpg" alt="">
+                <!-- <span class="iconfont icon-jiavcopy"></span> -->
+            </div>
+            <div class="answer-people-info">
+                <div class="answer-people-top">
+                    <h3>{{users.realname}}</h3>
+                    <p>{{list.created_at}}</p>
+                </div>
+                <h5 class="answer-people-bottom">
+                <!-- 加active表示有用，以点击，不加则为没点 -->
+                <span class="answer-people-bl">{{list.school_name}}</span>
+                <div>
+                  <i class="iconfont icon-biaoqing" :class="{'active':list.is_good }" @click="addPraise(list)">{{list.school_name}}</i>
+                  <span class="answer-people-br " :class="{'active':list.is_good }" @click="addPraise(list)">有用 {{list.praise_count}}</span>
+                </div>
+                
+            </h5>
+            </div>
+        </div>
+        <div class="answer-main">
+          {{list.content}}
+        </div>
+        <!-- <footer class="answer_foot">
+          <div class="givemoney">打赏</div>
+          <p>5人已打赏</p>
+        </footer> -->
+    </div>
+    <script src="../../js/mui.min.js"></script>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            list : [],
+            users : [],
+            load: false,
+            answers: [],
+        },
+        created : function(){
+            var self = this;
+            var _data = {};
+          _data.token = getCookie("token");
+          
+          _data.answer_id = GetQueryString("answer_id");
+          _data.user_id = getCookie("user_id");
+          
+
+          $.ajax({
+            url:site_url +  '/peony/wx/teachersay/getanswerdetail',
+            type: "GET",
+            dataType: "JSON",
+            data:_data,
+            success: function(obj){
+                self.list = obj.data.list[0];
+                self.users = obj.data.list[0].users;
+                self.problem = obj.data.list[0].problem;
+                document.title = obj.data.list[0].problem.content;
+            }
+          })
+          
+        },
+        methods : {
+           
+               addPraise: function(item) {
+                if (item.is_good) {
+                    return;
+                }
+                if (this.load)
+                    return;
+                this.load = true;
+                var _data = {};
+                var _self = this;
+                _data.token = getCookie("token");
+                _data.model_id = item.id;
+                _data.user_id = getCookie("user_id");
+                _data.model_type = "ProblemAnswer";
+                $.ajax({
+                    type: "POST",
+                    url: site_url + "/peony/wx/teachersay/addpraise",
+                    data: _data,
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            _self.list.is_good = true;
+                            _self.load = false;
+                            item.praise_count++;
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+            },
+        }
+    });
+    </script>
+</body>
+
+</html>

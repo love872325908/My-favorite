@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>投票详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/teachersay.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/timeago.js"></script>
+</head>
+
+<body>
+    <div id="content_box">
+        <div class="vote_title">
+            <div class="vote_title_l">{{ vote_config.content }}</div>
+           <!--  <span class="vote_title_r">{{ timeago.format(vote_config.created_at, 'zh_CN') }}</span> -->
+        </div>
+        <div class="vote_main">
+            <ul>
+                <li class="wei-input-box" v-for="voteoptions in options">
+                    <img v-if="voteoptions.attach_url!=''" :src="site_url+voteoptions.attach_url"  alt="">
+                    <p>{{voteoptions.content}}</p>
+                    <input @change="changeBtn" type="checkbox" v-model="optionId" :value="voteoptions.id">
+                </li>
+            </ul>
+        </div>
+        <footer class="vote_foot" @click="toupiao">
+            <span :class="btnClass">立即投票</span>
+        </footer>
+    </div>
+</body>
+<script type="text/javascript">
+var app = new Vue({
+    el: '#content_box',
+    data: {
+      site_url:site_url,
+      vote_config :{},
+      options: [],
+      optionId : [],
+      btnClass : "light-blue",
+      
+    },
+    created: function() {
+         //获取阅读记录
+        var _self = this;
+        _self.timeago = new timeago(); 
+        var _read_data = {};
+        _read_data.token = getCookie("token");
+        _read_data.model_id = GetQueryString("vote_id");
+        _read_data.user_id = getCookie("user_id");
+        _read_data.model_type = "Vote";
+
+        $.ajax({
+            url: site_url + "/peony/wx/teachersay/addread",
+            type: "POST",
+            dataType: "JSON",
+            data: _read_data,
+            async : "false",
+            success: function(obj) {
+                
+            }
+        });
+
+        var _data = {};
+        _data.token = getCookie("token");
+        _data.vote_id = GetQueryString('vote_id');
+        //获取投票选项信息
+        $.ajax({
+            url: site_url + "/peony/wx/teachersay/getvote",
+            type: "GET",
+            dataType: "JSON",
+            data: _data,
+            success: function(obj) {
+              _self.vote_config = obj.data.list[0];
+              _self.options = obj.data.list[0].voteoptions;
+               console.log(obj);
+            }
+        })
+    },
+    methods: {
+
+        toupiao: function() {
+            var _data = {};
+            var _self = this;
+            if( _self.optionId.length == 0){
+                mui.toast("请选择投票选项");
+                return;
+            }  
+            if(this.vote_config.option_max < _self.optionId.length){
+                mui.toast("该投票最多只能选择"+this.vote_config.option_max+"项");
+                return;
+            }    
+            _data.token = getCookie("token");
+            _data.vote_id = GetQueryString("vote_id");
+            _data.user_id = getCookie("user_id");
+            _data.option_id = JSON.stringify(_self.optionId);
+            $.ajax({
+                url: site_url+'/peony/wx/teachersay/addvote',
+                type: "POST",
+                dataType: "JSON",
+                data: _data,
+                success : function(obj){
+                    if(obj.code ==0){
+                        var vote_id = GetQueryString('vote_id');
+                        var model_id = GetQueryString("model_id");
+                        var url = goto_url+"/view/html/teachersay/vote-complete.html?vote_id="+ vote_id + "&model_id=" + model_id;
+                        location.href = url;
+                    }else{
+                        mui.toast(JSON.stringify(obj.msg));
+                    }
+                }
+            })
+            
+        },
+        changeBtn : function(){
+            if(this.optionId.length > 0){
+                this.btnClass = 'cl-white';
+            } else{
+                this.btnClass = 'light-blue';
+            }
+        }
+    }
+})
+</script>
+
+</html>

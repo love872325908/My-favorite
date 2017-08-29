@@ -1,0 +1,426 @@
+@import "../css/common2.css";
+@import "../fonts/iconfont.css";
+.box-row-center {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.box-column-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.nav-list {
+    ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        a {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}
+.item-list {
+    ul {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        a {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
+}
+
+/* -----------------------------approve-detail--------------------------- */
+
+.apporve-detail {
+    .container-list {
+        .container-list-inner {
+            .container-list-li {
+                .list-li-head {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+                    &.head-detail {
+                        .head-detail-title {
+                            padding-left: 10px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .container-program {
+        margin-top: 20px;
+        padding: 0 16px;
+        background: #fff;
+        .approve_program {
+            border-bottom: 1px solid #DEE1E6;
+            padding: 0px 10px;
+            line-height: 36px;
+            height: 36px;
+            background: #fff;
+            .approve_program_left {
+                float: left;
+                font-size: 14px;
+                color: #96A2A8;
+                letter-spacing: 0;
+            }
+            .approve_program_right {
+                font-size: 14px;
+                color: #676A6C;
+                float: right;
+            }
+        }
+        .approve_next {
+            padding: 15px 0 0 0;
+            border-bottom: 1px solid #DEE1E6;
+            ul {
+                li {
+                    height: 60px;
+                    width: 50%;
+                    div {
+                        float: left;
+                    }
+                    .passStatePic {
+                        height: 26px;
+                        line-height: 26px;
+                        padding-top: 5px;
+                        position: relative;
+                        img {
+                            width: 16px;
+                            height: 16px;
+                        }
+                        .passStateLine {
+                            position: absolute;
+                            left: 7px;
+                            bottom: -30px;
+                            img {
+                                width: 2px;
+                                height: 34px;
+                            }
+                        }
+                    }
+                    .approve_text {
+                        font-size: 14px;
+                        color: #333333;
+                        height: 26px;
+                        line-height: 26px;
+                        position: relative;
+                        .approve_recode {
+                            position: absolute;
+                            font-size: 12px;
+                            color: #999999;
+                        }
+                    }
+                    .approve_pic {
+                        width: 26px;
+                        height: 26px;
+                        padding: 0 15px;
+                        img {
+                            width: 100%;
+                            height: 100%;
+                        }
+                    }
+                }
+            }
+        }
+        .approve_send {
+            line-height: 30px;
+            ;
+            height: auto;
+            padding: 14px;
+            font-size: 14px;
+            color: #96A2A8;
+            letter-spacing: 0;
+            .approve_send_detail {
+                display: inline-block;
+                span {
+                    padding-right: 10px;
+                }
+            }
+        }
+    }
+}
+
+/* ----------------submit-approve && send-approve && wait-approve && apporve-detail--------------- */
+
+.submit-approve, .send-approve, .wait-approve, .apporve-detail {
+    .container-list {
+        padding: 0 16px;
+        background: #fff;
+        .container-list-inner {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            .container-list-li {
+                padding: 16px 0;
+                border-bottom: 1px solid #DEDFE0;
+                &:last-child {
+                    border-bottom: 0px;
+                }
+                .list-li-head {
+                    line-height: 24px;
+                    height: 24px;
+                    .head {
+                        float: left;
+                        font-size: 17px;
+                        color: #333333;
+                        letter-spacing: 0;
+                    }
+                    //审批状态，三种状态，三种颜色
+                    .pass {
+                        font-size: 12px;
+                        padding-left: 24px;
+                        &.passing {
+                            color: #FF7E0C;
+                        }
+                        &.passed {
+                            color: #FF7E0C;
+                        }
+                        &.passback {
+                            color: #FF7E0C;
+                        }
+                    }
+                    .time {
+                        float: right;
+                        font-size: 12px;
+                        color: #999999;
+                    }
+                }
+                .list-li-body {
+                    margin-top: 10px;
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    flex-wrap: wrap;
+                    .list-li-body-inner {
+                        display: flex;
+                        flex-direction: row;
+                        flex-wrap: nowrap;
+                        height: 24px;
+                        line-height: 24px;
+                        font-size: 14px;
+                        .type {
+                            display: inline-block;
+                            width: 20%;
+                            text-align: right;
+                            padding-right: 10px;
+                            color: #999999;
+                            letter-spacing: 0;
+                        }
+                        .type-content {
+                            display: inline-block;
+                            width: 80%;
+                            text-align: left;
+                            color: #333333;
+                            letter-spacing: 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    //待我审批，待处理&&已处理
+    .line {
+        height: 0.88rem;
+        line-height: 0.88rem;
+        text-align: left;
+        font-size: 14px;
+        color: #999999;
+        letter-spacing: 0;
+        padding-left: 16px;
+    }
+}
+
+/* -----------------------------approve-tpl--------------------------- */
+
+.approve-tpl {
+    .list-tpl {
+        .item-list-li {
+            //审批人和抄送人图标
+            .add-border {
+                width: 1rem;
+                height: 1rem;
+                border: 1px solid #B8C1CE;
+                border-radius: 2px;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+            }
+            //附件图标
+            .file-type-size {
+                width: 0.8rem;
+                height: 0.8rem;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                .icon-file-tpe {
+                    font-size: 26px;
+                }
+            }
+            margin-top: 16px;
+            padding: 10px 16px;
+            background-color: #FFFFFF;
+            width: 100%;
+            height: 1rem;
+            a {
+                width: 100%;
+                height: 100%;
+                i {
+                    height: 24px;
+                    line-height: 24px;
+                    color: #B8C1CE;
+                }
+                span {
+                    height: 24px;
+                    color: #333333;
+                    font-size: 17px;
+                    line-height: 24px;
+                }
+                .sle {
+                    font-size: 16px;
+                    color: #B8C1CE;
+                    letter-spacing: 0;
+                }
+            }
+        }
+        // 多行文本
+        .text-area-type {
+            height: auto;
+            textarea {
+                width: 100%;
+                height: 84px;
+            }
+        }
+        // 附件
+        .file-type {
+            height: auto;
+            .file-type-inner {
+                padding-top: 10px;
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                flex-flow: wrap;
+                .file-type-list {
+                    img {
+                        width: 0.8rem;
+                        height: 0.8rem;
+                    }
+                }
+            }
+        }
+        // 审批人，抄送人
+        .approver-sender-type {
+            height: auto;
+            .approver-sender-inner {
+                padding: 20px 0 0 0;
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                flex-flow: wrap;
+                .approver-sender-list {
+                    position: relative;
+                    width: 25%;
+                    margin-bottom: 20px;
+                    img {
+                        width: 1rem;
+                        height: 1rem;
+                    }
+                    .close {
+                        position: absolute;
+                        top: -0.18rem;
+                        left: 0.82rem;
+                        img {
+                            width: 0.36rem;
+                            height: 0.36rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // 可以提交common
+    .btn-box {
+        width: 100%;
+        padding: 0 20px;
+        margin: 20px 0;
+        .btn-submit {
+            width: 100%;
+            color: white;
+            background: #31B3EF;
+            border-radius: 4px;
+            height: 0.88rem;
+            line-height: 0.88rem;
+            font-size: 18px;
+            text-align: center;
+        }
+    }
+}
+
+/* -----------------------------approve-index--------------------------- */
+
+.approve-index {
+    .nav-about {
+        width: 100%;
+        height: 2.0rem;
+        padding: 15px;
+        background: #FFFFFF;
+        .nav-list-li {
+            width: 33.33%;
+            a {
+                width: 100%;
+                height: 100%;
+                img {
+                    width: 0.64rem;
+                    height: 0.64rem;
+                }
+                span {
+                    margin-top: 12px;
+                    font-size: 14px;
+                    color: #333333;
+                    letter-spacing: 0;
+                }
+            }
+        }
+    }
+    .list-tpl {
+        .item-list-li {
+            margin-top: 16px;
+            padding: 10px 16px;
+            background-color: #FFFFFF;
+            width: 100%;
+            height: 1rem;
+            a {
+                width: 100%;
+                height: 100%;
+                i {
+                    height: 24px;
+                    line-height: 24px;
+                    color: #B8C1CE;
+                }
+                span {
+                    height: 24px;
+                    color: #333333;
+                    font-size: 17px;
+                    line-height: 24px;
+                }
+            }
+        }
+    }
+}

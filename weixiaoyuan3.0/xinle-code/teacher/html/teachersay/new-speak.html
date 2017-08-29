@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>说点什么</title>
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/teachersay.css">
+    <link rel="stylesheet" type="text/css" href="../../css/nav.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/component.js"></script>
+    <script src="../../js/jssdkwx.js"></script>
+</head>
+
+<body style="background-color: #F2F4F7;">
+    <div id="content_box">
+        <div class="top_nav">
+            <span class="iconfont icon-fanhui1" @click="back"></span>
+            <p>说点什么</p>
+            <span :class="submitClass" @click="fabu">发布</span>
+            <!-- 可以提交后加cansubmit类名 -->
+            <!-- 不可以提交后加cannotsubmit类名 -->
+        </div>
+        <div class="textarea-bar">
+            <textarea @input="changeTitle" id="textarea" rows="5" placeholder="输入内容正文，限定字数4-5000字" v-model="content" @click="speakCon"></textarea>
+        </div>
+        <div class="img-bar">
+            <ul>
+                <li v-for="img in imgs" @click="imgPreview(img,imgs)">
+                    <a href="javascript:void(0)" v-bind:style="{backgroundImage:'url(' + img + ')'}"></a>
+                </li>
+                <li>
+                    <a class="add-img" href="javascript:void(0);" id="img_button">
+                        <i class="iconfont icon-xiangji"></i>
+                        <h6>添加图片</h6></a>
+                </li>
+            </ul>
+        </div>
+        <full-mask :mask-show="maskShow"></full-mask>
+        <loading :loading-show="maskShow" :loading-text="loadText"></loading>
+    </div>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            column_id: 0,
+            is_submit: false,
+            submitClass: "cannotsubmit",
+            content: "",
+            imgs: [],
+            upload_type: 0,
+            img_upload_count: 9,
+            maskShow: false,
+            loadText: '正在发送'
+        },
+        created: function() {
+            var _data = {};
+            var _self = this;
+            _data.token = getCookie("token");
+            $.ajax({
+                type: "GET",
+                url: site_url + "/peony/wx/teachersay/getcolumn",
+                data: _data,
+                dataType: "json",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        _self.columnData = obj.data.list;
+                        _self.columnData.forEach(function(item) {
+                            Vue.set(item, "text", item.name);
+                            Vue.set(item, "value", item.id);
+                        });
+                    } else {
+                        mui.toast(JSON.stringify(obj.msg));
+                    }
+                }
+            });
+        },
+        methods: {
+            speakCon: function() {
+                var _self = this;
+                this.submitClass = "cansubmit";
+            },
+            fabu: function() {
+                var _data = {};
+                var _self = this;
+                if (_self.content.length == 0 ) {
+                    mui.toast('请输入正文');
+                    return false;
+                }
+                if (_self.content.length < 4 || _self.content.length >= 5000) {
+                    mui.toast('正文字数不在限制范围内');
+                    return false;
+                }
+                _data.token = getCookie("token");
+                _data.content = this.content;
+                _data.serverId = images.serverId;
+                _data.user_id = getCookie("user_id");
+                _data.column_id = 1;
+                _data.school_name = getCookie("school_name");
+                _data.come_from = 2;
+                _self.maskShow = true;
+                $.ajax({
+                    type: "POST",
+                    url: site_url + "/peony/wx/teachersay/addcomplaint",
+                    data: _data,
+                    dataType: "JSON",
+                    success: function(obj) {
+                        _self.maskShow = false;
+                        if (obj.code == 0) {
+                            location.href = goto_url + "/view/html/teachersay/index.html";
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+            },
+            back: function() {
+                history.go(-1);
+            },
+            changeTitle: function() {
+                if (this.content.length > 3)
+                    this.is_submit = true;
+                else
+                    this.is_submit = false;
+            },
+            imgPreview: function(img, arr) { //预览图片
+                app.current_url = img;
+                app.previewImgs = arr;
+                previewImg();
+            },
+        },
+    });
+    </script>
+</body>
+
+</html>

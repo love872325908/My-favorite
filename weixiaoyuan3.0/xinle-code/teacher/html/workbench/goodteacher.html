@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>好老师</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/goodteacher.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" type="text/css" href="../../css/nav.css">
+    <script src="../../js/cssrem.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/component.js"></script>
+    <style>
+    .goodteacher-box {
+        overflow: hidden;
+        height: 608px;
+        position: relative;
+    }
+    </style>
+</head>
+
+<body class="bg-light-gray">
+    <div class="main" id="content_box" v-cloak>
+        <div class="main-inner">
+            <div class="main-box gt-box">
+                <div class="goodteacher-bar">
+                    <div class="goodteacher-box" id="scroll-bg">
+                        <div class="topBg" :style="{background:'url('+banner+') center/cover'}"></div>
+                        <div class="cover"></div>
+                        <div class="date">
+                            <div class="month">{{day>=10?day:'0'+day}}</div>
+                            <div class="day">{{month>=10?month:'0'+month}}</div>
+                            <hr>
+                            <div class="year">{{year}}</div>
+                        </div>
+                        <div class="prompt">{{prompt?prompt:''}}</div>
+                        <div class="school">
+                            <div class="workbench" v-if="school_id!=0||class_count>0" @click="toWork">
+                                <div>{{school}}</div>
+                                <div><span class="iconfont icon-jiantou1"></span> {{school_id!=0 ? '进入工作台':'进入班级'}}</div>
+                            </div>
+                            <div class="no-workbench" v-else @click="toClass">
+                                <p class="iconfont icon-jiarubanji"> 加入班级&学校</p>
+                                <!-- <span>开启你的互联网校园生活</span> -->
+                            </div>
+                        </div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="article-box">
+            <div class="article-bar">
+                <div class="text-box" v-for="(item,index) in result" :key="index">
+                    <div class="zaobao" :style="{  backgroundImage: 'url(' + site_url+item.model.attach_url+')' }" @click="todetail(item)">
+                        <center :class="{shadebox: item.model.isShow}">
+                            <p>
+                                {{ item.model.introduction }}
+                            </p>
+                        </center>
+                    </div>
+                    <h2 @click="todetail(item)">{{item.model.title}}</h2>
+                    <p @click="todetail(item)">{{item.model.content}}</p>
+                    <div><span class="nub">{{item.model.column ? item.model.column.name : ''}}</span> <span class="right"><i class="iconfont icon-fenxiang1"></i>分享 <i class="iconfont  ml15" :class="{'icon-wodeshoucang':item.model.is_collection,'icon-shoucang1':!item.model.is_collection}" @click="shoucang(item)"></i>收藏</span> </div>
+                </div>
+            </div>
+        </div>
+        <div class="white"></div>
+        <div class="look-history" @click="tohistory"><span>查看往日文章</span>
+            <hr/>
+        </div>
+        <!-- 底部tab -->
+        <menu-tab :footer-index="0"></menu-tab>
+    </div>
+    <script src="../../js/mui.min.js"></script>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            day: '',
+            month: '',
+            year: '',
+            result: [],
+            column: '',
+            prompt: '',
+            school: getCookie("school_name"),
+            school_id: getCookie("school_id"),
+            site_url: site_url,
+            model: '',
+            banner: '',
+            class_count: '',
+            isShow: true,
+        },
+        created: function() {
+            this.day = new Date().getDate();
+            this.month = new Date().getMonth() + 1;
+            this.year = new Date().getFullYear();
+            this.getData();
+            this.getClass();
+        },
+        methods: {
+            getData: function() {
+                var _self = this;
+                $.ajax({
+                    url: site_url + '/peony/wx/teachersay/getlog',
+                    data: {
+                        token: getCookie("token"),
+                        type: 2,
+                        user_id: getCookie("user_id")
+                    },
+                    type: "get",
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            app.result = obj.data.list;
+                            if (!_self.banner) {
+                                _self.banner = '/view/images/teacher-bg.png'
+                            }
+                            var reg = new RegExp("<[^<]*>", "gi");
+                            app.result.forEach(function(item) {
+                                item.model.content = item.model.content.replace(reg, '');
+                                if (item.model.introduction) {
+                                    item.model.isShow = true;
+                                } else {
+                                    item.model.isShow = false;
+                                }
+                                Vue.set(item, "is_show", true);
+                                if (isEmpty(item.model.collection)) {
+                                    Vue.set(item.model, "is_collection", false);
+                                } else {
+                                    Vue.set(item.model, "is_collection", true)
+                                }
+                            })
+                            if (obj.data.list && obj.data.list.length > 0) {
+                                app.column = obj.data.list[0].model.column;
+                                _self.banner = site_url + '/' + obj.data.list[0].model.attach_url;
+                                console.log(site_url);
+
+                            }
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg))
+                        }
+                    }
+                });
+                $.ajax({
+                    url: site_url + '/peony/wx/teachersay/getprompt',
+                    data: {
+                        token: getCookie("token"),
+                    },
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            app.prompt = obj.data.list ? obj.data.list.content : '';
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg))
+                        }
+                    }
+                })
+            },
+            getClass: function() {
+                var _data = {};
+                var _self = this;
+                _data.token = getCookie("token");
+                _data.teacher_id = getCookie("user_id");
+                $.ajax({
+                    url: site_url + '/peony/wx/teacher/getteacherclass',
+                    type: 'GET',
+                    dataType: 'JSON',
+                    data: _data,
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            _self.class_count = obj.data.list.length;
+                            console.log(_self.class_count);
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg))
+                        }
+
+                    }
+                })
+
+
+            },
+            toWork: function() {
+                location.href = goto_url + "/view/html/workbench/workbench.html";
+            },
+            toClass: function() {
+                location.href = goto_url + "/view/html/joinclass/add-class.html";
+            },
+            todetail: function(item) {
+                var self = this;
+                var article_id = item.model_id;
+                location.href = goto_url + "/view/html/teachersay/article-detail.html?article_id=" + article_id;
+            },
+            shoucang: function(item) {
+                var _data = {};
+                var _self = this;
+                _data.token = getCookie("token");
+                _data.model_type = item.model_type;
+                _data.model_id = item.model_id;
+                _data.user_id = getCookie("user_id");
+                if (item.model.is_collection) {
+                    mui.toast("您已收藏");
+                    // return;
+                } else {
+
+                    $.ajax({
+                        type: "POST",
+                        url: site_url + "/peony/wx/teachersay/addcollection",
+                        data: _data,
+                        dataType: "JSON",
+                        success: function(obj) {
+                            if (obj.code == 0) {
+                                item.model.is_collection = true;
+                            } else {
+                                mui.toast(JSON.stringify(obj.msg))
+                            }
+                        }
+                    })
+                }
+
+            },
+            tohistory: function() {
+                location.href = goto_url + "/view/html/article/history-article.html";
+            }
+        }
+
+    })
+    </script>
+    <script>
+    $(function() {
+        window.onresize = function() {
+            $('#scroll-bg').height($(window).height() - 58)
+        }
+        window.onscroll = function() {
+            if (window.scrollY >= 300) {} else {
+                $('.topBg').height($('.goodteacher-box')[0].offsetHeight - window.scrollY + 20);
+            }
+            var opacity1 = 0.5 - window.scrollY / 600;
+            var opacity2 = 1 - window.scrollY / 300;
+            $('.cover').css({
+                'background': 'rgba(0,0,0,' + opacity1 + ')'
+            });
+            $('.date').css({
+                'opacity': opacity2
+            })
+        }
+    })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>往日文章</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/article.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <script src="../../js/cssrem.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/mui.min.js"></script>
+</head>
+
+<body class="bg-light-gray">
+    <div id="content_box" v-cloak style="margin-bottom:20px">
+        <div class="article-bar" v-for="(value,index) in list" :key="value">
+            <h5>{{value.created_at}}</h5>
+            <a @click="toDetail(value)">
+                <div class="left">
+                    <h6 class="zaobao">{{value.model.column.name}}</h6>
+                    <!-- 课前早报 样式 zaobao-->
+                    <!-- 工作之余 样式 zhiyu-->
+                    <!-- 老师接招 样式 jiezhao-->
+                    <p>{{value.model.title}}</p>
+                    <span>阅读 {{value.model.read_count}}</span>
+                </div>
+                <div class="right" :style="{   background:'url('+site_url+'/'+value.model.attach_url+') center/cover'}"></div>
+            </a>
+        </div>
+        <!--暂无文章-->
+        <div class="coming-box" :class="{isempty: isShow}">
+            <img src="../../images/nocontent.png" alt="" class="nocontent">
+            <span>暂无文章</span>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            nub: 21,
+            site_url: site_url,
+            list: '',
+            isShow: false,
+        },
+        methods: {
+            toDetail: function(value) {
+                location.href = goto_url + "/view/html/teachersay/article-detail.html?article_id=" + value.model.id + "&model_type=" + value.model_type + "&model_id=" + value.model_id;
+            }
+        },
+        created() {
+            var _data = {},
+            _self = this,
+            url = site_url + "/peony/wx/teachersay/getlog";
+            _data.token = getCookie("token");
+            _data.user_id = getCookie("user_id");
+            _data.type = 2;
+            _data.is_old = 1;
+            cache = false;
+            $.get(url, _data, function(obj) {
+                if (obj.code == 0) {
+                    _self.list = obj.data.list;
+                    if (_self.list.length < 1) {
+                        _self.isShow = false;
+                    } else {
+                        _self.isShow = true;
+                    }
+                    var reg = new RegExp("<[^<]*>", "gi");
+                    var reg1 = new RegExp("[http]{4}\\:\\/\\/[a-z]*(\\.[a-zA-Z]*)*(\\/([a-zA-Z]|[0-9])*)*\\s?", "gi");
+
+                    _self.list.forEach(function(item) {
+                        item.model.content = item.model.content.replace(reg, '')
+                            // item.model.content = item.model.content.replace(reg1, '')
+                    })
+                } else {
+                    mui.toast(JSON.stringify(obj.msg));
+                }
+            }, 'json')
+        }
+
+    })
+    </script>
+</body>
+
+</html>

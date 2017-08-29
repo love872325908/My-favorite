@@ -1,0 +1,298 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+    <title>编辑文章</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telphone=no, email=no" />
+    <link rel="stylesheet" type="text/css" href="../../css/common2.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" type="text/css" href="../../css/mystyle.css">
+    <link rel="stylesheet" type="text/css" href="../../css/mui.poppicker.css">
+    <link href="../../css/mui.css" rel="stylesheet" />
+    <link href="../../css/mui.picker.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="../../css/teachersay.css">
+    <link rel="stylesheet" href="../../css/nav.css">
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/common.js"></script>
+    
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/mui.picker.min.js"></script>
+    <script src="../../js/mui.poppicker.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/jssdkwx.js"></script>
+    <script src="../../js/component.js"></script>
+    <style type="text/css" media="screen">
+    	.content{
+    		padding-bottom: 50px;
+    	}
+    	.newContent{
+    		width: 100%;
+    		min-height: 200px;
+    		padding: 10px 10px;
+    		 -webkit-user-select: text; 
+    		 user-select: text;
+    		background: rgba(0,0,0,0.1);
+    	}
+    </style>
+</head>
+
+<body class="bg-light-gray">
+    <div id="content_box">
+        <div class="top_nav" v-if="!is_yulan">
+            <span class="iconfont icon-fanhui1" @click="back"></span>
+            <p>编辑文章</p>
+            <span class="cansubmit" @click="fabuisShow = true" v-if="is_submit">发布</span>
+            <span class="cannotsubmit" v-else @click="fabuisShow = true">发布</span>
+            <!-- 可以提交后加cansubmit类名 -->
+            <!-- 不可以提交后加cannotsubmit类名 -->
+        </div>
+        <div class="top_nav" v-else>
+            <span class="iconfont" @click="is_yulan=false">关闭</span>
+        </div>
+        <div class="tobehonest" id="app">
+            <div class="tablebox">
+                <div class="thecover" v-bind:style="{backgroundImage: 'url(' + imgs[0] + ')'}">
+                    <div class="table_tabel">
+                        <h3 id="img_button" v-show="!is_yulan">添加封面</h3>
+                        <div class="thecover_text">
+                            <input type="text" name="" :readonly="is_yulan" v-model="introduction" placeholder="添加一句话引言（选填）...">
+                        </div>
+                    </div>
+                </div>
+                <div class="thetitle">
+                    <textarea :readonly="is_yulan" v-model="title" placeholder="标题：字数限制4-50字" @input="changeTitle"></textarea>
+                </div>
+                <div class="content">
+                    <!-- <textarea @input="changeTitle" rows="10" v-model="content" cols="20" style="float:left;" placeholder="输入内容正文，限定字数4-5000字"></textarea> -->
+                    <!-- <textarea placeholder="输入内容正文，限定字数4-5000字" :readonly="is_yulan" v-on:blur="changeContent($event)" v-html="content" ></textarea> -->
+                    <div id="ooo" class="newContent" v-on:blur="changeContent($event)" v-html="content" contenteditable="true" ref="editContent">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="new-article-bottom" v-show="!is_yulan">
+            <div class="new-article-bottoml">
+                <span class="iconfont icon-tupian" @click="chooseImg"></span>
+                <span class="iconfont icon-fujian" @click="toggle"></span>
+            </div>
+            <div class="new-article-bottomr" @click="showSelect">{{columnText}}</div>
+        </div>
+        <div class="fabu-popover" v-show="fabuisShow">
+            <ul>
+                <li>
+                    <span @click="fabu">发布</span>
+                    <span @click="is_yulan = true;fabuisShow=false;">预览</span>
+                </li>
+                <li class="mt10" @click="fabuisShow = false;"><span class="cl-gray">取消</span></li>
+            </ul>
+        </div>
+        <div class="addhref-popover" id="addhref" v-show="isShow">
+            <div class="addhref-box">
+                <h3>请输入链接</h3>
+                <input type="text" placeholder="http://chanpin-preview.jiuchunjiaoyu.com/" v-model="link">
+                <div>
+                    <span class="cl-light-gray" @click="isShow=false">取消</span><span class="blue line" @click="addLink">确定</span>
+                </div>
+            </div>
+        </div>
+         <loading :loading-show="is_load"></loading>
+    </div>
+   
+</body>
+<script type="text/javascript">
+var app = new Vue({
+    el: '#content_box',
+    data: {
+        columnData: [],
+        columnText: "选择栏目",
+        column_id: 0,
+        is_submit: false,
+        introduction: "",
+        title: "",
+        content: "",
+        imgs: [],
+        upload_type: 0,
+        img_upload_count: 1,
+        isShow: false,
+        fabuisShow: false,
+        link: "",
+        is_yulan: false,
+        is_load : false
+    },
+    created: function() {
+        var _data = {};
+        var _self = this;
+        _data.token = "123";
+        $.ajax({
+            type: "GET",
+            url: site_url + "/peony/wx/teachersay/getcolumn",
+            data: _data,
+            dataType: "json",
+            success: function(obj) {
+                if (obj.code == 0) {
+                    _self.columnData = obj.data.list;
+                    _self.columnData.forEach(function(item) {
+                        Vue.set(item, "text", item.name);
+                        Vue.set(item, "value", item.id);
+                    });
+                } else {
+                    mui.toast(JSON.stringify(obj.msg));
+                }
+            }
+        });
+    },
+    methods: {
+        showSelect: function() {
+            var _self = this;
+            var picker = new mui.PopPicker();
+            picker.setData(this.columnData);
+            picker.show(function(selectItems) {
+                _self.columnText = selectItems[0].text;
+                _self.column_id = selectItems[0].value;
+                picker.dispose();
+            })
+        },
+        changeContent:function($event){
+            this.content = $event.target.innerHTML;
+        },
+        chooseImg: function() {
+            var _self = this;
+            wx.chooseImage({
+                count: 1,
+                success: function(res) {
+                    _self.uploadImg(res.localIds[0]);
+                }
+            });
+        },
+        uploadImg: function(localId) {
+            var _self = this;
+            wx.uploadImage({
+                localId: localId,
+                isShowProgressTips: 0,
+                success: function(res) {
+                    _self.is_load = true;
+                    _self.upload(res.serverId);
+
+                },
+                fail: function(res) {
+                    mui.toast(JSON.stringify(res));
+                }
+            });
+        },
+        upload: function(serverId) {
+           	
+            var _data = {};
+            var _self = this;
+            _data.token = getCookie("token");
+            _data.serverId = [serverId];
+            _data.come_from = 2;
+            $.ajax({
+                type: "POST",
+                url: site_url + "/peony/wx/file/upload",
+                data: _data,
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        var img = "<img width='100%' src='" +
+                         site_url + obj.data.list[0] + "'/>";
+                        app.content = app.content + img;
+                         _self.set_foucs(_self.$refs.editContent,app.content);
+                        _self.is_load = false;
+                    } else {
+                        mui.toast(JSON.stringify(obj.msg));
+                    }
+                }
+            });
+        },
+        set_foucs:function(dom,str){
+        	var selection= window.getSelection ? window.getSelection() : document.selection;
+			var range= selection.createRange ? selection.createRange() : selection.getRangeAt(0);
+			if (!window.getSelection){
+			dom.focus();
+			var selection= window.getSelection ? window.getSelection() : document.selection;
+			var range= selection.createRange ? selection.createRange() : selection.getRangeAt(0);
+			range.pasteHTML(str);
+			range.collapse(false);
+			range.select();
+			}else{
+			dom.focus();
+			range.collapse(false);
+			var hasR = range.createContextualFragment(str);
+			var hasR_lastChild = hasR.lastChild;
+			while (hasR_lastChild && hasR_lastChild.nodeName.toLowerCase() == "br" && hasR_lastChild.previousSibling && hasR_lastChild.previousSibling.nodeName.toLowerCase() == "br") {
+			var e = hasR_lastChild;
+			hasR_lastChild = hasR_lastChild.previousSibling;
+			hasR.removeChild(e)
+			}                                
+			range.insertNode(hasR);
+			if (hasR_lastChild) {
+			range.setEndAfter(hasR_lastChild);
+			range.setStartAfter(hasR_lastChild)
+			}
+			selection.removeAllRanges();
+			selection.addRange(range)
+			}
+        },
+        fabu: function() {
+
+            var _data = {};
+            var _self = this;
+            _data.token = getCookie("token");
+            _data.title = this.title;
+            _data.content = this.content;
+            _data.introduction = this.introduction;
+            _data.serverId = images.serverId;
+            _data.create_id = getCookie("user_id");
+            _data.column_id = this.column_id;
+            _data.school_name = getCookie("school_name");
+            _data.come_from = 2;
+
+            this.fabuisShow = !this.fabuisShow;
+
+            
+
+            $.ajax({
+                type: "POST",
+                url: site_url + "/peony/wx/teachersay/addarticle",
+                data: _data,
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        mui.toast("ok");
+                    } else {
+                        mui.toast(JSON.stringify(obj.msg));
+                    }
+                }
+            });
+        },
+        back: function() {
+            
+            history.go(-1);
+        },
+        changeTitle: function() {
+            if (this.title.length > 3 && this.content.length > 3)
+                this.is_submit = true;
+            else
+                this.is_submit = false;
+        },
+        toggle: function() {
+            this.isShow = !this.isShow;
+        },
+
+        addLink: function() {
+
+            var a = "<a target='blank' href='" + this.link + "'>" + this.link + "</a>"
+            this.content = this.content + a;
+            this.isShow = false;
+        }
+
+    },
+});
+</script>
+</html>

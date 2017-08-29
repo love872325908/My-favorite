@@ -1,0 +1,220 @@
+@charset "UTF-8";
+@import url(../css/common2.css);
+@import url(../fonts/iconfont.css);
+.address-trun {
+  width: 100%;
+  background: #f2f2f2;
+  height: 100%;
+  position: absolute;
+  overflow: auto; }
+
+.organize {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+     -moz-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background-color: #fff;
+  padding: 8px 15px;
+  border-bottom: 1px solid #DEDFE0; }
+  .organize label {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+       -moz-box-align: center;
+        -ms-flex-align: center;
+            align-items: center; }
+    .organize label img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      margin-right: 15px; }
+  .organize i {
+    display: block; }
+
+.organize-tips {
+  background-color: #fff;
+  border-bottom: 1px solid #DEDFE0;
+  padding: 15px;
+  line-height: 24px; }
+  .organize-tips span {
+    font-size: 16px;
+    color: #999; }
+
+.organize-section {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+     -moz-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background-color: #fff;
+  padding: 15px;
+  border-bottom: 1px solid #DEDFE0; }
+
+.organize-peo {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+     -moz-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background-color: #fff;
+  padding: 8px 15px;
+  border-bottom: 1px solid #DEDFE0; }
+  .organize-peo label {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+       -moz-box-align: center;
+        -ms-flex-align: center;
+            align-items: center; }
+    .organize-peo label div.artvarimg {
+      width: 42px;
+      height: 42px;
+      margin-right: 20px; }
+      .organize-peo label div.artvarimg img {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: block; }
+  .organize-peo div.right {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+       -moz-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    /*单选样式*/ }
+    .organize-peo div.right a {
+      display: block;
+      color: #66C0FF;
+      margin-right: 10px; }
+    .organize-peo div.right input {
+      border: 0;
+      outline: 0 !important;
+      -webkit-appearance: none;
+      background-color: transparent; }
+    .organize-peo div.right input[type=checkbox]:before,
+    .organize-peo div.right input[type=radio]:before {
+      font-family: "iconfont" !important;
+      font-size: 16px;
+      font-style: normal;
+      content: "\e73c";
+      color: #E7E7E7; }
+    .organize-peo div.right input[type=checkbox]:checked:before,
+    .organize-peo div.right input[type=radio]:checked:before {
+      color: #31B3EF; }
+
+.address-trun-list {
+  width: 100%; }
+  .address-trun-list .address-trun-list_tit {
+    padding-left: 10px;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    font-size: 14px;
+    color: #8B9198;
+    line-height: 32px; }
+  .address-trun-list ul li {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    border-bottom: 1px solid #DEDFE0;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+       -moz-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+       -moz-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    background-color: #fff;
+    padding: 8px 15px; }
+    .address-trun-list ul li:last-child {
+      border-bottom: none; }
+    .address-trun-list ul li label {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+         -moz-box-align: center;
+          -ms-flex-align: center;
+              align-items: center; }
+      .address-trun-list ul li label .address-trun-list_img {
+        width: 42px;
+        height: 42px;
+        margin-right: 20px; }
+        .address-trun-list ul li label .address-trun-list_img img {
+          width: 42px;
+          height: 42px;
+          border-radius: 50%;
+          display: block; }
+    .address-trun-list ul li i {
+      display: block;
+      margin-right: 15px;
+      color: #66C0FF; }
+
+.address-trun-side {
+  position: fixed;
+  right: 5px;
+  top: 50%;
+  -webkit-transform: translate(0, -50%);
+      -ms-transform: translate(0, -50%);
+          transform: translate(0, -50%);
+  text-align: center;
+  padding-left: 10px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box; }
+  .address-trun-side li {
+    font-size: 12px;
+    line-height: 16px;
+    color: #555; }

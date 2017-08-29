@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>发布作业</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/nav.css">
+    <link href="../../css/mui.picker.css" rel="stylesheet" />
+    <link href="../../css/mui.poppicker.css" rel="stylesheet" />
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/mui.poppicker.js"></script>
+    <script src="../../js/mui.picker.js"></script>
+    <script src="../../js/component.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/jssdkwx.js"></script>
+</head>
+
+<body class="bg-light-gray">
+    <div id="content_box">
+        <div v-if="mainhtml">
+            <div class="textarea-bar">
+                <textarea id="textarea" rows="5" placeholder="输入作业内容正文，限定字数4-700字" v-model="content"></textarea>
+            </div>
+            <div class="img-bar">
+                <ul>
+                    <li v-for="img in imgs">
+                        <a href="" :style="{backgroundImage:'url(' + img + ')'}"></a>
+                    </li>
+                    <li><a class="add-img" id="img_button"><i class="iconfont icon-xiangji"></i><h6>添加图片</h6></a></li>
+                </ul>
+            </div>
+            <div class="url-bar mt10">
+                <a class="br-bottom-gray" href="javascript:;" @tap="showSubject">
+                    <h5>科目</h5>
+                    <div>{{subjectText}}</div>
+                    <i class="iconfont icon-zhishi cl-light-gray"></i>
+                </a>
+                <a href="javascript:;" @click="choose">
+                    <h5>可见范围</h5>
+                    <div>{{classText}}</div>
+                    <i class="iconfont icon-zhishi cl-light-gray"></i>
+                </a>
+            </div>
+            <div class="m15 bottom"><a href="javascript:;" class="btn  cl-white" @touchstart="touchstart" @touchend="touchend" :class="{'btnLight':isLight}" @click="addHomework">发布</a></div>
+            <div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+                <ul class="mui-table-view">
+                    <li class="mui-table-view-cell">
+                        <a href="#">拍照</a>
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <a href="#">从手机相册选择</a>
+                    </li>
+                </ul>
+                <ul class="mui-table-view">
+                    <li class="mui-table-view-cell">
+                        <a href="#picture"><b>取消</b></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div v-else>
+            <div class="people-list">
+                <ul>
+                    <li class="wei-input-box" v-for="(val,key) in classes">
+                        <h5>{{val}}</h5>
+                        <input type="checkbox" :value="key" v-model="classArr" />
+                    </li>
+                </ul>
+            </div>
+            <div class="m15 bottom">
+                <a href="javascript:;" class="btn cl-white" @click="choose" @touchstart="touchstart" @touchend="touchend" :class="{'btnLight':isLight}">确定</a>
+            </div>
+        </div>
+        <!-- loading -->
+        <full-mask :mask-show="maskShow"></full-mask>
+    	<loading :loading-show="maskShow" :loading-text="loadText"></loading>
+    </div>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            isLight: false, //点击btn,有效果
+            subject_url: "/peony/wx/subject/get-all",
+            class_url: "/peony/wx/teacher/getteacherclass",
+            task_url: "/peony/wx/task/publish-homework",
+            token: '',
+            user_id: 0,
+            subject: [], //科目列表
+            classes: {}, //班级列表
+            subjectText: '', //默认科目text
+            subject_id: 0, //科目id
+            class_id:0,
+            school_id: 0,
+            class_json: [],
+            classArr: [], //发布范围arr      
+            classText: '', //发布范围text
+            content: '', //作业内容
+            mainhtml: true,
+            picker: null,
+            imgs: [],
+            upload_type: 0, // 0 不及时上传  1 及时上传
+            img_count: 9, // 总共上传总数
+            img_upload_count: 9, // 还能上传总数  
+            maskShow: false,
+            loadText:"正在发送",
+
+        },
+        created: function() {
+            var self = this;
+            self.class_id = GetQueryString("class_id");
+            self.school_id = isEmpty(GetQueryString("school_id")) ? 0 : GetQueryString("school_id");
+            self.picker = new mui.PopPicker(); //初始化选择器插件
+            self.getSubject(); //获取科目
+            self.getclass(); //获取班级
+        },
+        methods: {
+            touchstart: function() {
+                this.isLight = true;
+            },
+            touchend: function() {
+                this.isLight = false
+            },
+            getSubject: function() {
+                var self = this;
+                var url = site_url + self.subject_url;
+                var subject_data = {
+                    "token": getCookie("token"),
+                    "create_id": getCookie("user_id")
+                };
+                self.httpurl(url, subject_data, 'get', function(obj) {
+                    var getsubs = obj.data.list;
+                    for (var subs in getsubs) {
+                        var current = {};
+                        current.value = getsubs[subs].id;
+                        current.text = getsubs[subs].name;
+                        self.subject.push(current);
+                    }
+                    console.log(self.subject);
+                    self.subjectText = self.subject[0].text;
+                    self.subject_id = self.subject[0].value;
+                });
+            },
+            getclass: function() {
+                var self = this;
+                var url = site_url + self.class_url;
+                var class_data = {
+                    "token": getCookie("token"),
+                    "teacher_id": getCookie("user_id")
+                };
+                self.httpurl(url, class_data, 'get', function(obj) {
+                    var getclas = obj.data.list;
+                    for (var clas in getclas) {
+                        self.classes[getclas[clas].id] = getclas[clas].name;
+                        if(self.class_id == getclas[clas].id)
+                        {
+                        	self.classArr[0] = getclas[clas].id;
+                        	self.classText = getclas[clas].name;
+                        	self.class_json = JSON.stringify(self.classArr);
+                        }
+                    }
+                    // console.log(self.classes);
+                    // self.classText = self.classes[0].text;
+                });
+            },
+            addHomework: function() {
+                var self=this;
+                var url = site_url + self.task_url;
+                if (self.content == null || self.content == '') {
+                    mui.toast('内容不能为空');
+                    return false;
+                }
+                if ( self.content.length >= 700) {
+                    mui.toast('内容长度不正确');
+                    return false;
+                }
+
+                if (isEmpty(this.classArr)) {
+                    mui.toast('请选择班级');
+                    return false;
+                }
+                var self = this;
+                var home_data = {
+                    "token": getCookie("token"),
+                    "author_id": getCookie("user_id"),
+                    "school_id": self.school_id,
+                    "content": self.content,
+                    "attach": self.img,
+                    "class": self.class_json,
+                    "subject_id": self.subject_id,
+                    "come_from": 2
+                };
+
+                if (images.serverId.length > 0)
+                    home_data.serverId = images.serverId;
+                
+
+                self.maskShow = true;
+                self.loadText = '正在发送';
+                self.httpurl(url, home_data, 'post', function(obj) {
+
+                	self.maskShow = false;
+                    if (obj.code == 0) {
+
+                        location.href = goto_url + "/view/html/myclass/index.html?class_id=" + GetQueryString("class_id");
+                        mui.toast(obj.msg);
+                    }
+                    else{
+                        mui.toast(obj.msg);
+                    }
+                });
+            },
+            showSubject: function() {
+                var self = this;
+                self.picker.setData(self.subject);
+                self.picker.show(function(selectItems) {
+                    self.subjectText = selectItems[0].text;
+                    self.subject_id = selectItems[0].value;
+                })
+            },
+            choose: function() {
+                var self = this;
+                self.mainhtml = !self.mainhtml;
+                var newArr = self.classArr.map(function(item, index) {
+                    return self.classes[item];
+                });
+                self.classText = newArr.join(',');
+                // console.log(newArr);
+                self.class_json = JSON.stringify(self.classArr);
+                // console.log(self.classArr);
+            },
+            httpurl: function(url, data, type, closure) {
+                $.ajax({
+                    url: url,
+                    data: data,
+                    type: type,
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            closure(obj);
+                        } else {
+                            mui.toast(obj.msg);
+                        }
+                    },
+                    error: function(e) {
+                        console.log(e);
+                    }
+                });
+            }
+        }
+    })
+    </script>
+</body>
+
+</html>

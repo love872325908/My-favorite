@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title></title>
+
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/searchbar.css">
+    <link rel="stylesheet" type="text/css" href="../../css/classtable.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/cssrem.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/jssdkwx.js"></script>
+</head>
+
+<body>
+    <div id="content_box" class="classtable-box" v-cloak>
+        <div class="top-title">
+            <i class="iconfont icon-fanhui1"></i>
+            <h3>{{classname}}课表</h3>
+            <button  id="img_button">修改</button>
+        </div>
+        <div class="classtable-img" @click="imgPreview(attach_url,[attach_url])">
+            <img :src="attach_url" alt="">
+        </div>
+        <!--暂未添加课表-->
+        <!-- <h4>暂未添加课表</h4> -->
+    </div>
+</body>
+<script>
+var app = new Vue({
+    el: '#content_box',
+    data: {
+    	site_url:site_url,
+        classname: "",
+        attach_url: ""
+    },
+    created: function() {
+        var _data = {};
+        _data.class_id = GetQueryString('class_id');
+        _data.teacher_id = getCookie("user_id");
+        _data.token = getCookie("token");
+        var self = this;
+        $.ajax({//获取班级名称
+            url: site_url + '/peony/wx/teacher/getclassdetail',
+            data: _data,
+            type: "GET",
+            dataType: "JSON",
+            success: function(obj) {
+                if (obj.code == 0) {
+                     self.classname = obj.data.list[0].name;
+                     document.title = obj.data.list[0].name + '课表';
+                } else {
+                    mui.toast(JSON.stringify(obj.msg));
+                }
+            }
+        });
+        var _data = {};
+        var _self = this;
+        _data.token = getCookie("token");
+        _data.class_id = GetQueryString('class_id');
+        $.ajax({//获取课表
+            url: site_url + "/peony/wx/lesson/get",
+            data: _data,
+            type: "GET",
+            dataType: "JSON",
+            success: function(obj) {
+                if (obj.code == 0) {
+                    _self.attach_url = site_url+'/'+obj.data.list.attach_url;
+                } else {
+                    mui.toast(JSON.stringify(obj.msg));
+                }
+            }
+        });
+
+    },
+    methods: {
+        upload: function() {
+            var _data = {};
+            _data.token = getCookie("token");
+            _data.class_id = GetQueryString('class_id'); /**/
+            _data.serverId = images.serverId;
+            /*_data.come_from = 2;*/
+            $.ajax({
+                url: site_url + "/peony/wx/lesson/add",
+                data: _data,
+                type: "GET",
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        mui.toast('上传成功');
+                    } else {
+                        mui.toast(JSON.stringify(obj.msg));
+                    }
+                }
+            });
+        },
+        imgPreview:function(img,arr){//预览图片
+        	app.current_url=img;
+        	app.previewImgs=arr;
+        	previewImg();
+       	},
+    },
+
+})
+</script>
+
+</html>

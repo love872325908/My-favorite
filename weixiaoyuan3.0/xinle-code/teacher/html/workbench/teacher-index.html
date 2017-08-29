@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+		<title>老师主页</title>
+		<link rel="stylesheet" href="../../css/mui.css">
+		<link rel="stylesheet" type="text/css" href="../../css/child.css">
+		<link rel="stylesheet" type="text/css" href="../../css/base.css">
+
+		<script src="../../js/cssrem.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script src="../../js/jquery-1.8.3.min.js"></script>
+		<script src="../../js/common.js"></script>
+		<script src="../../js/mui.min.js"></script>
+    	<script src="../../js/timeago.js"></script>
+	</head>
+
+	<body class="bg-light-gray">
+		<div id="content_box" v-cloak>
+			<div class="child-header">
+				<div class="index-top space-flex">
+					<i class="iconfont icon-fanhui1" @click = "goBack
+"></i>
+					<!-- <span>聊天</span> -->
+				</div>
+				<div class="index-bottom">
+					<h3>{{realname}}老师<span></span></h3>
+					<small>
+			           <span>{{school_name}}</span>  
+			           <span>任教科目: {{job}}</span>    
+			           <span>教龄：{{work_years}}年</span> 
+			     </small>
+				</div>
+			</div>
+			<!--
+			<div class="child-school">
+				<ul>
+					<li>
+						<i class="iconfont icon-xuexiaozhuye"></i>
+						<h5>{{school_name}}</h5>
+						<span><i class="iconfont icon-zhishi"></i></span>
+					</li>
+				</ul>
+			</div>
+			-->
+			<div class="article-bar" v-for="(item, index) in result" ::key="index" @click="toDetail(item)">
+				<a v-if="item.model.attach_url!=null" class="mlr15 pt15"><img :src="site_url +item.model.attach_url" alt=""></a>
+				<div class="text-box">
+					<h2>{{item.model.title}}</h2>
+					<p v-html="item.model.content"></p>
+
+					<div>
+						<!-- 课前早报样式 .zaobao -->
+						<!-- 工作之余样式 .zhiyu -->
+						<!-- 老师接招样式 .jiezhao -->
+						<span class="zaobao">{{item.model.column ? item.model.column.name : ''}}</span>
+
+						<span><small>{{timeago.format(item.created_at, 'zh_CN')}}</small><i class="iconfont icon-pinglun ml15"></i> {{item.model? item.model.comment_count :''}}
+            <!-- 点击收藏样式切换  icon-shoucang1 变为 icon-shoucang  cl-shoucang-->
+            <i class="iconfont icon-shoucang cl-shoucang  ml15" ></i>  <!--<i class="iconfont icon-fenxiang1  ml15"></i>--> </span> </div>
+				</div>
+			</div>
+
+		</div>
+		<script type="text/javascript">
+			var app = new Vue({
+				el: '#content_box',
+				data: {
+					work_years: '',
+					gender: '',
+					job: '',
+					artvar_img: '',
+					realname: '',
+					result: '',
+					school_name: getCookie("school_name"),
+					user_id: GetQueryString('teacher_id'),
+					site_url:''
+				},
+				created: function() {
+		            var self = this;
+		            self.timeago = new timeago();
+					this.getData();
+					self.site_url = site_url;
+				},
+				methods: {
+					getData() {
+
+						$.ajax({
+							url: site_url + '/peony/wx/teachersay/getlog',
+							data: {
+								token: getCookie("token"),
+								type: 0,
+								create_id: GetQueryString('teacher_id')
+							},
+							type: "get",
+							dataType: "JSON",
+							success: function(obj) {
+
+								if(obj.code == 0) {
+									app.result = obj.data.list;
+
+									var reg = new RegExp("<[^<]*>", "gi");
+                            		app.result.forEach(function(item) {
+	                                	if(item.model_type == 'Article')
+										{                            		
+                                    		item.model.content = item.model.content.replace(reg, '');
+										}
+                                })
+								} else {
+
+								}
+							}
+						});
+						$.ajax({
+							url: site_url + '/peony/wx/user/getuserinfo',
+							data: {
+								token: getCookie("token"),
+								user_id: GetQueryString('teacher_id'),
+								come_from: 2,
+							},
+							success: function(obj) {							
+								if(obj.code == 0) {
+									var starttime = obj.data.result.job_time
+									if(starttime)
+										starttime = starttime.replace(new RegExp("-", "gm"), "/");
+										app.work_years = new Date().getFullYear() - (new Date(starttime)).getFullYear();
+										app.gender = obj.data.result.gender == 1 ? '男' : '女';
+										app.job = obj.data.result.job;
+										app.realname = obj.data.result.realname;
+										app.artvar_img = obj.data.result.artvar_img;
+										$('.child-header').css({
+											'background': "url(" + app.artvar_img + ")center/cover no-repeat"
+										})
+								} else {
+
+								}
+							}
+						})
+					},
+					goBack : function(){
+						// location.href = GetQueryString('target_url');
+						history.go(-1)
+					},
+					toDetail : function(item){
+						console.log(item.model_type);
+						 var url = goto_url;
+		                switch(item.model_type){
+		                    case 'Article' :   url += "/view/html/teachersay/article-detail.html?article_id="+item.model_id;break;
+		                    case 'Problem' :  url += "/view/html/teachersay/question-detail.html?problem_id="+item.model_id;break;
+		                    case 'Resource' :  url = site_url + item.model.attach_url;break;
+		                    case 'Complaint' :    url += "/view/html/teachersay/speak-detail.html?complaint_id="+item.model_id;break;
+		                    case 'Vote' :  url += "/view/html/teachersay/vote-detail.html?vote_id="+item.model_id;break;
+		                    case 'Topic' :   url += "/view/html/teachersay/topic-detail.html?topic_id="+item.model_id;break;
+		                }
+						console.log(url);
+		                location.href = url;
+					}
+				}
+
+			})
+		</script>
+	</body>
+
+	</body>
+
+</html>

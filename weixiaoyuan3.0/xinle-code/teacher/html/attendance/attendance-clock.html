@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>考勤打卡</title>
+    <link rel="stylesheet" type="text/css" href="../../css/attendance.css">
+    <link rel="stylesheet" type="text/css" href="../../css/mui.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script charset="UTF-8" src="http://map.qq.com/api/js?v=2.exp"></script>
+    <script src="../../js/geolocation.js"></script>
+    <script src="https://3gimg.qq.com/lightmap/components/geolocation/geolocation.min.js"></script>
+    <!-- <script src="http://webapi.amap.com/maps?v=1.3&key=a9cbf79c51a223ea43c024646b54b245"></script> -->
+</head>
+
+<body>
+    <div id="app">
+        <div class="heade-nav center-float-left">
+            <div class="heade-nav_btn" @click="goback()"><img src="../../images/return.png" alt=""></div>
+            <div class="heade-nav_name flex-1">考勤打卡</div>
+            <div class="heade-nav_btn" @click="jumpRecord()"><img src="../../images/icon_6.png" alt=""></div>
+        </div>
+        <div class="attendance-clock">
+            <div class="attendance-clock-text" v-if="is_allow">
+                <img src="../../images/icon_2.png" alt="">
+                <p>{{ attendance.attendance_place }}</p>
+                <span>{{ area_name }}</span>
+            </div>
+            <div class="attendance-clock-text" v-else>
+                <img src="../../images/icon_1.png" alt="">
+                <p>不在考勤范围内
+                    <template v-if="current_range">（当前距离：{{ current_range }}米）</template>
+                </p>
+                <span>{{ area_name }}</span>
+            </div>
+            <div class="attendance-clock-box" v-if="is_allow">
+                <div class="attendance-clock-btn" @click="setAttendance">
+                    <div class="attendance-clock-btn_time">{{ nowtime }}</div>
+                    <div class="attendance-clock-btn_text">
+                        <template v-if="attendanceRules.attendance_type==1">
+                            上班打卡
+                        </template>
+                        <template v-else>
+                            下班打卡
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <div class="attendance-clock-box active" v-else>
+                <div class="attendance-clock-btn" @click="setAttendance">
+                    <div class="attendance-clock-btn_time">{{ nowtime }}</div>
+                    <div class="attendance-clock-btn_text">
+                        <template v-if="attendanceRules.attendance_type==1">
+                            上班打卡
+                        </template>
+                        <template v-else>
+                            下班打卡
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <div class="attendance-clock-bot">
+                <span @click="refresh()">刷新</span>
+                <p v-if="attendanceRules.attendance_time">
+                    <template v-if="attendanceRules.attendance_type==1">
+                        请在{{ attendanceRules.attendance_time }}前打卡
+                    </template>
+                    <template v-else>
+                        请在{{ attendanceRules.attendance_time }}后打卡
+                    </template>
+                </p>
+            </div>
+        </div>
+        <div class="attendance-clock-result">
+            <div class="attendance-clock-result-top">
+                <img src="../../images/icon_7.png" alt="">
+                <p>打卡成功</p>
+                <span>新的一天，元气满满哦！</span>
+            </div>
+            <div class="left-float-top mt15">
+                <div class="attendance-clock-result_n">时间</div>
+                <div class="attendance-clock-result_v flex-1">{{ record_time }}</div>
+            </div>
+            <div class="left-float-top mt15">
+                <div class="attendance-clock-result_n">地点</div>
+                <div class="attendance-clock-result_v flex-1">{{ attendance_place }}</div>
+            </div>
+            <div class="attendance-clock-result_btn mt15" @click="jumpRemarks()">写备注</div>
+        </div>
+        <div class="attendance-clock-finished">
+            <div class="attendance-clock-finished-top">
+                <img src="../../images/icon_7.png" alt="">
+                <p>今日打卡已完成</p>
+            </div>
+            <div class="attendance-clock-finished-bot">
+                <p @click="updateTime()">更新下班时间</p>
+            </div>
+        </div>
+
+       
+    </div>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#app',
+        data: {
+            getAttendance_url: site_url + '/peony/wx/attendance/getAttendance',
+            setAttendance_url: site_url + '/peony/wx/attendance/setAttendance',
+            setAttendanceTime_url: site_url + '/peony/wx/attendance/setAttendanceTime',
+            token: '',
+            user_id: 0,
+            school_id: 0,
+            attendances: {},
+            attendance: {},
+            attendanceRules: {},
+            attendanceRange: {},
+            attendanceRimind: {},
+            attendance_id: 0,
+            attendance_place: '',
+            is_finished: 0,
+            attendance_records_id: 0,
+            record_time: '',
+            area_name: '',
+            lng: '',
+            lat: '',
+            attendance_record_details_id: 0,
+            remark: '',
+            client_ip: 0,
+            nowtime: getNowFormatDate('H:i'),
+            current_range: 0,
+            adcode: 0,
+            is_allow: false, //是否允许打卡
+        },
+        mounted: function() {
+            var _self = this;
+
+            _self.token = getCookie("token");
+            _self.school_id = getCookie("school_id");
+            _self.user_id = getCookie("user_id");
+
+            // 初始化地理位置
+            _self.initGeolocation();
+
+            _self.getAttendance();
+
+            setInterval(function() {
+                _self.nowtime = getNowFormatDate('H:i');
+
+                //检测是否允许打卡
+                _self.is_allow = _self.isAllow();
+
+                // // 初始化地理位置
+                // _self.initGeolocation();
+
+            }, 3000);
+        },
+        methods: {
+            initGeolocation: function() {
+
+                _self = this;
+
+                // //H5获取地理位置
+                // _self.getGeolacation();
+
+                // 腾讯地图API获取地理位置
+                _self.getTecentGeolocation();
+
+                // // 高德地图API获取地理位置
+                // _self.getGaodeGeolocation();
+            },
+            //检测是否允许打卡
+            checkAttendance: function() {
+                _self = this;
+
+                //考勤数据获取失败，刷新页面，重新获取数据
+                if (!_self.isExistAttendanceFunc) {
+                    mui.toast('数据错误，重新加载中...');
+                    setTimeout(function() {
+                        _self.refresh();
+                    }, 1000);
+                    return false;
+                }
+
+                //考勤地址获取失败，重新获取地址
+                if (!_self.isExistGeolocationFunc) {
+                    mui.toast('获取考勤地址失败');
+                    // 初始化地理位置
+                    _self.initGeolocation();
+                    return false;
+                }
+
+                //不在考勤范围内，重新获取地址
+                if (!_self.isInRangeFunc) {
+                    mui.toast('不在考勤范围内');
+                    // 初始化地理位置
+                    _self.initGeolocation();
+                    return false;
+                }
+
+                return true;
+            },
+            //是否允许打卡
+            isAllow: function() {
+                _self = this;
+
+                if (_self.isExistAttendanceFunc && _self.isExistGeolocationFunc && _self.isInRangeFunc) {
+                    return true;
+                }
+
+                return false;
+            },
+            isExistAttendanceFunc: function() {
+                _self = this;
+                //考勤数据获取成功
+                if (_self.attendance.id > 0) {
+                    _self.is_exist_attendance = true;
+                    return true;
+                }
+                return false;
+            },
+            isExistGeolocationFunc: function() {
+                _self = this;
+                //考勤地址获取成功
+                if (_self.lng && _self.lat && _self.area_name) {
+                    _self.is_exist_geolocation = true;
+                    return true;
+                }
+                return false;
+            },
+            isInRangeFunc: function() {
+                _self = this;
+                //在考勤范围内
+                if (_self.current_range && _self.current_range <= _self.attendanceRange.attendance_range_key) {
+                    _self.is_in_range = true;
+                    return true;
+                }
+                return false;
+            },
+            goback: function() {
+                history.go(-1);
+            },
+            jumpRecord: function() {
+                location.href = "./attendance-clock-record.html";
+            },
+            jumpRemarks: function() {
+                var _self = this;
+                location.href = "./attendance-clock-remarks.html?attendance_record_details_id=" + _self.attendance_record_details_id;
+            },
+            //  获取考勤打卡初始化信息
+            getAttendance: function() {
+                var _self = this;
+                var _url = _self.getAttendance_url;
+                var _data = {
+                    "token": _self.token,
+                    "user_id": _self.user_id,
+                    "school_id": _self.school_id,
+                };
+                _self.httpurl(_url, _data, 'GET', 'JSON', function(obj) {
+
+                    //验证当前用户是否加入考勤
+                    if( !obj.data.list.is_join_attendance ){
+                        location.href = './attendance-prompt.html';
+                    }
+
+                    if (obj.code === 0) {
+                        console.log(obj);
+
+                        _self.attendances = obj.data.list;
+                        _self.attendance = obj.data.list.attendance;
+                        _self.attendanceRules = obj.data.list.attendanceRules;
+                        _self.attendanceRange = obj.data.list.attendanceRange;
+                        _self.attendanceRimind = obj.data.list.attendanceRimind;
+
+                        _self.attendance_records_id = obj.data.list.attendance_records_id;
+
+                        //检测是否允许打卡
+                        _self.is_allow = _self.isAllow();
+
+                        console.log(_self);
+                        if (_self.attendances.is_finished == 1) {
+                            $(".attendance-clock").hide();
+                            $(".attendance-clock-finished").show();
+                            return;
+                        }
+
+                    } else {
+                        // mui.toast(obj.msg);
+                    }
+                });
+            },
+            //  考勤打卡
+            setAttendance: function() {
+                var _self = this;
+
+                //检测是否允许打卡
+                var res = _self.checkAttendance();
+                if (!res) {
+                    return;
+                }
+
+                var _url = _self.setAttendance_url;
+                var _data = {
+                    "token": _self.token,
+                    "user_id": _self.user_id,
+                    "school_id": _self.school_id,
+                    "attendance_id": _self.attendance.id,
+                    "area_name": _self.area_name,
+                    "lng": _self.lng,
+                    "lat": _self.lat,
+                };
+                _self.httpurl(_url, _data, 'POST', 'JSON', function(obj) {
+                    if (obj.code === 0) {
+                        var detail = obj.data.list;
+
+                        $(".attendance-clock").hide();
+
+                        _self.record_time = detail.record_time;
+                        _self.attendance_place = detail.attendance_place;
+                        _self.attendance_record_details_id = detail.attendance_record_details_id;
+
+                        if (detail.record_status != 1) {
+
+                            $(".attendance-clock-result-top span").hide();
+                            $(".attendance-clock-result-top img").attr('src', '../../images/icon_11.png');
+
+                            if (detail.record_status == 2) {
+                                $(".attendance-clock-result-top p").text('迟到');
+                            } else if (detail.record_status == 3) {
+                                $(".attendance-clock-result-top p").text('早退');
+                            } else {
+                                $(".attendance-clock-result-top p").text('请重新打卡');
+                            }
+
+                            $(".attendance-clock-result_btn").show();
+                        }
+                        $(".attendance-clock-result").show();
+                    } else {
+                        mui.toast(obj.msg);
+                    }
+                });
+            },
+            //  更新下班时间
+            updateTime: function() {
+                var _self = this;
+
+                //检测是否允许打卡
+                var res = _self.checkAttendance();
+                if (!res) {
+                    return;
+                }
+
+                var _url = _self.setAttendanceTime_url;
+                var _data = {
+                    "token": _self.token,
+                    "attendance_records_id": _self.attendance_records_id,
+                    "attendance_num": _self.attendanceRules.attendance_num,
+                };
+                _self.httpurl(_url, _data, 'POST', 'JSON', function(obj) {
+                    if (obj.code === 0) {
+                        mui.toast("更新成功");
+                    } else {
+                        mui.toast(obj.msg);
+                    }
+                });
+            },
+            refresh: function() {
+                location.reload(true);
+            },
+            //  高德地图API获取地理位置
+            getGaodeGeolocation: function() {
+                var _self = this;
+
+                mapObj = new AMap.Map('iCenter');
+                mapObj.plugin('AMap.Geolocation', function() {
+                    geolocation = new AMap.Geolocation({
+                        enableHighAccuracy: true, //是否使用高精度定位，默认:true
+                        timeout: 10000, //超过10秒后停止定位，默认：无穷大
+                        maximumAge: 0, //定位结果缓存0毫秒，默认：0
+                        convert: true, //自动偏移坐标，偏移后的坐标为高德坐标，默认：true
+                        showButton: true, //显示定位按钮，默认：true
+                        buttonPosition: 'LB', //定位按钮停靠位置，默认：'LB'，左下角
+                        buttonOffset: new AMap.Pixel(10, 20), //定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+                        showMarker: true, //定位成功后在定位到的位置显示点标记，默认：true
+                        showCircle: true, //定位成功后用圆圈表示定位精度范围，默认：true
+                        panToLocation: true, //定位成功后将定位到的位置作为地图中心点，默认：true
+                        zoomToAccuracy: true //定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+                    });
+                    mapObj.addControl(geolocation);
+                    AMap.event.addListener(geolocation, 'complete', onComplete); //返回定位信息
+                    AMap.event.addListener(geolocation, 'error', onError); //返回定位出错信息
+                });
+
+                //获取到信息
+                var onComplete = function(result) {
+                    console.log(result); //这里面获得经纬度的相关信息
+                }
+
+                var onError = function(result) {
+                    console.log(result); //这里面获得经纬度的相关错误
+                }
+            },
+            //  腾讯地图API获取地理位置
+            getTecentGeolocation: function() {
+                var _self = this;
+
+                var geolocation = new qq.maps.Geolocation("RX3BZ-G5MC4-OHDUT-XLCYE-VDKHH-PDBKP", "jiuchunjiaoyu_weizhixiaoyuan_web");
+
+                geolocation.getLocation(showLocation, showErr);
+
+                function showLocation(result) {
+
+                    //地址
+                    _self.area_name = result.province + result.city + result.addr;
+                    //地区编码
+                    _self.adcode = result.adcode;
+
+                    _self.lng = result.lng;
+                    _self.lat = result.lat;
+
+                    // if (_self.lng && _self.lat) {
+                    //     //火星坐标转换地球坐标
+                    //     var arr = wgs84togcj02(_self.lng, _self.lat);
+
+                    //     _self.lng = arr[0];
+                    //     _self.lat = arr[1];
+                    // }
+
+                    console.log('您的位置：' + _self.lng + ',' + _self.lat + ',' + result.accuracy);
+
+                    if (_self.attendance.attendance_lat && _self.attendance.attendance_lng && _self.lat && _self.lng) {
+                        _self.current_range = _self.getGreatCircleDistance(_self.attendance.attendance_lat, _self.attendance.attendance_lng, _self.lat, _self.lng);
+
+                        //检测是否允许打卡
+                        _self.is_allow = _self.isAllow();
+                    }
+                    console.log(result);
+                    // console.log(_self.current_range);
+                };
+
+                function showErr(err) {
+                    console.log(err)
+                };
+            },
+            //  H5获取地理位置
+            getGeolacation: function() {
+                _self = this;
+                if (navigator.geolocation) {        
+                    navigator.geolocation.getCurrentPosition(                function(p) {
+                        var accuracy = p.coords.accuracy;
+                        _self.lat = p.coords.latitude;
+                        _self.lng = p.coords.longitude;
+
+                        // if (_self.lng && _self.lat) {
+                        //     //火星坐标转换地球坐标
+                        //     var arr = wgs84togcj02(_self.lng, _self.lat);
+
+                        //     _self.lng = arr[0];
+                        //     _self.lat = arr[1];
+                        // }
+
+                        if (_self.attendance.attendance_lat && _self.attendance.attendance_lng && _self.lat && _self.lng) {
+                            _self.current_range = _self.getGreatCircleDistance(_self.attendance.attendance_lat, _self.attendance.attendance_lng, _self.lat, _self.lng);
+
+                            //检测是否允许打卡
+                            _self.is_allow = _self.isAllow();
+                        }
+
+                        // console.log(_self.current_range);
+                        // console.log(accuracy);
+                        // console.log(_self);
+
+                        //经纬度获取地址
+                        _self.showPosition(_self.lat, _self.lng);
+
+                                        
+                    },                 function(e) {                    
+                        var  msg  =  e.code  +  "\n"  +  e.message;
+                        mui.toast(msg);
+                        // console.log(e);
+                                        
+                    }        );    
+                }
+            },
+            //  腾讯地图API获取坐标地址
+            showPosition: function(latitude, longitude) {
+                _self = this;
+                // 逆地址解析，设置起点的地址位置
+                var latLng = new qq.maps.LatLng(latitude, longitude);
+                var geocoder = new qq.maps.Geocoder();
+                geocoder.getAddress(latLng);
+                geocoder.setComplete(function(result) {
+                    _self.area_name = result.detail.address + result.detail.addressComponents.town;
+
+                    //检测是否允许打卡
+                    _self.is_allow = _self.isAllow();
+                });
+            },
+            //  第三方获取客户端IP
+            getClientIp: function() {
+                _self = this;
+                var url = 'http://chaxun.1616.net/s.php?type=ip&output=json&callback=?&_=' + Math.random();           
+                $.getJSON(url, function(data) {               
+                    _self.client_ip = data.Ip;           
+                });
+            },
+            //  地理坐标两点之间的距离
+            getGreatCircleDistance: function(lat1, lng1, lat2, lng2) {
+                _self = this;
+                var EARTH_RADIUS = 6367000; //单位M  6367000/6378245.0
+                var radLat1 = _self.getRad(lat1);
+                var radLng1 = _self.getRad(lng1);
+                var radLat2 = _self.getRad(lat2);
+                var radLng2 = _self.getRad(lng2);
+
+                var calcLongitude = radLng2 - radLng1;
+                var calcLatitude = radLat2 - radLat1;
+                var stepOne = Math.pow(Math.sin(calcLatitude / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(calcLongitude / 2), 2);
+                var stepTwo = 2 * Math.asin(Math.min(1, Math.sqrt(stepOne)));
+
+                s = stepTwo * EARTH_RADIUS;
+                s = Math.round(s * 10000) / 10000.0;
+
+                return s;
+            },
+            getRad: function(d) {
+                var PI = Math.PI;
+                return d * PI / 180.0;
+            },
+            httpurl: function(url, data, type, datatype, closure) {
+                $.ajax({
+                    url: url,
+                    data: data,
+                    type: type,
+                    dataType: datatype,
+                    success: closure,
+                    error: function(e) {
+                        console.log(e);
+                    }
+                });
+            }
+        }
+    })
+    </script>
+</body>
+
+</html>

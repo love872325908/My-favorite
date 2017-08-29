@@ -1,0 +1,106 @@
+/*
+* @Author: zhangjiayuan
+* @Date:   2017-07-04 11:06:53
+* @Last Modified by:   zhangjiayuan
+* @Last Modified time: 2017-07-04 16:47:33
+*/
+
+@import "../css/common2.css";
+@import "../fonts/iconfont.css";
+.detail_title {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    background-color: #fff;
+    padding: 15px;
+    a {
+        img {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+        }
+    }
+    .middle {
+        margin-left: 12px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        p {
+            padding: 5px 0;
+            font-size: 12px;
+            color: #999999;
+            letter-spacing: 0;
+            line-height: 14px;
+        }
+        h3 {
+            color: #333;
+            font-size: 16px;
+        }
+        span {
+            color: #999;
+            font-size: 12px;
+        }
+    }
+}
+
+.child-info {
+    position: relative;
+    margin-top: 10px;
+    &:before {
+        position: absolute;
+        top: 0;
+        z-index: 100;
+        left: 0;
+        right: 0;
+        height: 1px;
+        content: '';
+        transform: scaleY(.5);
+        background-color: #ccc;
+    }
+    &:after {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        content: '';
+        transform: scaleY(.5);
+        background-color: #ccc;
+    }
+    li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        h5 {
+            font-weight: normal;
+            font-size: 16px;
+            color: #333;
+        }
+        span {
+            color: #999;
+            font-size: 14px;
+            i {
+                color: #C7C7CC;
+                font-size: 12px;
+                margin-left: 5px;
+            }
+        }
+        a {
+            font-size: 14px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            img {
+                width: .64rem;
+                height: .64rem;
+            }
+            i {
+                color: #C7C7CC;
+                font-size: 12px;
+                margin-left: 5px;
+            }
+        }
+    }
+}

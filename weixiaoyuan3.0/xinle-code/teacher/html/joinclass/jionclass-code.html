@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>加入班级</title>
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/cssrem.js"></script>
+    <script src="../../js/common.js"></script>
+    <style type="text/css">
+    html {
+        height: 100%;
+    }
+    
+    body {
+        background: url(../../images/code-bg.png) top left no-repeat;
+        background-size: cover;
+        min-height: 100%;
+        height: auto !important;
+    }
+    </style>
+</head>
+
+<body style="position: relative;">
+    <div class="code" id="content_box">
+        <h3>请输入班级暗号</h3>
+        <div class="code-num">
+            <div>
+                <input id="code1" @keyup="next($event,1)" type="tel" maxlength="1" v-model="code1" tabindex="1" />
+            </div>
+            <div>
+                <input id="code2" @keyup="next($event,2)" type="tel" maxlength="1" v-model="code2" tabindex="2" />
+            </div>
+            <div>
+                <input id="code3" @keyup="next($event,3)" type="tel" maxlength="1" v-model="code3" tabindex="3" />
+            </div>
+            <div>
+                <input id="code4" @keyup="next($event,4)" type="tel" maxlength="1" v-model="code4" tabindex="4" />
+            </div>
+            <div>
+                <input id="code5" @keyup="next($event,5)" type="tel" maxlength="1" v-model="code5" tabindex="5" />
+            </div>
+            <div>
+                <input id="code6" @keyup="next($event,6)" type="tel" maxlength="1" v-model="code6" tabindex="6" />
+            </div>
+            <div>
+                <input id="code7" @keyup="next($event,7)" type="tel" maxlength="1" v-model="code7" tabindex="7" />
+            </div>
+            <div>
+                <input id="code8" @keyup="next($event,8)" type="tel" maxlength="1" v-model="code8" tabindex="8" />
+            </div>
+        </div>
+        <button class="btn-border " :class="{'btn-border-no':cansubmit}" @click="queren">确认</button>
+    </div>
+    <div class="confirmBtn">小贴士：班级暗号在班主任创建班级时生成哦！</div>
+</body>
+<script src="../../js/mui.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+$("#code1").focus();
+var app = new Vue({
+    el: '#content_box',
+    data: {
+        code1: "",
+        code2: "",
+        code3: "",
+        code4: "",
+        code5: "",
+        code6: "",
+        code7: "",
+        code8: "",
+        cansubmit: true
+    },
+    mounted: function() {
+        $("#code1").focus();
+    },
+    methods: {
+
+        queren: function() {
+            var _self = this;
+            var class_name = GetQueryString("class_name");
+            var code = _self.code1 + _self.code2 + _self.code3 + _self.code4 + _self.code5 + _self.code6 + _self.code7 + _self.code8;
+            if (code.length != 8) {
+                mui.toast("请输入正确的8位数班级暗号！");
+                return;
+            } else {
+
+            }
+            $.ajax({
+                url: site_url + '/peony/wx/teacher/getclassdetail',
+                data: {
+                    "teacher_id": getCookie("user_id"),
+                    "token": getCookie("token"),
+                    "code": code
+                },
+                type: "GET",
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        if (obj.data.list.length == 0) {
+                            mui.toast("请输入正确的班级暗号");
+                            return;
+                        }
+                        var class_id = obj.data.list[0].id;
+                        var class_name = obj.data.list[0].name;
+                        var subject = obj.data.list[0].class_and_subject;
+                        var grade_name = obj.data.list[0].grade.name;
+                        var school_name = "无";
+                        if (obj.data.list[0].school_id != 0) {
+                            school_name = obj.data.list[0].school.name;
+                        }
+                        if (subject == "") {
+                            location.href = goto_url + "/view/html/joinclass/joinclass.html?class_id=" + class_id + "&class_name=" + class_name + "&school_name=" + school_name + "&grade_name=" + grade_name;
+                        } else {
+                            mui.toast("您已在" + class_name + "任课");
+                            return;
+                        }
+                    } else {
+                        mui.toast(obj.msg);
+                    }
+                }
+            });
+        },
+        next: function(e, i) {
+            var _self = this;
+            var keycode = e.keyCode;
+            if (keycode == 8 || keycode == 46) {
+                if (i == 1) {
+                    return;
+                } else {
+                    i--;
+                    $("#code" + i).focus();
+                }
+            } else {
+                if (i == 8) {
+                    return;
+                } else {
+                    i++;
+                    $("#code" + i).focus();
+                    var code = _self.code1 + _self.code2 + _self.code3 + _self.code4 + _self.code5 + _self.code6 + _self.code7 + _self.code8;
+                }
+            }
+
+        }
+    }
+})
+</script>
+
+</html>

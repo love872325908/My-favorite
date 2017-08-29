@@ -1,0 +1,47 @@
+@import url(../css/common2.css);
+@import url(../fonts/iconfont.css);
+.wages-bar ul {
+  list-style: none; }
+  .wages-bar ul li {
+    background-color: #fff;
+    margin: 10px 0px;
+    padding: 15px; }
+    .wages-bar ul li:before, .wages-bar ul li:after {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      content: '';
+      -webkit-transform: scaleY(0.5);
+          -ms-transform: scaleY(0.5);
+              transform: scaleY(0.5);
+      background-color: #f2f2f2; }
+    .wages-bar ul li h5 {
+      font-weight: bold;
+      font-size: 16px;
+      color: #333;
+      line-height: 30px; }
+    .wages-bar ul li p {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: justify;
+      -webkit-justify-content: space-between;
+         -moz-box-pack: justify;
+          -ms-flex-pack: justify;
+              justify-content: space-between;
+      color: #999;
+      font-size: 14px; }
+
+.wages-bar .wages-bar_not {
+  width: 100%;
+  height: 100%;
+  line-height: 400px;
+  font-size: 24px;
+  color: #D8D8D8;
+  background-color: #fff;
+  position: absolute;
+  text-align: center; }

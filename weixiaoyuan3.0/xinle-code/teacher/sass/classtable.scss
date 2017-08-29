@@ -1,0 +1,134 @@
+/*
+* @Author: zxl
+* @Date:   2017-06-15 11:11:46
+* @Last Modified by:   wangxiujuan
+* @Last Modified time: 2017-07-28 14:24:50
+*/
+
+@import "../css/common2.css";
+@import "../fonts/iconfont.css";
+$c1:#fff;
+$c2:#32B7F0;
+$c3:#333;
+.classtable_main {
+    width: 100%;
+    height: 70px;
+    padding: 14px;
+    padding-left: 0;
+    padding-right: 28px;
+    margin-left: 14px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #C7C7CC;
+    overflow: hidden;
+    .classtable_contain {
+        flex: 1;
+        h3 {
+            width: 100%;
+            height: 14px;
+            color: #333333;
+            font-size: 14px;
+            margin-top: 2px;
+            line-height: 14px;
+        }
+        p {
+            width: 100%;
+            height: 12px;
+            color: #999999;
+            font-size: 12px;
+            margin-top: 12px;
+            line-height: 12px;
+        }
+    }
+    span {
+        line-height: 42px;
+        color: #C7C7CC;
+        font-size: 12px;
+    }
+}
+
+.list {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 10px;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #F2F4F7;
+}
+
+footer {
+    width: 80%;
+    height: 44px;
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    margin-left: -40%;
+    border-radius: 2px;
+    background-color: #40B9F0;
+    color: #FFFFFF;
+    font-size: 18px;
+    line-height: 44px;
+    text-align: center;
+}
+
+.classtable-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    height: 11.34rem;
+    .classtable-bar {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #EEFBFA;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        img {
+            width: 80px;
+        }
+        h3 {
+            font-size: 20px;
+            color: #1FC86B;
+        }
+    }
+    h4 {
+        font-size: 20px;
+        color: #B8C1CE;
+    }
+    .classtable-img {
+        padding:20px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+    }
+}
+
+.top-title {
+    background-image: linear-gradient(90deg, #0AC3F8 0%, #3287DB 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 44px;
+    color: #fff;
+    padding: 0px 15px;
+    i {
+        color: #fff;
+    }
+    h3 {
+        font-size: 18px;
+    }
+    button {
+        border: 0;
+        background-color: transparent;
+        font-size: 16px;
+        color: #fff;
+    }
+}

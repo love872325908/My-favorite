@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>考勤打卡</title>
+    <link rel="stylesheet" type="text/css" href="../../css/attendance.css">
+    <link rel="stylesheet" type="text/css" href="../../css/simplecalendar.css">
+    <link rel="stylesheet" type="text/css" href="../../css/mui.css">
+
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/simplecalendar.js"></script>
+    <script src="../../js/mui.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="heade-nav center-float-left">
+            <a href="javascript:history.go(-1);" class="heade-nav_btn"><img src="../../images/return.png" alt=""></a>
+            <div class="heade-nav_name flex-1">{{ start_time }}</div>
+            <div class="heade-nav_btn" @click=""></div>
+        </div>
+        <div class="attendance-clock">
+          <div class="calendar">
+          	<table border="" cellspacing="" cellpadding="">
+          		<tr><td>周日</td><td>周一</td><td>周二</td><td>周三</td><td>周四</td><td>周五</td><td>周六</td></tr>
+          	</table>
+            <div class="container">
+      			<div class="con_box" @touchstart="calenTouchstart($event)" @touchmove="calenTouchmove($event)" @touchend="calenTouchend($event)">
+  					<ul>
+  						<table>
+		  		 	    	<tbody class="calendar-con">
+				                <tr>
+				                  <td date-month="12" date-day="1"></td>
+				                  <td date-month="12" date-day="2"></td>
+				                  <td date-month="12" date-day="3"></td>
+				                  <td date-month="12" date-day="4"></td>
+				                  <td date-month="12" date-day="5"></td>
+				                  <td date-month="12" date-day="6">1</td>
+				                  <td date-month="12" date-day="7">2</td>
+				                </tr>
+				                <tr>
+				                  <td date-month="12" date-day="1">3</td>
+				                  <td date-month="12" date-day="2">4</td>
+				                  <td date-month="12" date-day="3">5</td>
+				                  <td date-month="12" date-day="4">6</td>
+				                  <td date-month="12" date-day="5">7</td>
+				                  <td date-month="12" date-day="6">8</td>
+				                  <td date-month="12" date-day="7">9</td>
+				                </tr>
+				                <tr>
+				                  <td date-month="12" date-day="1">10</td>
+				                  <td date-month="12" date-day="2">11</td>
+				                  <td date-month="12" date-day="3">12</td>
+				                  <td date-month="12" date-day="4">13</td>
+				                  <td date-month="12" date-day="5">14</td>
+				                  <td date-month="12" date-day="6">15</td>
+				                  <td date-month="12" date-day="7">16</td>
+				                </tr>
+				                <tr>
+				                  <td date-month="12" date-day="1">17</td>
+				                  <td date-month="12" date-day="2">18</td>
+				                  <td date-month="12" date-day="3">19</td>
+				                  <td date-month="12" date-day="4">20</td>
+				                  <td date-month="12" date-day="5">21</td>
+				                  <td date-month="12" date-day="6">22</td>
+				                  <td date-month="12" date-day="7">23</td>
+				                </tr>
+				                <tr>
+				                  <td date-month="12" date-day="1">24</td>
+				                  <td date-month="12" date-day="2">25</td>
+				                  <td date-month="12" date-day="3">26</td>
+				                  <td date-month="12" date-day="2">27</td>
+				                  <td date-month="12" date-day="3">28</td>
+				                  <td date-month="12" date-day="2">29</td>
+				                  <td date-month="12" date-day="3">30</td>
+				                </tr>
+				                <tr>
+				                  <td date-month="12" date-day="1">31</td>
+				                </tr>
+			                </tbody>
+		                </table>
+  					</ul>
+  					<ul>
+  					<table>
+		            <tbody class="calendar-con active">
+		                <template v-for="n in totalcount">
+		                  <template v-if="(n-1)%7==0">
+		                  <tr>
+		                      <template v-for="m in totalcount">
+		                          <template v-if="n==1">
+		                              <template v-if="m-1<attendance_w_0">
+		                                <td></td>
+		                              </template>
+		                              <template v-else>
+		                                  <template v-if="m>=n+attendance_w_0&&m<n+7">
+		                                      <template v-if="attendanceRecords[m-attendance_w_0-1].attendance_laststatus == 1&&attendanceRecords[m-attendance_w_0-1].attendance_records_id != 0">
+		                                          <td @click="getAttendances(attendanceRecords[m-attendance_w_0-1].attendance_ymd)" class="event normal" :date-month="attendanceRecords[m-attendance_w_0-1].attendance_m" :date-day="attendanceRecords[m-attendance_w_0-1].attendance_d">{{ attendanceRecords[m-attendance_w_0-1].attendance_d }}</td>
+		                                      </template>
+		                                      <template v-else>
+		                                          <template v-if="attendanceRecords[m-attendance_w_0-1].attendance_records_id != 0">
+		                                              <td @click="getAttendances(attendanceRecords[m-attendance_w_0-1].attendance_ymd)" class="event" :date-month="attendanceRecords[m-attendance_w_0-1].attendance_m" :date-day="attendanceRecords[m-attendance_w_0-1].attendance_d">{{ attendanceRecords[m-attendance_w_0-1].attendance_d }}</td>
+		                                          </template>
+		                                          <template v-else>
+		                                              <td @click="getAttendances(attendanceRecords[m-attendance_w_0-1].attendance_ymd)" class="" :date-month="attendanceRecords[m-attendance_w_0-1].attendance_m" :date-day="attendanceRecords[m-attendance_w_0-1].attendance_d">{{ attendanceRecords[m-attendance_w_0-1].attendance_d }}</td>
+		                                          </template>
+		                                      </template>
+		                                  </template>
+		                              </template>
+		                          </template>
+		                          <template v-else>
+		                              <template v-if="m>=n&&m<n+7">
+		                              
+		                                <template v-if="attendanceRecords[m-attendance_w_0-1].attendance_laststatus == 1&&attendanceRecords[m-attendance_w_0-1].attendance_records_id != 0">
+		                                    <td @click="getAttendances(attendanceRecords[m-attendance_w_0-1].attendance_ymd)" class="event normal" :date-month="attendanceRecords[m-attendance_w_0-1].attendance_m" :date-day="attendanceRecords[m-attendance_w_0-1].attendance_d">{{ attendanceRecords[m-attendance_w_0-1].attendance_d }}</td>
+		                                </template>
+		                                <template v-else>
+		                                    <template v-if="attendanceRecords[m-attendance_w_0-1].attendance_records_id != 0">
+		                                        <td @click="getAttendances(attendanceRecords[m-attendance_w_0-1].attendance_ymd)" class="event" :date-month="attendanceRecords[m-attendance_w_0-1].attendance_m" :date-day="attendanceRecords[m-attendance_w_0-1].attendance_d">{{ attendanceRecords[m-attendance_w_0-1].attendance_d }}</td>
+		                                    </template>
+		                                    <template v-else>
+		                                        <td @click="getAttendances(attendanceRecords[m-attendance_w_0-1].attendance_ymd)" class="" :date-month="attendanceRecords[m-attendance_w_0-1].attendance_m" :date-day="attendanceRecords[m-attendance_w_0-1].attendance_d">{{ attendanceRecords[m-attendance_w_0-1].attendance_d }}</td>
+		                                    </template>
+		                                </template>
+		                              </template>
+		                          </template>
+		                      </template>
+		                  </tr>
+		                  </template>
+		                </template>
+		              </tbody>
+		              </table>
+		              </ul>
+		            <ul>
+		              	<table>
+			                <tbody class="calendar-con">
+				                <tr>
+				                  <td date-month="12" date-day="1"></td>
+				                  <td date-month="12" date-day="2"></td>
+				                  <td date-month="12" date-day="3"></td>
+				                  <td date-month="12" date-day="4"></td>
+				                  <td date-month="12" date-day="5"></td>
+				                  <td date-month="12" date-day="6">1</td>
+				                  <td date-month="12" date-day="7">2</td>
+				                </tr>
+				                <tr>
+				                  <td date-month="12" date-day="1">3</td>
+				                  <td date-month="12" date-day="2">4</td>
+				                  <td date-month="12" date-day="3">5</td>
+				                  <td date-month="12" date-day="4">6</td>
+				                  <td date-month="12" date-day="5">7</td>
+				                  <td date-month="12" date-day="6">8</td>
+				                  <td date-month="12" date-day="7">9</td>
+				                </tr>
+				                <tr>
+				                  <td date-month="12" date-day="1">10</td>
+				                  <td date-month="12" date-day="2">11</td>
+				                  <td date-month="12" date-day="3">12</td>
+				                  <td date-month="12" date-day="4">13</td>
+				                  <td date-month="12" date-day="5">14</td>
+				                  <td date-month="12" date-day="6">15</td>
+				                  <td date-month="12" date-day="7">16</td>
+				                </tr>
+				                <tr>
+				                  <td date-month="12" date-day="1">17</td>
+				                  <td date-month="12" date-day="2">18</td>
+				                  <td date-month="12" date-day="3">19</td>
+				                  <td date-month="12" date-day="4">20</td>
+				                  <td date-month="12" date-day="5">21</td>
+				                  <td date-month="12" date-day="6">22</td>
+				                  <td date-month="12" date-day="7">23</td>
+				                </tr>
+				                <tr>
+				                  <td date-month="12" date-day="1">24</td>
+				                  <td date-month="12" date-day="2">25</td>
+				                  <td date-month="12" date-day="3">26</td>
+				                  <td date-month="12" date-day="2">27</td>
+				                  <td date-month="12" date-day="3">28</td>
+				                  <td date-month="12" date-day="2">29</td>
+				                  <td date-month="12" date-day="3">30</td>
+				                </tr>
+				                <tr>
+				                  <td date-month="12" date-day="1">31</td>
+				                </tr>
+		                	</tbody>
+		                </table>
+	                </ul>
+	            </div>
+            </div>
+            <div class="calendar-list">
+              <template v-for="(item0,index0) in attendanceRecords">
+              <ul class="day-event" :date-month="item0.attendance_m" :date-day="item0.attendance_d">
+
+                <template v-if="attended_times>0">
+                <template v-for="item in attendances">
+
+                <li v-if="item.attendanceRecordDetails.record_status===1">
+                  <div class="day-event-li left-float-top" @click="SeeDetails(item.attendanceRecordDetails.id)">
+                    <div class="day-event-li_event"></div>
+                    <div class="day-event-li_time">{{ item.attendance_time }}</div>
+                    <div class="day-event-li_text flex-1">
+                      <p v-if="item.attendance_type ==1">上班</p>
+                      <p v-if="item.attendance_type ==2">下班</p>
+                      <span v-if="item.attendanceRecordDetails.record_time">
+                      正常
+                      （{{ item.attendanceRecordDetails.record_time }}）
+                      </span>
+                      <span v-else></span>
+                    </div>
+                    <div class="day-event-li_img" v-for="attach in item.attendanceRecordDetails.attendance_attachments">
+                      <img :src="site_url+attach.attach_url" alt="">
+                    </div>
+                  </div>
+                </li>
+
+                <li v-else>
+                  <div class="day-event-li left-float-top abnormal" @click="SeeDetails(item.attendanceRecordDetails.id)">
+                    <div class="day-event-li_event"></div>
+                    <div class="day-event-li_time">{{ item.attendance_time }}</div>
+                    <div class="day-event-li_text active flex-1">
+                      <p v-if="item.attendance_type ==1">上班</p>
+                      <p v-if="item.attendance_type ==2">下班</p>
+                      <span v-if="item.attendanceRecordDetails.record_time">
+
+                      <template v-if="item.attendanceRecordDetails.record_status===0">
+                      未打卡
+                      </template>
+                      <template v-if="item.attendanceRecordDetails.record_status===2">
+                      迟到
+                      </template>
+                      <template v-if="item.attendanceRecordDetails.record_status===3">
+                      早退
+                      </template>
+                      （{{ item.attendanceRecordDetails.record_time }}）
+                      </span>
+                      <span v-else></span>
+                    </div>
+                    <div class="day-event-li_img" v-for="attach in item.attendanceRecordDetails.attendance_attachments">
+                      <img :src="site_url+attach.attach_url" alt="">
+                    </div>
+                  </div>
+                </li>
+
+                </template>
+                </template>
+                <template v-else>
+                    <div class="day-event_empty">记录为空</div>
+                </template>
+
+              </ul>
+              </template>
+
+            </div>
+          </div>
+        </div>
+    </div>
+    <script src="../../js/common.js"></script>
+    <script type="text/javascript">
+        $(function(){
+          calendar.init();
+        });
+
+        var app = new Vue({
+          el:'#app',
+          data:{
+            getAttendanceRecordList_url:site_url + '/peony/wx/attendance/getAttendanceRecordList',
+            getAttendances_url:site_url + '/peony/wx/attendance/getAttendances',
+            token:'',
+            school_id:0,
+            user_id:[],
+            start_time:'',
+            attendanceRecords:[],
+            attendance_w_0:0,
+            totalcount:0,
+            attendances:{},
+            attended_times:0,
+            startY:0,
+            endY:0,
+            site_url:site_url,
+            container_height:0,
+            month:7,
+          },
+          created : function(){
+            var _self = this;
+            _self.token = getCookie("token");
+            _self.school_id = getCookie("school_id");
+            _self.user_id = [getCookie("user_id")];
+            _self.start_time = getNowFormatDate('Y-m');
+
+            //获取考勤打卡当月记录初始化信息
+            _self.getAttendanceRecordList();
+          },
+          mounted:function(){
+          	
+          },
+          methods: {
+          	calenTouchstart:function(e){
+          		this.startY = e.touches[0].pageY;
+          	},
+          	calenTouchmove:function(e){
+          		this.endY = e.touches[0].pageY;
+          		document.querySelector(".con_box").style.top = -264 + (this.endY - this.startY) + 'px';
+          	},
+          	calenTouchend:function(e){
+          		var distance = Math.abs(this.endY-this.startY);
+          		console.log(this.endY,this.startY);
+          		if(distance>130 && this.endY!=0){
+          			if(this.startY>this.endY){
+	          			this.month++;
+	          			var html ="<ul><table><tbody><tr><td>"+this.month+"</td></tr><tr><td>1</td></tr><tr><td>1</td></tr><tr><td>1</td></tr><tr><td>1</td></tr><tr><td>1</td></tr></tbody></table></ul>";
+	          			$('.con_box ul:first').remove();
+	          			$('.con_box').append(html);
+	          		}else{
+	          			this.month--;
+	          			var html ="<ul><table><tbody><tr><td>"+this.month+"</td></tr><tr><td>1</td></tr><tr><td>1</td></tr><tr><td>1</td></tr><tr><td>1</td></tr><tr><td>1</td></tr></tbody></table></ul>";
+	          			$('.con_box ul:last').remove();
+	          			$('.con_box').prepend(html);
+	          		}
+	          		this.endY=0;
+	          		document.querySelector(".con_box").style.top = -264 + 'px';
+          		}else{
+          			document.querySelector(".con_box").style.top = -264 + 'px';
+          		}
+          	},
+            SeeDetails:function(id){
+                if(id){
+                  location.href="./attendance-clock-details.html?id="+id;
+                }else{
+                  mui.toast("没有记录");
+                }
+            },
+            //获取考勤打卡初始化信息
+            getAttendanceRecordList:function(){
+                var _self = this;
+                var _url = _self.getAttendanceRecordList_url;
+                var _data = {
+                    "token" : _self.token,
+                    "user_id":_self.user_id,
+                    "school_id":_self.school_id,
+                    "start_time":_self.start_time,
+                };
+                _self.httpurl(_url , _data ,'GET' , false , 'JSON' , function(obj){
+                   if (obj.code === 0) {
+                        _self.attendanceRecords = obj.data.list;
+                        _self.attendance_w_0 = parseInt(_self.attendanceRecords[0].attendance_w);
+                        _self.totalcount = _self.attendanceRecords.length+_self.attendance_w_0;
+
+                        // y = getNowFormatDate('Y',1);
+                        // m = getNowFormatDate('m',1);
+                        // d1 = getMonthDays(y,m);
+                        
+                        // console.log(_self);
+                        return;
+                    } else {
+                        // mui.toast(obj.msg);
+                        return;
+                    }
+                });
+            },
+            //获取今日考勤记录列表
+            getAttendances:function(record_start_time){
+            	event.stopPropagation();
+                var _self = this;
+                var _url = _self.getAttendances_url;
+                var _data = {
+                    "token" : _self.token,
+                    "user_id":_self.user_id,
+                    "school_id":_self.school_id,
+                    "record_start_time":record_start_time,
+                };
+                _self.httpurl(_url , _data ,'GET' , true , 'JSON' , function(obj){
+                   if (obj.code === 0) {
+                        _self.attendances = obj.data.list.list;
+                        _self.attended_times = obj.data.list.attended_times;
+                        
+                        // console.log(_self);
+                        // console.log(_self.attended_times);
+                        return;
+                    } else {
+                        _self.attended_times = 0;
+                        _self.attendances = {};
+                        return;
+                    }
+                });
+            },
+            httpurl:function( url , data , type , async , datatype , closure ){
+              var _self = this;
+               $.ajax({
+                   url : url,
+                   data : data,
+                   type : type,
+                   async : async, 
+                   dataType : datatype,
+                   success : function(obj){
+                       if(obj.code == 0){
+                           closure(obj);
+                       }else{
+                          _self.attended_times = 0;
+                          _self.attendances = {};
+                           // mui.toast(obj.msg);
+                       }
+                   },
+                   error : function(e){
+                       console.log(e);
+                   }
+               });
+            }
+          },
+        });
+
+      </script>
+</body>
+</html>

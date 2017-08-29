@@ -1,0 +1,70 @@
+@import "../css/common2.css";
+@import "../fonts/iconfont.css";
+.invite-select {
+    text-align: center;
+    margin: 0 auto;
+    p {
+        color: #666;
+        font-size: 12px;
+        line-height: 24px;
+        text-align: left;
+       /*  text-indent: 2em; */
+        padding: 20px 30px;
+    }
+    h4 {
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 30px;
+    }
+}
+
+.select-status {
+    background: #50BF60;
+    color: #fff;
+}
+
+.select-identity {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #F2F4F7;
+    border-bottom: 1px solid #F2F4F7;
+    padding: 10px 15px;
+    span {
+        font-size: 16px;
+    }
+    div {
+        flex: 1;
+        text-align: right;
+        font-size: 16px;
+        color: #999;
+    }
+    i {
+        margin-top: 5px;
+    }
+}
+
+
+/*分享遮罩*/
+
+.share-bar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .5);
+    transition: all .3s;
+    .share-but {
+        position: absolute;
+        top: 0;
+        right: 0;
+        img {
+            width: 100%;
+        }
+    }
+}
+
+.noshow {
+    display: none;
+}

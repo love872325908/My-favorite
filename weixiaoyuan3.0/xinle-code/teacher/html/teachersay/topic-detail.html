@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>话题详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/teachersay.css">
+    <link rel="stylesheet" href="../../css/qqface.css">
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/common.js"></script>
+    
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/timeago.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/jssdkwx.js"></script>
+</head>
+
+<body>
+    <div id="content_box">
+        <div class="content-bar">
+            <div class="main-bar">
+                <h4>{{ topic.title }}</h4>
+                <div class="personal-people">
+                    <div class="personal-people-image">
+                        <img v-bind:src="topic.headimgurl" alt="" @click="toPerson(topic)">
+                        <span class="iconfont icon-jiavcopy"></span>
+                    </div>
+                    <div class="personal-people-info">
+                        <h3>{{topic.create_name}}</h3>
+                        <span class="personal-people-center">{{topic.school_name}}</span>
+                    </div>
+                    <p>
+                        <span class="personal-people-right">{{ timeago.format(topic.created_at, 'zh_CN')}}</span>
+                    </p>
+                </div>
+                <div class="topic-contain">
+                    {{topic.content}}
+                </div>
+                <div class="detail_img">
+		            <ul class="detail_imgbox" v-if="attachs.length  > 0">
+		                <li v-for="picurl in attachs">
+		                    <a href="javascript:void(0)"><img :src="picurl" @click="imgPreview(picurl,attachs)"></a>
+		                </li>
+		            </ul>
+                </div>
+                <div class="comment-list">
+                    <div class="comment-list-title">
+                        <span>全部评论&nbsp;{{comment_count}}</span>
+                        <i class="iconfont icon-shoucang1"></i>
+                    </div>
+                    <div class="comment-list-main" v-for="(comment,index) in comments" v-if="comment.isShow">
+                        <div class="comment-list-main-top">
+                            <img v-bind:src="comment.users ? comment.users.headimgurl : '../../images/touxiang.jpg'" alt="">
+                            <div>
+                                <div>
+                                    <h5>{{comment.users ? comment.users.realname : "未知"}}</h5>
+                                    <span>{{timeago.format(comment.created_at, 'zh_CN')}}</span>
+                                </div>
+                                <p @click="childComment(comment,index)" v-if="comment.pusers == null">{{comment.content}}</p>
+                                <p>
+                                    <span v-if="comment.pusers !== null">回复@ <span style="color:#708FCC">{{comment.pusers.realname}}</span> ：{{comment.content}}</span>
+                                    有回复则显示，没有则不显示
+                                </p>
+                            </div>
+                        </div>
+                        <div class="comment-list-main-bottom">
+                            <span class="iconfont " :class="{'icon-dianzan1':!comment.isgood,'icon-dianzan':comment.isgood}" @click="addLike(comment)"></span>
+                            <i class="iconfont icon-shanchu3" @click="shanChu(comment,index)" v-if="comment.user_id == user_id"></i>
+                            <small>{{ comment.praise_count}}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="topic_foot">
+            <input type="text" placeholder="我来讲两句..." @click="addClick" v-show="isInput">
+            <span @click="add">发送</span>
+        </footer>
+        <!-- 评论弹窗开始 -->
+        <div class="comment-box" :class="{ 'noshow' : isTure }">
+            <div class="mask" @click="closePopup"></div>
+            <div class="popup">
+                <textarea id="saytext" name="saytext" class="weui-textarea" :placeholder="placeString" rows="3" :value="comment_content" @change="comment_content = $event.target.value"></textarea>
+                <p id="saytext" name="saytext" contenteditable="true">请输入留言内容</p>
+                <a class="emotion"><i class="iconfont icon-biaoqing"></i></a>
+                <div class="popup_btn">
+                    <button class="cl-light-gray" @click="canCel">取消</button>
+                    <button class="blue" @click="addComment">确定</button>
+                </div>
+            </div>
+            <div id="qqfacebox"></div>
+        </div>
+        <!--评论弹窗结束-->
+        
+    </div>
+    <script src="../../js/mui.min.js"></script>
+    <script type="text/javascript" src="../../js/swiper.js"></script>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            topic: {},
+            comments: [],
+            user_id: getCookie('user_id'),
+            content: "",
+            comment_count: '',
+            comment_content: "",
+            placeString: "请输入回复内容",
+            attachs :[] ,
+            load: false,
+            isTure: true,
+            isInput: true,
+            p_id: 0
+        },
+        created: function() {
+
+            var _read_data = {};
+            _read_data.token = getCookie("token");
+            _read_data.user_id = getCookie("user_id");
+            _read_data.model_id = GetQueryString("topic_id");
+            _read_data.model_type = "Topic";
+
+            $.ajax({
+                url: site_url + '/peony/wx/teachersay/addread',
+                type: "POST",
+                dataType: "JSON",
+                data: _read_data,
+                success: function(obj) {
+
+                }
+            })
+
+            var _self = this;
+            _self.timeago = new timeago();
+            _self.user_id = getCookie("user_id");
+            var _data = {};
+            _data.token = getCookie("token");
+            _data.topic_id = GetQueryString("topic_id");
+
+            $.ajax({
+                url: site_url + "/peony/wx/teachersay/gettopic",
+                type: "GET",
+                dataType: "JSON",
+                data: _data,
+                success: function(obj) {
+                    _self.topic = obj.data.list[0];
+                    
+                    if(obj.data.list[0].attachs && obj.data.list[0].attachs.length > 0){
+                       	for(n in obj.data.list[0].attachs){//将图片提取出来放到数组里面;
+                            _self.attachs.push(site_url+'/'+obj.data.list[0].attachs[n].attach_url);
+                        }
+                    }     
+                }
+            });
+
+            var _comment_data = {};
+            _comment_data.token = getCookie("token");
+            _comment_data.topic_id = GetQueryString("topic_id");
+            _comment_data.user_id = getCookie("user_id");
+            $.ajax({
+                url: site_url + "/peony/wx/teachersay/gettopiccomment",
+                type: "GET",
+                dataType: "JSON",
+                data: _comment_data,
+                success: function(obj) {
+                    _self.comments = obj.data.list;
+                    _self.comment_count = obj.data.list.length;
+                    _self.comments.forEach(function(item) {
+                        Vue.set(item, 'isShow', true);
+                    });
+                    console.log(_self.comments);
+
+                }
+            })
+        },
+        methods: {
+            addClick: function() {
+                this.placeString = "请输入回复内容";
+                this.add();
+            },
+            add: function() {
+                this.isTure = !this.isTure;
+                this.isInput = false;
+            },
+            canCel: function() {
+                this.isTure = !this.isTure;
+                this.isInput = true;
+            },
+            addComment: function(p_id) {
+                if (this.load)
+                    return;
+                this.load = true;
+
+                var _data = {};
+                var _self = this;
+                _self.content = $('#saytext').val();
+                if (_self.content == '') {
+
+                    mui.toast("内容不能为空！");
+                } else {
+                    _data.token = getCookie("token");
+                    _data.content = this.content;
+                    _data.user_id = getCookie("user_id");
+                    _data.topic_id = GetQueryString("topic_id");
+                    if (_self.p_id != 0) {
+                        _data.p_id = _self.p_id;
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        url: site_url + "/peony/wx/teachersay/addtopiccomment",
+                        data: _data,
+                        dataType: "JSON",
+                        success: function(obj) {
+                            if (obj.code == 0) {
+                                _self.load = false;
+
+                                location.reload();
+                            } else {
+                                mui.toast(JSON.stringify(obj.msg));
+                            }
+                        }
+                    });
+                }
+
+            },
+            childComment: function(comment, index) {
+                this.placeString = "回复： " + comment.users.realname;
+                this.p_id = comment.id;
+                this.add();
+
+
+            },
+          	imgPreview:function(img,arr){//预览图片
+                app.current_url=img;
+                app.previewImgs=arr;
+                previewImg();
+            },
+            closePopup: function() {
+                this.isTure = !this.isTure;
+                this.isInput = true;
+            },
+            shanChu: function(comment, index) {
+
+                var _self = this;
+                mui.confirm('是否删除此条记录？', function(e) {
+                    if (e.index == 1) {
+                        var _data = {};
+                        _data.token = getCookie("token");
+                        _data.comment_id = comment.id;
+                        $.ajax({
+                            url: site_url + '/peony/wx/teachersay/deltopiccomment',
+                            data: _data,
+                            type: "POST",
+                            dataType: "JSON",
+                            success: function(obj) {
+                                if (obj.code == 0) {
+                                    _self.comments.splice(index, 1);
+                                    comment.isShow = false;
+                                    _self.comment_count--;
+                                } else {
+                                    mui.toast(JSON.stringify(obj.msg));
+                                }
+                            }
+                        })
+                    } else {
+                        return;
+                    }
+                })
+            },
+            // add: function(){
+            //   console.log(this.load);
+            //   if(this.content == ''){
+            //       mui.toast('内容不能为空');
+            //       return;
+            //   }
+            //   if (this.load)
+            //       return;
+            //   this.load = true;
+
+            //   var _add_data = {};
+            //   var _self = this;
+            //   _add_data.token = getCookie("token");
+            //   _add_data.topic_id = GetQueryString("topic_id");
+            //   _add_data.user_id = getCookie("user_id");
+            //   _add_data.content = this.content;
+
+            //   $.ajax({
+            //        url : site_url+'/peony/wx/teachersay/addtopiccomment',
+            //        data : _add_data,
+            //        type : "POST",
+            //        dataType : "JSON",
+            //        success: function(obj) {
+            //           if (obj.code == 0) {
+            //              _self.load = false;
+            //               location.reload();
+            //           } else {
+            //               mui.toast(JSON.stringify(obj.msg));
+            //           }
+            //         }
+            //    })
+            // },
+            toPerson: function(item) {
+                location.href = goto_url + "/view/html/workbench/teacher-index.html?teacher_id=" + item.create_id;
+
+            },
+            addLike: function(comment) {
+                if (comment.isgood) {
+                    return;
+                }
+                if (this.load)
+                    return;
+                this.load = true;
+                var _data = {};
+                var _self = this;
+                _data.token = getCookie("token");
+                _data.model_id = comment.id;
+                _data.user_id = getCookie("user_id");
+                _data.model_type = "TopicComment";
+                $.ajax({
+                    type: "POST",
+                    url: site_url + "/peony/wx/teachersay/addpraise",
+                    data: _data,
+                    dataType: "JSON",
+                    success: function(obj) {
+                        _self.load = false;
+                        if (obj.code == 0) {
+                            comment.isgood = true;
+                            comment.praise_count++;
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+
+
+            }
+
+        }
+
+    });
+    </script>
+</body>
+
+</html>

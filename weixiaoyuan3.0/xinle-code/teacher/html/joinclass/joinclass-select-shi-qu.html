@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+	<title>湖南省-长沙市</title>
+	<link rel="stylesheet" type="text/css" href="../../css/searchbar.css">
+
+	<link rel="stylesheet" type="text/css" href="../../css/layout.css">
+	<link rel="stylesheet" type="text/css" href="../../css/base.css">
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/jquery-1.8.3.min.js"></script>
+
+</head>
+<body>
+<div class="wei-content">
+	<div class="search-bar" id="searchBar">
+	    <form class="search-bar_form">
+	        <div class="search-bar_box">
+	            <i class="iconfont icon-sousuo icon-search"></i>
+	            <input type="search" class="search-bar_input" id="searchInput" placeholder="搜索" required="">
+	            <a href="javascript:" class="icon-clear" id="searchClear"></a>
+	        </div>
+	        <label class="search-bar_label" id="searchText" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
+	            <i class="iconfont icon-sousuo icon-search"></i>
+	            <span>搜索</span>
+	        </label>
+	    </form>
+	    <a href="javascript:" class="search-bar_cancel-btn" id="searchCancel">取消</a>
+	</div>
+	<div class="table-title">欢迎来到微智校园！请选择您的学校</div>
+</div>
+
+<ul class="table-view pt88">
+	<li><a href="">岳麓区</a><i class="iconfont icon-zhishi"></i></li>
+	<li><a href="">芙蓉区</a><i class="iconfont icon-zhishi"></i></li>
+	<li><a href="">天心区</a><i class="iconfont icon-zhishi"></i></li>
+	<li><a href="">岳麓区</a><i class="iconfont icon-zhishi"></i></li>
+	<li><a href="">芙蓉区</a><i class="iconfont icon-zhishi"></i></li>
+	<li><a href="">天心区</a><i class="iconfont icon-zhishi"></i></li>
+	<li><a href="">岳麓区</a><i class="iconfont icon-zhishi"></i></li>
+
+</ul>
+<script type="text/javascript" class="searchbar js_show">
+    $(function(){
+        var $searchBar = $('#searchBar'),
+            $searchResult = $('#searchResult'),
+            $searchText = $('#searchText'),
+            $searchInput = $('#searchInput'),
+            $searchClear = $('#searchClear'),
+            $searchCancel = $('#searchCancel');
+
+        function hideSearchResult(){
+            $searchResult.hide();
+            $searchInput.val('');
+        }
+        function cancelSearch(){
+            hideSearchResult();
+            $searchBar.removeClass('search-bar_focusing');
+            $searchText.show();
+        }
+
+        $searchText.on('click', function(){
+            $searchBar.addClass('search-bar_focusing');
+            $searchInput.focus();
+        });
+        $searchInput
+            .on('blur', function () {
+                if(!this.value.length) cancelSearch();
+            })
+            .on('input', function(){
+                if(this.value.length) {
+                    $searchResult.show();
+                } else {
+                    $searchResult.hide();
+                }
+            })
+        ;
+        $searchClear.on('click', function(){
+            hideSearchResult();
+            $searchInput.focus();
+        });
+        $searchCancel.on('click', function(){
+            cancelSearch();
+            $searchInput.blur();
+        });
+    });
+ </script>
+</body>
+</html>

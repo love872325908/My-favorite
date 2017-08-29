@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+  <title>我的文件列表</title>
+  <script src="../js/vue.js"></script>
+  <style>
+    body{padding: 10px;}
+    table{ border-collapse: collapse; width: 100%; border: 1px #ccc solid;}
+    td,th{border: 1px #ccc solid; padding:10px; font-size: 14px;}
+    td:nth-child(1){width:30%; word-wrap: break-word;}
+  </style>
+</head>
+<body class="bg-light-gray">
+  <h1>教师端页面</h1>
+  <h4>绑定手机号/编辑资料/加入班级</h4>
+  <table id="app">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <h4>个人信息</h4>
+  <table id="app1">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <h4>我的班级</h4>
+  <table id="app2">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>我的班级--班级管理</h4>
+  <table id="app3">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>公告</h4>
+  <table id="app4">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <h4>投票</h4>
+  <table id="app5">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>动态</h4>
+  <table id="app6">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>作业</h4>
+  <table id="app7">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>学生表现</h4>
+  <table id="app8">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>成绩</h4>
+  <table id="app9">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>工作台</h4>
+  <table id="app10">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+  
+
+  <h4>文章</h4>
+  <table id="app11">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>学生主页</h4>
+  <table id="app12">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <h4>家长主页</h4>
+  <table id="app13">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <h4>学校公告</h4>
+  <table id="app14">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <h4>好老师</h4>
+  <table id="app15">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>工资</h4>
+  <table id="app16">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <h4>沟通</h4>
+  <table id="app17">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>老师说</h4>
+  <table id="app18">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>考勤</h4>
+  <table id="app19">
+    <tbody>
+      <tr>
+          <th>描述</th> <th>链接</th> <th>备注</th></tr> 
+      <tr v-for="el in list">
+          <td>{{el.tit}}</td> 
+          <td><a :href="el.url">{{el.url}}</a></td> 
+          <td>{{el.mark}}</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+<script>
+    var vm = new Vue({
+      el: '#app',
+      data: {
+        list:[
+            {tit:"绑定手机号",url:"register/tel.html",mark:""},
+            {tit:"编辑资料",url:"register/profile.html",mark:""},
+            {tit:"添加班级或学校",url:"joinclass/add-class.html",mark:""},
+
+            {tit:"加入学校-选择省",url:"joinclass/joinclass.html",mark:""},
+            {tit:"加入学校-选择市区",url:"joinclass/joinclass-select-shi-qu.html",mark:""},
+            {tit:"加入学校-选择市",url:"joinclass/joinclass-select-shi.html",mark:""},
+            {tit:"加入学校-选择学校",url:"joinclass/joinclass-selectschool.html",mark:""},
+            {tit:"加入学校搜索结果页",url:"joinclass/jionclass-search-result.html",mark:""},
+
+            {tit:"学校暗号",url:"joinclass/code.html",mark:""},
+            {tit:"班级暗号",url:"joinclass/jionclass-code.html",mark:""},
+            {tit:"加入班级",url:"joinclass/joinclass.html",mark:""},
+            {tit:"加入班级-选择科目",url:"joinclass/select-subject.html",mark:""},
+
+            {tit:"我的班级-添加班级",url:"joinclass/new-class.html",mark:""},
+            {tit:"自定义科目",url:"joinclass/write-subject.html",mark:""}
+                      
+          ]
+        }
+    });
+    var vm = new Vue({
+      el: '#app1',
+      data: {
+        list:[
+            {tit:"我的",url:"user/my.html",mark:""},
+            {tit:"工具箱",url:"user/tool.html",mark:""},
+            {tit:"我的下载",url:"user/download.html",mark:""},
+            {tit:"设置",url:"user/set.html",mark:""},
+            {tit:"我的钱包",url:"user/mywallet.html",mark:""},
+            {tit:"我的收藏",url:"user/mycollection.html",mark:""},
+            {tit:"我的发布",url:"user/myrelease.html",mark:""},
+            {tit:"设置登录密码",url:"user/loginpassword.html",mark:""},
+            {tit:"修改登录密码",url:"user/edit-oginpassword.html",mark:""},
+            {tit:"切换学校",url:"user/change-school.html",mark:""},
+            {tit:"个人信息-选择部门",url:"user/departmentl.html",mark:""},
+            {tit:"个人信息-头像",url:"user/imageviewer.html",mark:""},
+            {tit:"个人信息",url:"user/personal.html",mark:""},
+            {tit:"个人信息-编辑姓名",url:"user/write-name.html",mark:""},
+            {tit:"个人信息-编辑职务",url:"user/write-post.html",mark:""},    
+            {tit:"个人信息-修改手机号码",url:"user/write-tel.html",mark:""}
+          ]
+        }
+    });
+    var vm = new Vue({
+      el: '#app2',
+      data: {
+        list:[
+            {tit:"我的班级--需重新调数据",url:"myclass/myclass1.html",mark:""},
+            {tit:"解散班级/转让班级 输入手机验证码--需重新调数据",url:"myclass/jiesan-class.html",mark:""},
+            {tit:"转让班级-选择部门-需重新调数据",url:"myclass/select-bumen.html",mark:""},
+            {tit:"家委会",url:"myclass/class-pta.html",mark:""},
+            {tit:"新增家委会人员",url:"myclass/select-people.html",mark:""},
+            {tit:"新增家委会新增人",url:"myclass/select-people-list.html",mark:""},
+            
+            {tit:"班级学生列表",url:"myclass/student-list.html",mark:""},
+            {tit:"班级学生搜索",url:"myclass/student-list.html",mark:""},
+            {tit:"学生名片",url:"myclass/student-card.html",mark:""},
+
+            {tit:"任课老师",url:"myclass/class-teach.html",mark:""},
+            {tit:"任课老师--需重新调数据",url:"myclass/class-teach1.html",mark:""},
+            {tit:"任课老师详情",url:"myclass/teacher-card.html",mark:""},
+            {tit:"班级主页",url:"myclass/index.html",mark:""}
+          ]
+        }
+    });
+    var vm = new Vue({
+      el: '#app3',
+      data: {
+        list:[
+            {tit:"班级相册",url:"myclass/class-imageviewer.html",mark:""},
+            {tit:"班级管理",url:"myclass/class-management.html",mark:""},
+            {tit:"任课老师-班级管理",url:"myclass/teacher-quitclass.html",mark:""}
+          ]
+        }
+    });
+    var vm = new Vue({
+      el: '#app4',
+      data: {
+        list:[
+            {tit:"我的班级-班级圈-发布公告",url:"notice/new-notice.html",mark:""},
+            {tit:"我的班级-班级圈-发布公告-选择发送范围",url:"notice/notice-select.html",mark:""},
+            {tit:"我的班级-班级圈-公告详情-阅读详情",url:"notice/notice-readnub.html",mark:""},
+            {tit:"我的班级-班级圈-公告详情",url:"notice/notice-detail.html",mark:""},
+            {tit:"我的班级-班级圈-公告预览",url:"notice/notice-preview.html",mark:""}
+
+            
+          ]
+        }
+    });
+    var vm = new Vue({
+      el: '#app5',
+      data: {
+        list:[
+            {tit:"我的班级-班级圈-投票详情-选项人数详情",url:"vote/vote-peoplenub.html",mark:""},
+            {tit:"我的班级-班级圈-投票详情",url:"vote/vote-detail.html",mark:""},
+            {tit:"我的班级-班级圈-开始投票",url:"vote/vote-begin.html",mark:""}
+
+          ]
+        }
+    });
+    var vm = new Vue({
+      el: '#app6',
+      data: {
+        list:[
+            {tit:"发布动态",url:"dynamic/new-dynamic.html",mark:""},
+            {tit:"发布动态-选择发送范围",url:"dynamic/dynamic-select.html",mark:""},
+            {tit:"发布动态-动态详情",url:"dynamic/dynamic-detail.html",mark:""}
+          ]
+        }
+    });
+    var vm = new Vue({
+      el: '#app7',
+      data: {
+        list:[
+
+            {tit:"发布作业1",url:"homework/new-homework.html",mark:""},
+            {tit:"发布作业-选择发送范围",url:"homework/homework-select.html",mark:""},
+            {tit:"发布作业-作业详情",url:"homework/homework-detail.html",mark:""}
+          ]
+        }
+    });
+    var vm = new Vue({
+      el: '#app8',
+      data: {
+        list:[
+            {tit:"发布学生表现-选择学生",url:"studoing/select-stu.html",mark:""},
+            {tit:"发布学生表现",url:"studoing/new-studoing.html",mark:""},
+            {tit:"发布学生表现-学生表现详情",url:"studoing/studoing-detail.html",mark:""}
+          ]
+        }
+    });
+    var vm = new Vue({
+      el: '#app9',
+      data: {
+        list:[
+            {tit:"发布成绩",url:"score/new-score.html",mark:""},
+            {tit:"成绩预览",url:"score/score-preview.html",mark:""},
+          ]
+        }
+    });
+    var vm = new Vue({
+      el: '#app10',
+      data: {
+        list:[
+            {tit:"工作台",url:"workbench/workbench.html",mark:""},
+
+          ]
+        }
+    });
+
+    var vm = new Vue({
+      el: '#app11',
+      data: {
+        list:[
+            {tit:"往日文章",url:"article/history-article.html",mark:""},
+            {tit:"文章详情",url:"article/article-detail.html",mark:""},
+            {tit:"评论列表",url:"article/comment-detail.html",mark:""}
+          ]
+        }
+    });
+
+    var vm = new Vue({
+      el: '#app12',
+      data: {
+        list:[
+            {tit:"学生主页",url:"students/students-index.html",mark:""}
+          ]
+        }
+    });
+    
+    var vm = new Vue({
+      el: '#app13',
+      data: {
+        list:[
+            {tit:"家长主页",url:"parent/parents-index.html",mark:""}
+          ]
+        }
+    });
+    var vm = new Vue({
+      el: '#app14',
+      data: {
+        list:[
+            {tit:"学校公告",url:"schoolnotice/school-notice.html",mark:""},
+            {tit:"公告详情",url:"schoolnotice/school-notice-detail.html",mark:""}
+          ]
+        }
+    });
+    
+    var vm = new Vue({
+      el: '#app15',
+      data: {
+        list:[
+            {tit:"好老师",url:"workbench/goodteacher.html",mark:""},
+            {tit:"老师主页",url:"workbench/teacher-index.html",mark:""}
+          ]
+        }
+    });
+
+    var vm = new Vue({
+      el: '#app16',
+      data: {
+        list:[
+            {tit:"工资条",url:"wages/wages-index.html",mark:""},
+            {tit:"工资条详情",url:"communicate/communicate-wages-details.html",mark:""},
+            {tit:"工资条-首次查看",url:"communicate/communicate-wages-test.html",mark:""},
+            {tit:"工资条密码验证-二次",url:"communicate/communicate-wages-test.html",mark:""},
+            {tit:"工资条-忘记密码",url:"wages/wages-forget-password.html",mark:""}
+          ]
+        }
+    });
+    
+    var vm = new Vue({       
+      el: '#app17',       
+      data: {         
+        list:[             
+        {tit:"消息",url:"communicate/school-assistant-index.html",mark:""},
+        {tit:"班级群聊",url:"communicate/communicate-chat.html",mark:""},         
+        {tit:"群消息",url:"communicate/communicate-group-massage.html",mark:""},
+        {tit:"沟通主页",url:"communicate/communicate-index.html",mark:""},
+        {tit:"转审选择",url:"communicate/communicate-leave-choose.html",mark:""},
+        {tit:"工资表",url:"communicate/communicate-wages-details.html",mark:""},
+        {tit:"安全验证",url:"communicate/communicate-wages-test.html",mark:""},
+        {tit:"工资条",url:"communicate/communicate-wages.html",mark:""} ,       
+        {tit:"校园助手",url:"communicateschool-assistant-index.html",mark:""}      
+        ]         
+      }     
+    });
+    
+    var vm = new Vue({       
+      el: '#app18',       
+      data: {         
+        list:[
+           
+            {tit:"添加答案",url:"teachersay/addanswer.html",mark:""},             
+            {tit:"回答详情",url:"teachersay/answer-detail.html",mark:""},        
+            {tit:"文章详情",url:"teachersay/article-detail.html",mark:""},
+            {tit:"评论列表",url:"teachersay/commentlist.html",mark:""},             
+            {tit:"名师堂",url:"teachersay/teacherdon.html",mark:""},             
+            {tit:"打赏",url:"teachersay/givemoney.html",mark:""},             
+            {tit:"打赏其他金额",url:"teachersay/givemoney-other.html",mark:""},     
+            {tit:"首页",url:"teachersay/index.html",mark:""},             
+            {tit:"",url:"teachersay/lonlyquestion-detail.html",mark:""},           
+            {tit:"发布问题",url:"teachersay/new-answer.html",mark:""},           
+            {tit:"发布碎碎念",url:"teachersay/new-speak.html",mark:""},         
+            {tit:"发布文章",url:"teachersay/new-article.html",mark:""},         
+            {tit:"消息",url:"teachersay/newmessage.html",mark:""},             
+            {tit:"问题详情",url:"teachersay/question-detail.html",mark:""},
+            {tit:"资源详情",url:"teachersay/resorce-detail.html",mark:""},
+            {tit:"文章详情",url:"teachersay/sectionfordetails.html",mark:""},
+            {tit:"碎碎念详情",url:"teachersay/speak-detail.html",mark:""},
+            {tit:"名师堂",url:"teachersay/teacherdon.html",mark:""},          
+            {tit:"小贴士",url:"teachersay/tips.html",mark:""},             
+            {tit:"话题详情",url:"teachersay/topic-detail.html",mark:""}, 
+            {tit:"完成投票",url:"teachersay/vote-complete.html",mark:""},
+            {tit:"投票详情",url:"teachersay/vote-detail.html",mark:""}                       
+            ]         
+          }     
+        });
+
+      var vm = new Vue({       
+      el: '#app19',       
+      data: {         
+        list:[
+            
+            {tit:"考勤打卡",url:"attendance/attendance-clock.html",mark:""},             
+            {tit:"考勤记录",url:"attendance/attendance-clock-record.html",mark:""},        
+            {tit:"考勤详情",url:"attendance/attendance-clock-details.html",mark:""},
+            {tit:"考勤备注",url:"attendance/attendance-clock-remarks.html",mark:""},             
+                      
+            ]         
+          }     
+        });
+</script>
+</body>
+</html>

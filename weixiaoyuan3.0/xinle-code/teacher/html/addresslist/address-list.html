@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"   content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>学校通讯录</title>
+  <link rel="stylesheet" type="text/css" href="../../css/mui.css">
+  <link rel="stylesheet" type="text/css" href="../../css/base.css">
+  <link rel="stylesheet" type="text/css" href="../../css/searchbar.css">
+  <link rel="stylesheet" type="text/css" href="../../css/addresslist.css">
+
+  <script src="../../js/vue.js"></script>
+  <script src="../../js/jquery-1.8.3.min.js"></script>
+  <script src="../../js/mui.min.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../js/jquery.charfirst.pinyin.js"></script>
+</head>
+<body>
+   <div id="app">
+      <div class="address-trun">
+         <!--搜索开始-->
+         <div class="search-bar" id="searchBar">
+             <div class="search-bar_form">
+                <div class="search-bar_box">
+                    <i class="iconfont icon-sousuo icon-search" @click="search"></i>
+                    <input v-model="keywords" type="search" class="search-bar_input" id="searchInput" placeholder="搜索" required="">
+                    <a href="javascript:" class="icon-clear" id="searchClear"></a>
+                </div>
+                <label class="search-bar_label" id="searchText" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
+                    <i class="iconfont icon-sousuo icon-search" @click="search"></i>
+                    <span >搜索</span>
+                </label>
+             </div>
+             <a href="javascript:" class="search-bar_cancel-btn" id="searchCancel">取消</a>
+         </div>
+         <!--搜索结束-->
+         <div class="organize" @click="organizeList">
+            <label>
+                <img src="../../images/classnotice.png" alt="">
+                <p>按组织架构查看</p>
+            </label>
+            <i class="iconfont icon-zhishi cl-light-gray"></i>
+         </div>
+
+         <div class="address-trun-list">
+            <div :id="index" v-for="(item, index) in schools">
+               <div class="address-trun-list_tit">{{index}}</div>
+               <ul>
+                  <li v-for="data in item">
+                     <label @click="toTeacherCard(data)">
+                        <div class="address-trun-list_img"><img :src="data.headimgurl ? data.headimgurl : '../../images/touxiang.png'"  alt=""></div>
+                        <p>{{data.realname}}</p>
+                     </label>
+                     <a @click="call(data)"><i class="iconfont icon-dianhua"></i></a>
+                  </li>
+               </ul>
+            </div>
+         </div>
+         <ul class="address-trun-side">
+             <li class="iconfont icon-sousuo"></li>
+             <li @click="location(item)" v-for="item in letter">{{item}}</li>
+         </ul>
+      </div>
+      <!--电话弹窗开始-->
+      <div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+         <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+               <a @click="chat" >聊天</a>
+            </li>
+            <li class="mui-table-view-cell">
+               <a :href="'tel:' + phone">打电话：{{phone}}</a>
+            </li>
+         </ul>
+         <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+               <a class="cl-gray" href="#picture">取消</a>
+            </li>
+         </ul>
+      </div>
+      <!--电话弹窗结束-->
+   </div>
+   <script type="text/javascript">
+        var app = new Vue({
+          el:'#app',
+          data:{
+            keywords : '',
+            /*approver_id : '',*/
+            letter : ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','#'],  //学校通讯录字母
+            schools : {} ,      //学校通讯录列表
+            phone:"",           //手机号码
+            site_url :site_url,  //页头
+            user_id: 0,
+          },
+          created : function(){
+                this.getData();
+          },
+          methods: {
+            search:function(){
+               this.getData(this.keywords);
+            },
+            getData : function(){ //根据学校ID获取教职工
+                var _self = this;
+                var _data = {};
+                _data.token = getCookie("token");
+                _data.school_id = GetQueryString("school_id");
+                if(_self.keywords != ''){
+                    _data.name = _self.keywords;
+                }
+                $.ajax({
+                    url : site_url+'/peony/wx/department/get-school-staff',
+                    data : _data,
+                    type : "GET",
+                    dataType : "JSON",
+                    success:function(obj){
+                      if(obj.code == 0){
+                            var schools = {};
+
+                            obj.data.list.sort(function(x,y){
+                                return  makePy(x.realname.charAt(0)) < makePy(y.realname.charAt(0)) ? -1 : 1;
+                            });
+
+                            $.each(obj.data.list,function(index,e){
+                                var first = makePy(e.realname.charAt(0));
+                                if(!schools[first]){
+                                    schools[first] = [];
+                                }
+                                schools[first].push(e);
+                            });
+                             _self.schools = schools;
+
+                      }else{
+                            mui.toast(JSON.stringify(obj.msg));
+                      }
+                    }
+                })
+            },
+            location:function(item){//通讯录首字母切换
+                mui.toast(item);
+                location.href = "#"+item;
+            },
+            call:function(data){//打电话
+               mui('#picture').popover('show');
+               this.phone = data.phone;
+               this.user_id = data.id;
+               console.log(data);
+            },
+            chat:function(){
+				location.href = goto_url  + "/view/im/index.html#/chat/p2p-"+ this.user_id +".2";
+            },
+            organizeList : function(){//组织架构跳转
+               var url = goto_url+"/view/html/addresslist/organize-list.html?school_id="+ GetQueryString("school_id");
+                  location.href = url;
+            },
+            toTeacherCard : function(teacher){
+               	var url = goto_url+"/view/html/myclass/teacher-card.html?teacher_id="+ teacher.id + "&is_master=false";
+                location.href = url;
+            }
+          }
+        });
+        $(function(){
+        var $searchBar = $('#searchBar'),
+            $searchResult = $('#searchResult'),
+            $searchText = $('#searchText'),
+            $searchInput = $('#searchInput'),
+            $searchClear = $('#searchClear'),
+            $searchCancel = $('#searchCancel');
+
+        function hideSearchResult(){
+            $searchResult.hide();
+            $searchInput.val('');
+        }
+        function cancelSearch(){
+            hideSearchResult();
+            $searchBar.removeClass('search-bar_focusing');
+            $searchText.show();
+        }
+
+        $searchText.on('click', function(){
+            $searchBar.addClass('search-bar_focusing');
+            $searchInput.focus();
+        });
+        $searchInput
+            .on('blur', function () {
+                if(!this.value.length) cancelSearch();
+            })
+            .on('input', function(){
+                if(this.value.length) {
+                    $searchResult.show();
+                } else {
+                    $searchResult.hide();
+                }
+            })
+        ;
+        $searchClear.on('click', function(){
+            hideSearchResult();
+            $searchInput.focus();
+        });
+        $searchCancel.on('click', function(){
+            cancelSearch();
+            $searchInput.blur();
+        });
+    });
+   </script>
+</body>
+</html>

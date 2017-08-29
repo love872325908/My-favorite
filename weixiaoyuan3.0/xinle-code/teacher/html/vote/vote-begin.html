@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: #F2F4F7;padding-top:0px;overflow-x: hidden;">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>发起投票</title>
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../../css/mui.css">
+    <!--App自定义的css-->
+    <link rel="stylesheet" type="text/css" href="../../css/app.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/mui.picker.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" type="text/css" href="../../fonts/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../../css/common2.css">
+    <link rel="stylesheet" type="text/css" href="../../css/images.css">
+    <link rel="stylesheet" type="text/css" href="../../css/nav.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/mui.picker.min.js"></script>
+    <script src="../../js/mui.poppicker.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/vote-jssdk.js"></script>
+    <script src="../../js/component.js"></script>
+    <style>
+        /*覆盖层完全覆盖，添加样式*/
+        html,body,#app{height: 100%}
+        #app main{overflow-y: auto;height: 100%;overflow-x: hidden;}
+        .vote_btn{padding:10px 20px}
+        .vote_btn .btn{margin: 0}
+    </style>
+</head>
+
+<body style="background-color: #F2F4F7;">
+    <div id="app" v-cloak>
+        <main>
+            <div class="vote_title">
+                <h4>投票主题</h4>
+                <textarea name="voteTitle" v-model="theme" placeholder="请输入投票主题，限定字数4-2000字"></textarea>
+                <h4>投票选项</h4>
+            </div>
+            <div class="vote_choose">
+                <p v-for="(item,index) in option">
+                    <i v-if="index>1" class="iconfont icon-shanchu1" @click="delOption(index)"></i>
+                    <span>选项{{index+1}}</span>
+                    <input type="text" :value="options_text[index]" @input="options_text[index] = $event.target.value">
+                    <a @click="chooseImg(item,index)" href="javascript:void(0);" :style="{ backgroundImage: 'url('+imgs[index]+')' }">
+                        <span v-show="item.isSpan" class="iconfont icon-tianjiabanji"></span>
+                    </a>
+                </p>
+                <div class="vote_choose_add iconfont icon-xinzengjiaweihui" @click="addOption">
+                    &nbsp&nbsp&nbsp添加选项
+                </div>
+            </div>
+            <div class="vote_geduan"></div>
+            <div class="vote_startTime" @tap="showBeginTime" id="userpicker">
+                <span class="vote_startTime_title">开始时间</span>
+                <span class="vote_startTime_time"><span>{{beginTime}}</span><span class="iconfont icon-zhishi"></span></span>
+            </div>
+            <div class="vote_endTime" @tap="showEndTime" id="userpicker">
+                <span class="vote_endTime_title">结束时间</span>
+                <span class="vote_endTime_time"><span>{{endTime}}</span><span class="iconfont icon-zhishi"></span></span>
+            </div>
+            <div class="vote_voteSelect" @tap="showAddSelect">
+                <span class="vote_voteSelect_title">投票类型</span>
+                <span class="vote_voteSelect_select"><span>{{addSelect}}</span><span class="iconfont icon-zhishi"></span></span>
+            </div>
+            <div class="vote_voteniming">
+                <span class="vote_voteniming_title">匿名投票</span>
+                <span class="vote_voteniming_niming">
+                    <div class="mui-switch mui-switch-blue  mui-switch-mini" @click="change_anonymity">
+                        <div class="mui-switch-handle"></div> <!-- mui-active -->
+                    </div>
+                </span>
+            </div>
+            <p class="vote_voteMan">开启后，发布者不可查看投票人详情</p>
+            <div class="vote_btn">
+                <a href="javascript:;" class="btn cl-white" @click="queren" @touchstart="touchstart" @touchend="touchend" :class="{'btnLight':isLight}" >发布</a>
+            </div>
+        </main>
+        <!-- loading -->
+        <full-mask :mask-show="maskShow"></full-mask>
+        <loading :loading-show="maskShow" :loading-text="loadText"></loading>
+    </div>
+</body>
+<script>
+var app = new Vue({
+    el: '#app',
+    data: {
+        isLight: false, //点击btn,有效果
+        theme: "",
+        options_count: 2,
+        beginTime: "2017-5-18 17:20",
+        beginTime:0,
+        endTime: "2017-5-19 17:20",
+        end_second:0,
+        addSelect: "单选",
+        anonymity: 0,
+        options_max: 1,
+        status: 1,
+        options_text: [], //选项val数组
+        option: [{
+            isSpan: true
+        }, {
+            isSpan: true
+        }, ],
+        pickData: [{
+            value: 1,
+            text: '单选'
+        }, {
+            value: 2,
+            text: '多选，最多选2项'
+        }],
+        imgs: ["", ""],
+        maskShow: false,
+        loadText: "正在发送"
+    },
+    created:function(){
+    	var _self=this;
+    	var dates = new Date();
+	    var month = dates.getMonth() + 1;
+	    var strDate = dates.getDate();
+	    if (month >= 1 && month <= 9) {
+	        month = "0" + month;
+	    }
+	    if (strDate >= 0 && strDate <= 9) {
+	        strDate = "0" + strDate;
+	    }
+	    _self.beginTime = dates.getFullYear() + "-" + month + "-" + strDate + " " + "08" + ":" + "30";
+        _self.endTime = dates.getFullYear() + "-" + month + "-" + strDate + " " + "16" + ":" + "00";
+        _self.begin_second= new Date(_self.beginTime);
+    	_self.end_second= new Date(_self.endTime);
+    	_self.begin_second=_self.begin_second.getTime();
+    	_self.end_second=_self.end_second.getTime();
+    },
+    methods: {
+        touchstart: function() {
+            this.isLight = true;
+        },
+        touchend: function() {
+            this.isLight = false
+        },
+        showBeginTime: function() {
+        	var _self=this;
+            var dtPicker = new mui.DtPicker({
+                'type': 'datetime',
+                'beginYear': '1800'
+            });
+            dtPicker.show(function(selectItems) {
+                _self.beginTime = selectItems.text;
+                _self.begin_second= new Date(_self.beginTime);
+		    	_self.begin_second=_self.begin_second.getTime();
+                dtPicker.dispose();
+            })
+        },
+        showEndTime: function() {
+        	var _self=this;
+            var dtPicker = new mui.DtPicker({
+                'type': 'datetime',
+                'beginYear': '1800'
+            });
+            dtPicker.show(function(selectItems) {
+                _self.endTime = selectItems.text;
+		    	_self.end_second= new Date(_self.endTime);
+		    	_self.end_second=_self.end_second.getTime();
+                dtPicker.dispose();
+            })
+        },
+        showAddSelect: function() {
+            var picker = new mui.PopPicker();
+            picker.setData(this.pickData);
+            _self = this;
+            picker.show(function(selectItems) {
+                _self.addSelect = selectItems[0].text;
+                _self.options_max = selectItems[0].value;
+                picker.dispose();
+            })
+        },
+        addOption: function() {
+            this.options_count++;
+            if (this.options_count > 60) {
+                mui.toast("选项最多60项");
+                return;
+            }
+            this.option.push({
+                isSpan: true
+            });
+            images.serverId.push(this.options_count.length);
+            this.imgs.push("");
+            this.pickData.push({
+                value: this.options_count,
+                text: '多选，最多选' + this.options_count + '项'
+            });
+        },
+        change_anonymity: function() {
+            this.anonymity = this.anonymity == 0 ? 1 : 0;
+        },
+        delOption: function(index) {
+            this.option.splice(index, 1);
+            this.imgs.splice(index, 1);
+            images.serverId.splice(index, 1);
+            this.options_text.splice(index, 1);
+            this.pickData.pop({
+                value: this.options_count,
+                text: '多选，最多选' + this.options_count + '项'
+            });
+            this.options_count--;
+        },
+        chooseImg: function(item, index) {
+            chooseImg(item, index);
+        },
+        queren: function() {
+            var _self = this;
+            if(!_self.theme){
+            	mui.toast("请输入投票主题！");
+                return;
+            }else if(_self.end_second<_self.begin_second){
+            	mui.toast('结束时间不能小于开始时间！');
+            	return;
+            }
+            console.log(_self.end_second);
+            console.log(_self.begin_second);
+            var _data = {};
+            _data.token = getCookie("token");
+            if (images.localId.length > 0) {
+                if ($.inArray("", _self.imgs) != -1) {
+                    mui.toast("一旦上传图片，所有选项都必须上传");
+                    return;
+                }
+                _data.serverId = images.serverId;
+                _data.come_from = 2;
+            }
+            _data.user_id = getCookie("user_id");
+            _data.creator_id = getCookie("user_id");
+            _data.school_id = GetQueryString("school_id");
+            _data.class_id = GetQueryString("class_id");
+            _data.theme = _self.theme;
+            _data.options_count = _self.options_count;
+            _data.start_time = _self.beginTime;
+            _data.end_time = _self.endTime;
+            _data.anonymity = _self.anonymity;
+            _data.options_max = _self.options_max;
+            _data.status = 1;
+            _data.options_text = JSON.stringify(_self.options_text);
+            
+            _self.maskShow = true;
+            $.ajax({
+                url: site_url + '/peony/wx/vote/add-voteconfig',
+                data: _data,
+                type: "POST",
+                dataType: "JSON",
+                success: function(obj) {
+                    _self.maskShow = false;
+                    if (obj.code == 0) {
+                        var urlParam = window.location.search.substr(1);
+                        var url = goto_url + "/view/html/myclass/index.html?" + urlParam;
+                        location.href = url;
+                    } else {
+                        mui.toast(JSON.stringify(obj.msg));
+                    }
+                }
+            });
+        }
+    }
+})
+</script>
+
+</html>

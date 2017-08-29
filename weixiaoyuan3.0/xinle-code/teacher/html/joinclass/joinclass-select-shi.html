@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title></title>
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../../css/mui.css">
+    <!--App自定义的css-->
+    <link rel="stylesheet" type="text/css" href="../../css/app.css" />
+    <link href="../../css/mui.picker.css" rel="stylesheet" />
+    <link href="../../css/mui.poppicker.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="../../css/mui.picker.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/vue.js"></script>
+</head>
+
+<body>
+    <div id="content_box">
+        <div class="wei-content">
+            <div class="table-title">欢迎来到微智校园！请选择您的学校</div>
+        </div>
+        <ul class="table-view pt44">
+            <template v-for="a in province_list">
+                <li @click="select_province($event,a.id)" :data-id="a.id"><a href="#">{{a.name}}</a><i class="iconfont icon-zhishi"></i></li>
+            </template>
+            <template v-for="a in city_list">
+                <li @click="select_city($event,a.id)" :data-id="a.id"><a href="#">{{a.name}}</a><i class="iconfont icon-zhishi"></i></li>
+            </template>
+            <template v-for="a in area_list">
+                <li @click="select_area($event,a.id)" :data-id="a.id"><a href="#">{{a.name}}</a><i class="iconfont icon-zhishi"></i></li>
+            </template>
+        </ul>
+    </div>
+</body>
+
+</html>
+<script>
+var app = new Vue({
+    el: '#content_box',
+
+    created: function() {
+        var _data = {};
+        _data.token = getCookie("token");
+        var url = site_url + "/peony/wx/organize/getarea?token=" + getCookie("token") + "&parent_id=100000";
+        var _self = this;
+        $.ajax({
+            url: url,
+            type: "get",
+            dataType: "JSON",
+            success: function(obj) {
+                document.title = "选择省份";
+                _self.province_list = obj.data.list;
+            }
+        });
+    },
+    data: {
+        province_list: [],
+        city_list: [],
+        area_list: [],
+
+    },
+    methods: {
+        select_province: function(e, province_id) {
+
+            this.province_list = [];
+
+            var _data = {};
+
+            _data.token = getCookie("token");
+            _data.province_id = province_id;
+
+
+            var url = site_url + "/peony/wx/organize/getarea?token=" + getCookie("token") + "&parent_id=" + _data.province_id;
+            document.title = e.target.textContent;
+            var _self = this;
+            $.ajax({
+                url: url,
+                type: "get",
+                dataType: "JSON",
+                success: function(obj) {
+                    _self.city_list = obj.data.list;
+
+                }
+            });
+
+        },
+        select_city: function(e, city_id) {
+
+            this.province_list = [];
+            this.city_list = [];
+
+            var _data = {};
+            _data.token = getCookie("token");
+
+            _data.city_id = city_id;
+
+            var url = site_url + "/peony/wx/organize/getarea?token=" + getCookie("token") + "&parent_id=" + _data.city_id;
+            document.title = e.target.textContent;
+            var _self = this;
+            $.ajax({
+                url: url,
+                type: "get",
+                dataType: "JSON",
+                success: function(obj) {
+
+                    _self.area_list = obj.data.list;
+
+                }
+            });
+        },
+
+        select_area: function(e,area_id) {
+
+            this.province_list = [];
+            this.city_list = [];
+
+            var _data = {};
+
+            _data.area_id = area_id;
+
+            var class_id = GetQueryString("class_id");
+
+            var href = goto_url + "/view/html/joinclass/search-school.html?area_id=" + _data.area_id + "&class_id=" + class_id;
+
+            location.href = href;
+        }
+    }
+
+});
+</script>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>创建班级</title>
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+</head>
+
+<body>
+    <div id="content_box">
+        <!--头部开始-->
+        <div class="grade-select">
+            <a href="javascript:;" @click="showGrade">{{gradeName}}<i class="iconfont icon-xialaxuanze ml10"></i></a>
+        </div>
+        <!--头部下拉菜单-->
+        <div class="select-box">
+            <div class="box-mask" v-show="isGrade"></div>
+        </div>
+        <div class="select-box-radio" v-show="isGrade">
+            <div v-for="item in grades" @click="selectGrade(item)" class="select-box-text">
+                {{item.name}}
+            </div>
+        </div>
+        <div class="subject-box pt44">
+            <small>创建人必须是班主任</small>
+            <input class="bg-input" type="text" v-model="name" maxlength="10" placeholder="请输入班级名称">
+            <small>选择您在该班所教科目(可多选)</small>
+            <ul class="moren">
+                <li @click="addSubjectId(item)" :class="{ 'bg-gray': item.selected,'bg-blue':!item.selected}" v-for="item in subjects">
+                <span>{{item.name}}</span></li>
+                <li @click="addSubject"><i class="iconfont icon-xinzeng"></i></li>
+            </ul>
+        </div>
+        <div class="mlr20">
+            <a href="javascript:;" @click="queren" id="confirmBtn" class="btn cl-white">确认创建</a>
+        </div>
+    </div>
+    <script src="../../js/mui.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            isGrade: false,
+            subjectClass: "bg-gray",
+            grades: [],
+            subjects: [],
+            subjectId: [],
+            class_subject: {},
+            grade_id: 0,
+            code : 0,
+            gradeName: "选择年级",
+            name: "",
+            school_id: 0,
+            flag: true, //是否可提交
+            /*classcode : ""*/
+        },
+        created: function() {
+            var self = this;
+            var user_id = getCookie('user_id');
+            var school_id = GetQueryString("school_id");
+            if (!isEmpty(school_id)) {
+                self.school_id = school_id;
+            }
+            $.ajax({
+                url: site_url + '/peony/wx/grade/getgradelist',
+                data: {
+                    "token": getCookie("token")
+                },
+                type: "GET",
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        self.grades = obj.data.list;
+                    } else {
+                        mui.toast(obj.msg);
+                    }
+                }
+            });
+            $.ajax({
+                url: site_url + '/peony/wx/subject/get-all',
+                data: {
+                    "create_id": user_id,
+                    "token": getCookie("token")
+                },
+                type: "GET",
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        self.subjects = obj.data.list;
+                        self.subjects.forEach(function(item) {　　　　　　　　　　
+                            Vue.set(item, 'selected', true);　　　　　　　　　　
+                        });
+                    } else {
+                        mui.toast(obj.msg);
+                    }
+                }
+            });
+
+        },
+        methods: {
+            showGrade: function() {
+                this.isGrade = !this.isGrade;
+            },
+            queren: function() {
+                var self = this;
+                if (self.grade_id == 0) {
+                    mui.toast("您必须选择年级");
+                    return;
+                }
+                if (!self.name) {
+                    mui.toast("您必须输入班级名称");
+                    return;
+                } else if (self.name.length > 11) {
+                    mui.toast("班级名称不能超过10个字");
+                    return;
+                } else if (self.flag == false) {
+                    mui.toast("不可重复提交");
+                    return;
+                }
+                self.flag = false;
+                var _data = {};
+                _data.name = self.name;
+                _data.school_id = self.school_id;
+                _data.master_id = getCookie('user_id');
+                _data.grade_id = self.grade_id;
+                _data.token = getCookie("token");
+                $.ajax({
+                    url: site_url + '/peony/wx/teacher/createclass',
+                    data: _data,
+                    type: "POST",
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            var class_id = obj.data.list[0].id;
+                            self.code =  obj.data.list[0].code;
+                            if (self.subjectId.length > 0) { //选择科目
+                                self.class_subject.class_id = class_id;
+                                self.class_subject.code = obj.data.list[0].code;
+                                self.class_subject.teacher_id = getCookie('user_id');
+                                self.class_subject.subject_id = self.subjectId.join("|");
+                                self.class_subject.token = getCookie('token');
+                                $.ajax({
+                                    url: site_url + '/peony/wx/teacher_subject/build',
+                                    data: self.class_subject,
+                                    type: "POST",
+                                    dataType: "JSON",
+                                    success: function(obj) {
+                                        if (obj.code == 0) {
+                                            self.flag = true;
+                                            self.isUpdateClass(class_id);
+                                        } else {
+                                            mui.toast(JSON.stringify(obj.msg));
+                                        }
+                                    }
+                                });
+                            } else {
+                                self.flag = true;
+                                self.isUpdateClass(class_id);
+                            }
+                        } else {
+                            mui.toast(obj.msg);
+                        }
+                    }
+                });
+
+            },
+            addSubjectId: function(item) {
+                if (this.subjectId.length == 6) {
+                    mui.toast("您在该班所教科目最多6科");
+                    return;
+                }
+                item.selected = !item.selected;
+                if (item.selected) {
+                    this.subjectId.splice($.inArray(item.id, this.subjectId), 1);
+                } else {
+                    this.subjectId.push(item.id);
+                }　　　　　　　　
+                Vue.set(item, 'selected', item.selected);
+            },
+            selectGrade: function(item) {
+                this.gradeName = item.name;
+                this.grade_id = item.id;
+                this.isGrade = false;
+            },
+            addSubject: function() {
+                var urlParam = window.location.search.substr(1);
+                var url = goto_url + "/view/html/joinclass/write-subject.html?" + urlParam + "&type=1";
+                location.href = url;
+            },
+            isUpdateClass: function(class_id) {
+//          	var _data = {};
+//              _data.teacher_id = getCookie('user_id');
+//              _data.token = getCookie("token");
+//              $.ajax({
+//              	url: site_url + '/peony/wx/teacher/createclass',
+//              	data: _data,
+//              	type: "POST",
+//              	dataType: "JSON",
+//              	success: function(obj) {
+//              		if (obj.code == 0) {
+//              			
+//              		}
+//              		else{
+//              			mui.toast(obj.msg);
+//              		}
+//              	}
+//              });
+//          	http://dev-lumen.jcweixiaoyuan.cn/peony/wx/teacher/get-teacher-school?token=22&teacher_id=146
+            	
+                var _self = this;
+                var btnArray = ["暂时不用", "现在就去"];
+                var classcode = "创建成功," + "班级暗号" + _self.code;
+
+                mui.confirm('是否现在将班级加入学校', classcode, btnArray, function(e) {
+                    if (e.index == 0) {
+                        var url = goto_url + "/view/html/myclass/myclass.html?class_id=" + class_id;
+                        location.href = url;
+                    } else {
+                        location.href = goto_url + "/view/html/joinclass/select-school.html?class_id=" + class_id;
+                    }
+                });
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

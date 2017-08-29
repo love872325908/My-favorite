@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+	<title>评论列表</title>
+  <link rel="stylesheet" href="../../css/mui.css">
+  <link rel="stylesheet" type="text/css" href="../../css/article.css">
+  <link rel="stylesheet" type="text/css" href="../../css/base.css">
+  <link rel="stylesheet" href="../../css/qqface.css">
+  <script src="../../js/cssrem.js"></script>
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/jquery-1.8.3.min.js"></script>
+	<script src="../../js/common.js"></script>
+  <script src="../../js/mui.min.js"></script>
+
+</head>
+<body class="bg-light-gray">
+<div id="content_box" v-cloak>
+    <div class="comment-bar">
+      <h6>全部评论{{list.length}}</h6>
+      <ul>
+        <li v-for="(value,index) in list" :key="index" ref="commentBox">
+          <span v-show="false" ref="spanId">{{value.id}}</span>
+          <a class="avatar" href=""><img :src="value.users.headimgurl" alt=""></a>
+          <div class="right">
+             <div class="tit"><a href="">{{value.users.realname}}</a><span>{{value.users.created_at}}</span></div>
+             <p>{{value.content}}</p>
+             <span><i class="iconfont icon-shanchu3 a-narmal" @click="delarticlecomment(index)"></i><i class="iconfont icon-dianzan1 a-narmal" :style="{color:(value.praise_count ? red:'')}" @click="addpraise(value)"></i>{{value.praise_count}}</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <form class="write-comment" @click="huiFu" v-show="isInput">
+      <input type="text"  placeholder="请输入评论&回复">
+    </form>
+    <!--评论弹窗开始-->
+    <div class="comment-box" :class= "{ 'noshow' : isTure }">
+        <div class="mask" @click="closePopup"></div>
+        <div class="popup">
+            <textarea id="saytext" name="saytext" class="weui-textarea" placeholder="请输入留言内容" rows="3" v-model="commentContent"></textarea>
+            <!-- <p id="saytext" name="saytext" contenteditable="true" >请输入留言内容</p> -->
+            <a class="emotion"><i class="iconfont icon-biaoqing"></i></a>
+            <div class="popup_btn">
+                <button class="cl-light-gray" @click="canCel">取消</button>
+                <button class="blue" @click="addarticlecomment">确定</button>
+            </div>
+        </div>
+        <div id="qqfacebox"></div> 
+    </div>
+    <!--评论弹窗结束-->
+
+</div>
+<script type="text/javascript" src="../../js/swiper.js"></script>
+<script type="text/javascript">
+	var app = new Vue({
+        el:'#content_box',
+        data: {
+           list:'',
+           commentContent:'',
+           red:'red',
+           isTure:true,
+           isInput:true
+        },
+        mounted:function(){
+            $('.emotion').qqFace({
+              id : 'facebox', 
+              show_id : 'qqfacebox', 
+              assign:'saytext', 
+              path:'../../images/arclist/' //表情存放的路径
+            });
+        },
+        methods: {
+          huiFu : function(){
+              this.isTure = !this.isTure;
+              this.isInput = false;
+          },
+          canCel : function(){
+              this.isTure = !this.isTure;
+              this.isInput = true;
+          },
+          closePopup : function(){
+              this.isTure = !this.isTure;
+              this.isInput = true;
+          },
+            getarticlecomment(){
+              var _data={},
+                   _self=this,
+                   url=site_url+"/peony/wx/teachersay/getarticlecomment";
+                   _data.token=getCookie("token");
+                   _data.article_id=GetQueryString("article_id");
+                   _data.user_id=getCookie("user_id");
+               $.get(url,_data,function(obj){
+                    if(obj.code==0){
+                    _self.list=obj.data.list;
+                    }else{
+                    mui.toast(JSON.stringify(obj.msg));
+                    }
+                },'json')
+            },
+            delarticlecomment(index){
+              var _data={},
+                   _self=this,
+                   url=site_url+"/peony/wx/teachersay/delarticlecomment";
+                   _data.token=getCookie("token");
+                   _data.comment_id=this.list[index].id;
+               $.post(url,_data,function(obj){
+                    if(obj.code==0){
+
+                    }else{
+                    mui.toast(JSON.stringify(obj.msg));
+                    }
+                },'json')
+            },
+            addarticlecomment(index){
+              var _data={},
+                   _self=this,
+                   url=site_url+"/peony/wx/teachersay/addarticlecomment";
+                   _data.token=getCookie("token");
+                   _data.user_id=getCookie("user_id");
+                   _data.article_id=GetQueryString("article_id");
+                   _data.content=this.commentContent;
+               $.post(url,_data,function(obj){
+                    if(obj.code==0){
+                    }else{
+                    mui.toast(JSON.stringify(obj.msg));
+                    }
+                },'json')
+            },
+            addpraise(value){
+              var _data={},
+                   _self=this,
+                   url=site_url+"/peony/wx/teachersay/addpraise";
+                   _data.token=getCookie("token");
+                   _data.user_id=getCookie("user_id");
+                   _data.model_id=value.id;
+                   _data.model_type='ArticleComment';
+               $.post(url,_data,function(obj){
+                    if(obj.code==0){
+                        value.praise_count ++;
+                    }else{
+                    mui.toast(JSON.stringify(obj.msg));
+                    }
+                },'json')
+            }
+       },
+       created(){
+         this.getarticlecomment();
+       }
+
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>问题详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/teachersay.css">
+    <link rel="stylesheet" href="../../css/qqface.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/component.js"></script>
+    <script src="../../js/timeago.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/jssdkwx.js"></script>
+</head>
+
+<body style="background-color: #F2F4F7;">
+    <div id="content_box">
+        <div class="main-bar">
+            <div class="personal-people">
+                <div class="personal-people-image">
+                    <img :src="users.artvar_img" @click="toPerson(questions)">
+                    <span class="iconfont icon-jiavcopy" v-if="users.is_vip='1'"></span>
+                </div>
+                <div class="personal-people-info">
+                    <h3>{{users.realname}}</h3>
+                    <span class="personal-people-center"><!--{{questions.school_name}}--></span>
+                </div>
+                <p>
+                    <span class="personal-people-right">{{timeago.format(questions.created_at, 'zh_CN')}}</span>
+                </p>
+            </div>
+            <h4>
+              {{questions.content}}
+            </h4>
+            <div class="detail_img">
+                <ul class="detail_imgbox" v-if="questions.attachs != []">
+                    <li v-for="picurl in attach">
+                        <a href="javascript:void(0)"><img :src="picurl" @click="imgPreview(picurl,attach)"></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="question-title">
+                {{questions.answer_count}}个回答
+            </div>
+            <div class="question-contain" v-for="(answer,index) in answers">
+                <p class="question-contain-text" @click="toDetail(answer)">
+                    {{answer.content}}
+                </p>
+                <div class="answer-people">
+                    <div class="answer-people-image">
+                        <img :src="answer.users.headimgurl" alt="" @click="toPerson1(answer)">
+                        <!-- <span class="iconfont icon-jiavcopy"></span> -->
+                    </div>
+                    <div class="answer-people-info">
+                        <div class="answer-people-top">
+                            <h3>{{answer.users.realname}}</h3>
+                            <p>{{timeago.format(answer.created_at, 'zh_CN')}}</p>
+                        </div>
+                        <h5 class="answer-people-bottom">
+                <!-- 加active表示有用，以点击，不加则为没点 -->
+                <span class="answer-people-bl"><!--{{answer.school_name}}--></span>
+                <div>
+                  <small class="iconfont icon-biaoqing" :class="{'active':answer.isgood }" @click="addPraise(answer)"></small>
+                  <span class="answer-people-br " :class="{'active':answer.isgood }" @click="addPraise(answer)">有用 {{answer.praise_count}}</span>
+                  <i class="iconfont icon-shanchu3" @click="shanChu(answer,index)" v-if="answer.user_id == user_id"></i>
+                </div>
+                
+            </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="question_foot" @click="huiFu" v-show="isInput">
+            <span class="iconfont icon-wolaihuida"></span>
+            <span>我来回答</span>
+        </footer>
+        <emoji-smile :showbox="isTure" @smilecontent="addComment" @closecontent="huiFu"></emoji-smile>
+    </div>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            questions: [],
+            isActive: false,
+            page: 1,
+            pageSize: 15,
+            load: false,
+            answers: [],
+            users: [],
+            site_url: site_url,
+            isTure: true,
+            isInput: true,
+            comment_content: "",
+            user_id: getCookie('user_id'),
+            attach: [],
+        },
+        created: function() {
+            var _self = this;
+            _self.timeago = new timeago();
+            var _read_data = {};
+            _read_data.token = getCookie("token");
+            _read_data.user_id = getCookie("user_id");
+            _read_data.model_id = GetQueryString("problem_id");
+            _read_data.model_type = "Problem";
+
+            $.ajax({
+                url: site_url + '/peony/wx/teachersay/addread',
+                type: "POST",
+                dataType: "JSON",
+                data: _read_data,
+                success: function(obj) {
+
+                }
+            })
+
+
+            this.getData();
+
+        },
+
+        methods: {
+            imgPreview: function(img, arr) { //预览图片
+                app.current_url = img;
+                app.previewImgs = arr;
+                previewImg();
+            },
+            getData: function(type) {
+                var _data = {};
+                var _self = this;
+                _data.token = getCookie("token");
+                _data.problem_id = GetQueryString("problem_id");
+                _data.is_answer = 1;
+                _data.user_id = getCookie('user_id');
+                _data.page = _self.page;
+                _data.pageSize = _self.pageSize;
+                $.ajax({
+                    url: site_url + '/peony/wx/teachersay/getproblemdetail',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: _data,
+                    success: function(obj) {
+                        if (obj.code == 0) {
+
+                            _self.questions = obj.data.list[0];
+                            _self.answers = obj.data.list[0].answers;
+                            _self.users = obj.data.list[0].users;
+                            console.log(_self.questions);
+                            if (obj.data.list[0].attachs && obj.data.list[0].attachs.length > 0) {
+                                for (n in obj.data.list[0].attachs) { //将图片提取出来放到数组里面;
+                                    _self.attach.push(site_url + '/' + obj.data.list[0].attachs[n].attach_url);
+                                }
+                            }
+
+                            console.log(_self.questions);
+                        } else {
+                            mui.toast(JSON.stringify(data.msg));
+                        }
+                    }
+                })
+            },
+            canCel: function() {
+                this.isTure = !this.isTure;
+                this.isInput = true;
+            },
+            shanChu: function(answer, index) {
+                var _self = this;
+                mui.confirm('是否删除此条记录？', function(e) {
+                    if (e.index == 1) {
+                        var _data = {};
+
+                        _data.token = getCookie("token");
+                        _data.answer_id = answer.id;
+
+                        $.ajax({
+                            url: site_url + '/peony/wx/teachersay/delproblemanswer',
+                            data: _data,
+                            type: "POST",
+                            dataType: "JSON",
+                            success: function(obj) {
+                                if (obj.code == 0) {
+                                    _self.answers.splice(index, 1);
+                                    _self.questions.answer_count--;
+                                } else {
+                                    mui.toast(JSON.stringify(obj.msg));
+                                }
+                            }
+                        })
+                    } else {
+                        return;
+                    }
+                })
+            },
+            closePopup: function() {
+                this.isTure = !this.isTure;
+                this.isInput = true;
+            },
+            toPerson: function(item) {
+                location.href = goto_url + "/view/html/workbench/teacher-index.html?teacher_id=" + item.create_id;
+
+            },
+            toPerson1: function(item) {
+                location.href = goto_url + "/view/html/workbench/teacher-index.html?teacher_id=" + item.user_id;
+
+            },
+            addComment: function(data) {
+                var _self = this;
+                var _data = {};
+                _data.token = getCookie("token");
+                _data.content = data;
+                _data.user_id = getCookie("user_id");
+                _data.problem_id = GetQueryString("problem_id");
+                _data.school_name = getCookie("school_name");
+                if (data.length == 0) {
+                    mui.toast("评论内容不能为空！");
+                } else if (data.length < 2 || data.length > 10000) {
+                    mui.toast("评论内容在2-1万字范围内！");
+                } else {
+                    $.ajax({
+                        url: site_url + '/peony/wx/teachersay/addproblemanswer',
+                        data: _data,
+                        type: "POST",
+                        dataType: "JSON",
+                        success: function(obj) {
+                            if (obj.code == 0) {
+                                window.location.reload();
+                            } else {
+                                mui.toast(JSON.stringify(obj.msg));
+                            }
+                        }
+                    });
+                }
+            },
+            addPraise: function(item) {
+                if (item.isgood) {
+                    return;
+                }
+                if (this.load)
+                    return;
+                this.load = true;
+                var _data = {};
+                var _self = this;
+                _data.token = getCookie("token");
+                _data.model_id = item.id;
+                _data.user_id = getCookie("user_id");
+                _data.model_type = "ProblemAnswer";
+                $.ajax({
+                    type: "POST",
+                    url: site_url + "/peony/wx/teachersay/addpraise",
+                    data: _data,
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            item.isgood = true;
+                            _self.load = false;
+                            item.praise_count++;
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+            },
+            toDetail: function(answer) {
+
+                console.log(answer);
+                var self = this;
+                var answer_id = answer.id;
+                location.href = goto_url + "/view/html/teachersay/answer-detail.html?answer_id=" + answer_id;
+            },
+            huiFu: function() {
+                this.isTure = !this.isTure;
+                this.isInput = false;
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

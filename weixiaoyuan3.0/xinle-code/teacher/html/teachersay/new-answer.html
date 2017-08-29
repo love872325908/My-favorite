@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>发布问题</title>
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/teachersay.css">
+    <link rel="stylesheet" type="text/css" href="../../css/nav.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/component.js"></script>
+    <script src="../../js/jssdkwx.js"></script>
+</head>
+
+<body style="background-color: #F2F4F7;">
+    <div id="content_box">
+        <div class="top_nav">
+            <span class="iconfont icon-fanhui1" @click="back"></span>
+            <p>提问</p>
+            <span :class="submitClass" @click="submit">发布</span>
+            <!-- 可以提交后加cansubmit类名 -->
+            <!-- 不可以提交后加cannotsubmit类名 -->
+        </div>
+        <div class="textarea-bar">
+            <textarea id="textarea" rows="5" placeholder="输入内容正文，限定字数4-5000字" v-model="content" @click="answerCon"></textarea>
+        </div>
+        <div class="img-bar">
+            <ul>
+                <li v-for="img in imgs" @click="imgPreview(img,imgs)">
+                    <a href="" v-bind:style="{backgroundImage:'url(' + img + ')'}"></a>
+                </li>
+                <li><a class="add-img" href="javascript:void(0);" id="img_button"><i class="iconfont icon-xiangji"></i><h6>添加图片</h6></a></li>
+            </ul>
+        </div>
+        <full-mask :mask-show="maskShow"></full-mask>
+        <loading :loading-show="maskShow" :loading-text="loadText"></loading>
+    </div>
+    <script src="../../js/mui.min.js"></script>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            content: "",
+            imgs: [],
+            submitClass: "cannotsubmit",
+            upload_type: 0, // 0 不及时上传  1 及时上传
+            img_count: 9, // 总共上传总数
+            img_upload_count: 9, // 还能上传总数  
+            is_submit: true,
+            maskShow: false,
+            loadText: '正在发送'
+        },
+        methods: {
+            answerCon: function() {
+                var _self = this;
+                this.submitClass = "cansubmit";
+            },
+            submit: function() {
+                var _self = this;
+                if (_self.content.length == 0) {
+                    mui.toast('请输入正文');
+                    return false;
+                }
+                if (_self.content.length < 4 || _self.content.length >= 5000) {
+                    mui.toast('正文字数不在限制范围内');
+                    return false;
+                }
+                if (this.is_submit == false) {
+                    return;
+                } else {
+
+                    var data = {};
+                    data.token = getCookie("token");
+
+                    data.content = this.content;
+                    data.create_id = getCookie("user_id");
+                    data.column_id = 1;
+                    data.school_name = getCookie("school_name");
+                    data.serverId = images.serverId;
+                    data.come_from = 2;
+                    console.log(data);
+                    _self.maskShow = true;
+                    $.ajax({
+                        url: site_url + '/peony/wx/teachersay/addproblem',
+                        data: data,
+                        type: "POST",
+                        dataType: "JSON",
+                        success: function(obj) {
+                            _self.maskShow = false;
+                            if (obj.code == 0) {
+                                console.log(1);
+                                location.href = goto_url + "/view/html/teachersay/index.html";
+                            } else {
+                                mui.toast(JSON.stringify(obj.msg));
+                            }
+                        }
+                    });
+                    this.is_submit == false;
+                }
+
+
+            },
+            back: function() {
+                history.go(-1);
+            },
+            
+            imgPreview: function(img, arr) { //预览图片
+                app.current_url = img;
+                app.previewImgs = arr;
+                previewImg();
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

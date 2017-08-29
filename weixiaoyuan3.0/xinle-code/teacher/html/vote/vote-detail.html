@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>投票详情</title>
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../../css/mui.css">
+    <!--App自定义的css-->
+    <link rel="stylesheet" type="text/css" href="../../css/app.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/mui.picker.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" type="text/css" href="../../fonts/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../../css/images.css">
+    
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/timeago.js"></script>
+</head>
+<style type="text/css">
+	.detail_main{margin-bottom: 20px;}
+	.mui-radio.mui-left label, .mui-checkbox.mui-left label{padding-left: 10px;}
+</style>
+<body>
+	<div id="app">
+    <main class="detail_main" style="border:none;">
+        <div class="index_main_title">
+            <img v-bind:src="creator_info.headimgurl" height="42" width="42" alt="">
+            <div>
+                <h3 v-if="user_id == vote_config.creator_id">{{ creator_info.realname }}</h3><!-- (班主任) -->
+                <h3 v-else>{{ creator_info.realname }}</h3>
+                <span class="index_main_time">{{ timeago.format(vote_config.created_at, 'zh_CN') }}</span>
+                <span class="index_main_type">发布投票：</span>
+                <span v-if="vote_status==3" class="index_main_status_end">已结束</span>
+                <span v-if="vote_status==2" class="index_main_status_start">暂未开始</span>
+                <span v-if="vote_status==1" class="index_main_status">进行中</span>
+            </div>
+            <p>
+                <span class="iconfont icon-niming" v-if="vote_config.anonymity"></span>
+                <span class="index_main_look" style="color:#96A2A8;" v-if="vote_config.options_max > 1 ">多选</span>
+                <span class="index_main_look" style="color:#96A2A8;" v-else>单选</span>
+            </p>
+        </div>
+        <div class="index_main_content">
+            <!-- <h4>公告标题：关于端午节放假的通知</h4> -->
+            <p>{{ vote_config.theme }} </p>
+            <div class="detail_vote mui-card">
+                <form class="mui-input-group" v-for="(option,index) in options">
+                    <div @click="toPeople(option)" class="mui-input-row mui-checkbox mui-left" >
+                        <label>{{ index+1 }}、{{ option.content }}</label>
+                        <div class="vote_mask" :style=" 'width : ' + option.option_per "></div>
+                        <span>{{option.option_count}}人</span>
+                    </div>
+                    <img v-if="option.min_pic_url" :src="site_url + option.pic_url"  alt="">
+                </form>
+            </div>
+        </div>
+        <div class="detail_voteDes">
+            <span>结束时间：{{ timeago.format(vote_config.end_time, 'zh_CN') }} </span>
+            <span> &nbsp总人数：{{vote_config.voted_count}}人</span>
+        </div>
+    </main>
+	</div>
+</body>
+<script>
+    var app = new Vue({
+	    el: '#app',
+	    data: {
+	    	token : getCookie("token"),
+	    	user_id : getCookie("user_id"),
+	    	student_id : getCookie("student_id"),
+	    	timeago : new timeago(),       //转换时间方法
+			vote_config: {},
+			creator_info: {},
+			options: {},
+	        now : "",
+	        user_id : 0,
+	        vote_status : 1,
+	        goto_url : goto_url,
+	        site_url : site_url,
+	        vote_logs : {}
+	    },
+		created: function () {
+		     this.now = getNowFormatDate();
+	         this.user_id = getCookie("user_id");
+			 var _self = this;
+			$.ajax({
+				type: "GET",
+				url: site_url+"/peony/wx/vote/get-voteconfigforclass",
+				data: {
+					token			:getCookie("token"),
+					vote_config_id	:GetQueryString('vote_config_id'),
+					user_id			:getCookie("user_id"),
+					come_from       :2
+				},
+				dataType: "json",
+				success: function(data){
+					
+					if(data.code == 0) {
+						_self.vote_config = data.data.list;
+						_self.creator_info = data.data.list.creator_info;
+						_self.options = data.data.list.options;
+	
+	                        _self.options.forEach(function(item){
+	                            var option_per = Math.round((item.option_count / _self.vote_config.voted_count) * 10000) / 100.00 + "%";
+	                            app.$set(item,"option_per",option_per);
+	                        });
+	
+	                        if(_self.now < _self.vote_config.start_time)
+	                            _self.vote_status = 2;
+	
+	                        else if(_self.now > _self.vote_config.end_time)
+	                            _self.vote_status = 3;
+	
+	
+					} else {
+	                        mui.toast(JSON.stringify(data.msg));
+					}
+				}
+	       });
+	    },
+	    methods: {
+	        toPeople : function(option){
+	            location.href=goto_url+'/view/html/vote/vote-peoplenub.html?vote_option_id='+option.id
+	        }
+	    }
+	
+	})
+</script>
+
+<script>
+</script>
+</html>

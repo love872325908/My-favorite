@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>作业详情</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/qqface.css">
+    
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/common.js"></script>
+	<script src="../../js/jssdkwx.js"></script>
+    <script src="../../js/cssrem.js"></script>
+    <script src="../../js/component.js"></script>
+    <script src="../../js/timeago.js"></script>
+</head>
+
+<body>
+<div id="content_box" v-scroll="getMore" v-cloak>
+    <main class="detail_main">
+        <div class="index_main_title">
+            <img :src="headimgurl" height="42" width="42" @click="teacher_details(publisher_id)" alt="">
+            <div>
+                <h3>{{author}}</h3>
+                <span class="index_main_time">{{timeago.format(create_time, 'zh_CN')}}</span>
+                <span class="index_main_type">发布作业</span>
+            </div>
+            <p>
+            	<span class="index_main_look" @click="goReadnub(task_id)" v-if="user_id==publisher_id">阅读{{read_count}}</span>
+                <span class="index_main_look" v-else>阅读{{read_count}}</span>
+            </p>
+        </div>
+        <div class="index_main_content">
+            <p>{{content}}</p>
+            <ul>
+                <li v-for="picurl in attach">
+                	<img :src="picurl" @click="imgPreview(picurl,attach)">
+                </li>
+            </ul>
+        </div>
+        <div class="index_main_interact">
+            <span class="index_main_like iconfont" :class="{'icon-dianzan' : is_good, 'icon-dianzan1' : !is_good}" @click="praise">
+            <small>&nbsp;{{good_count}}</small>
+            </span>
+
+            <a href="javascript:void(0);" class="index_main_comment iconfont icon-huifu" @click="huiFu">&nbsp;回复</a>
+        </div>
+    </main>
+    <!--评论弹窗开始-->
+    <emoji-smile :showbox="isTure" @smilecontent="addcomment" @closecontent="huiFu"></emoji-smile>
+    <!--评论弹窗结束-->
+    <footer class="detail_footer">
+        <h4>全部评论{{comment_count}}</h4>
+        <div v-for="(item,key) in comments">
+            <div class="detail_footer_content">
+                <div class="detail_comment">
+                    <img v-if="item.student_id==0" @click="teacher_details(item.user_id)" :src="item.artvar_img" height="42" width="42" alt="">
+                	<img v-else @click="parent_details(item.user_id)" :src="item.artvar_img" height="42" width="42" alt="">
+                    <div class="detail_comment_content">
+                        <div class="detail_comment_content_title">
+                            <h3>{{item.user_name}}</h3>
+                            <span class="index_main_time">{{timeago.format(item.comment_time, 'zh_CN')}}</span>
+                        </div>
+                        <p class="index_main_type">{{item.comment_content}}</p>
+                        <div v-if="item.user_id==user_id" class="detail_comment_content--btn"><div></div><i @click="deleteComment(item,key)" class="iconfont icon-shanchu3"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+</body>
+<script type="text/javascript" src="../../js/swiper.js"></script>
+<script>
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            detail_url : "/peony/wx/task/get-homework-detail",
+            comment_url : "/peony/wx/task/get-comment-list",
+            praise_url : "/peony/wx/task/thumb-up",
+            praise_comment_url : "/peony/wx/task/comment-thumb-up",
+            add_comment_url : "/peony/wx/task/post-comment",
+            view_url : "/peony/wx/task/task-view",
+            token : '',
+            user_id : 0,
+            task_id : 0,
+            class_id : 0,
+            student_id : 0,
+            publisher_id:'',            //发布者id
+            author : "",
+            create_time : "",
+            headimgurl : "../../images/touxiang.jpg",
+            content : "",
+            attach : [],
+            read_count : 0,
+            comment_count : 0,
+            good_count : 0,
+            is_good : false,
+            page : 0,
+            pagesize : 5,
+            comments : [],
+            comment : [],
+            usercomment : '',
+            commentpid : 1,
+            scrollhandler : true,
+            isTure:true,
+        },
+        created : function(){
+            var self = this;
+            self.timeago = new timeago();  
+            self.token = getCookie('token');
+            self.user_id = getCookie('user_id');            //用户id
+            self.task_id = GetQueryString('id');            //作业id
+            self.class_id = GetQueryString("class_id");     //班级id
+            self.student_id = getCookie("student_id");      //孩子id
+            
+            var detail_data = {
+                "token":self.token,
+                "visit_user_id":self.user_id,
+                "task_id":self.task_id,
+            };
+            $.ajax({//作业详情
+                url : site_url+self.detail_url,
+                data : detail_data,
+                type : "GET",
+                dataType : "JSON",
+                success : function(obj){
+                    obj.code = 0;
+                    if(obj.code == 0){
+	                    self.author = obj.data.result.author_name; //发布人
+	                    self.publisher_id = obj.data.result.author_id;
+	                    self.create_time = obj.data.result.created_at; //发布时间
+	                    self.headimgurl = obj.data.result.author_avatar;     //头像
+	                    self.content = obj.data.result.content; //作业内容
+	                    if(obj.data.result.attach && obj.data.result.attach.length>0){
+	                    	for(n in obj.data.result.attach){//将图片提取出来放到数组里面;
+	                    		self.attach.push(site_url+'/'+obj.data.result.attach[n].attach_url);
+	                    	}     
+	                    }
+	                    self.read_count = obj.data.result.read_num; //阅读数
+	                    self.good_count = obj.data.result.thumb_num; //点赞数
+	                    if(obj.data.result.is_thumb_up==0){
+	                    	self.is_good=false;
+	                    }else{
+	                    	self.is_good=true;
+	                    }
+                    }else{
+                        mui.toast(obj.msg);
+                    }
+                }
+            });
+            
+            var view_data = {//阅读
+                "token":self.token,
+                "user_id":self.user_id,
+                "task_id":self.task_id,
+                "student_id":0,
+            };
+            $.ajax({
+                url : site_url+self.view_url,
+                data : view_data,
+                type : "POST",
+                dataType : "JSON",
+                success : function(obj){
+                    
+                }
+            });
+            this.moreComment();
+        },
+        methods: {
+            huiFu : function(){
+                this.isTure = !this.isTure;
+            },
+            parent_details:function(id){//家长名片
+            	location.href=goto_url+"/view/html/myclass/parent-card.html?parent_id="+id;
+            },
+            teacher_details:function(id){//老师名片
+            	location.href=goto_url+"/view/html/myclass/teacher-card.html?teacher_id="+id+"&class_id="+this.class_id;
+            },
+            goReadnub:function(id){
+	        	location.href = goto_url + "/view/html/homework/homework-readnub.html?id="+id+"&class_id="+this.class_id;
+	        },
+            imgPreview:function(img,arr){//预览图片
+            	app.current_url=img;
+            	app.previewImgs=arr;
+            	previewImg();
+            },
+            praise: function(){
+                var self = this;
+                if( self.is_good ){
+                    mui.toast('您已经点过赞了！！！');
+                    return;
+                }
+                var praise_data = {
+                    "token":self.token,
+                    "task_id":self.task_id,
+                    "user_id":self.user_id,
+                    "student_id":0,
+                };
+                $.ajax({
+                    url : site_url+self.praise_url,
+                    data : praise_data,
+                    type : "POST",
+                    dataType : "JSON",
+                    success : function(obj){
+                        obj.code = 0;
+                        if(obj.code == 0){
+                            console.log(obj.data);
+                            self.is_good = true;
+                            self.good_count++;
+                        }else{
+                            mui.toast(obj.msg);
+                        }
+                    }
+               });
+            },
+            praisecomment : function(comment_id,is_good = 0){
+                var self = this;
+                if( is_good ){
+                    mui.toast('您已经点过赞了！！！');
+                    return;
+                }
+                var praise_data = {
+                    "token":self.token,
+                    "id":comment_id,
+                    "user_id":self.user_id,
+                };
+                $.ajax({
+                    url : site_url+self.praise_comment_url,
+                    data : praise_data,
+                    type : "POST",
+                    dataType : "JSON",
+                    success : function(obj){
+                        obj.code = 0;
+                        if(obj.code == 0){
+                            console.log(obj.data);
+                            // self.is_good = true;
+                            // self.good_count++;
+                            
+                        }else{
+                            mui.toast(obj.msg);
+                        }
+                    }
+               });
+                
+            },
+            addcomment : function(data){//添加评论
+                var self = this;
+	            var len = data.length;
+	            if(len == 0){
+	            	mui.toast("评论内容不能为空！");
+	            }else if(len<4||len>200){
+	            	mui.toast("评论内容在4-200字范围内！");
+	            }else{
+	                var comment_data = {
+	                    "token" : self.token,
+	                    "p_id" : 0,
+	                    "task_id":self.task_id,
+	                    "user_id":self.user_id,
+	                    "content":data,
+	                    "student_id":0,
+	                    "class_id":self.class_id,
+	                };
+	                $.ajax({
+	                    url : site_url+self.add_comment_url,
+	                    data : comment_data,
+	                    type : "POST",
+	                    dataType : "JSON",
+	                    success : function(obj){
+		                    if(obj.code == 0){
+		                        window.location.reload();
+		                    }else{
+		                        mui.toast(obj.msg);
+		                    }
+	                    }
+	                });
+                }
+            },
+            deleteComment:function(item,key){//删除该评论
+        		var _self=this;
+        		mui.confirm('是否删除此条记录？', function(e) {
+		            if (e.index == 1) {
+		                var _data={
+	            			token:_self.token,
+	            			comment_id:item.comment_id,
+	            		}
+						$.post(site_url+'/peony/wx/task/delete-comment',_data,function(obj){
+							if(obj.code == 0){
+		                    	_self.comments.splice(key,1);
+		                    }else{
+		                    	mui.toast(obj.msg);
+		                    }
+						})
+		            } else {
+		                return;
+		            }
+        		});
+        	},
+            getMore: function () {
+                var self = this;
+                //控制获取下一页评论，当正在拉取或没有更多时为false
+                if( self.scrollhandler ){
+                    this.moreComment();
+                }
+            },
+            moreComment : function(){
+                var self = this;
+                self.scrollhandler = false;
+                self.page++;
+                var comment_data = {
+                    "token":self.token,
+                    "task_id":self.task_id,
+                    "student_id":self.student_id,
+                    "class_id":self.class_id,
+                    "page":self.page,
+                    "page_size":self.pagesize,
+                };
+                $.ajax({
+                    url : site_url+self.comment_url,
+                    data : comment_data,
+                    type : "GET",
+                    dataType : "JSON",
+                    success : function(obj){
+                        if(obj.code == 0){
+                            // console.log(obj.data);
+                            //第一次调用，给评论总数赋值
+                            if( self.page == 1 ){
+                                self.comment_count = obj.data.count;    //评论数
+                            }
+                            var getlength = obj.data.list.length;
+                            //在底部刷新评论
+                            self.comments = self.comment.concat(obj.data.list);
+                            //判断是否最后一页
+                            if( getlength >= self.page ){
+                                self.scrollhandler = true;//打开控制
+                            }else{
+                                if(getlength > 0){
+                                	mui.toast('没有更多...');
+                            	}	
+                            }
+                        }else{
+                            mui.toast(obj.msg);
+                        }
+                    }
+                });
+            }
+        },
+        directives: {// 自定义下拉获取更多
+            scroll: {
+                bind: function (el, binding){
+                    window.addEventListener('scroll', function () {
+                        if(document.body.scrollTop + window.innerHeight >= el.clientHeight) {
+                            var fnc = binding.value; 
+                            fnc(); 
+                        }
+                        
+                    })
+                }
+            }
+        }
+    });
+</script>
+
+</html>

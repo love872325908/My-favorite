@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>工作台</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/workbench.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" type="text/css" href="../../css/nav.css">
+    <script src="../../js/cssrem.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/component.js"></script>
+</head>
+
+<body class="bg-light-gray">
+    <div id="content_box" v-cloak>
+        <div class="teacher-bar">
+            <div class="teacher-bar-top">
+                <span><i class="iconfont icon-fanhui" @click="toBack"></i></span>
+                <span @click="toChangeschool"><i class="iconfont icon-qiehuan"></i></span>
+            </div>
+            <div class="teacher-bar-center">
+                <img :src="headimgurl" alt="">
+                <h5>{{realname}}老师</h5>
+                <h6>教学达人</h6>
+            </div>
+            <!-- <div class="teacher-bar-bottom">
+                <img src="../../images/flower.png" alt="">
+                <span>999+</span>
+            </div>
+            -->
+        </div>
+        <div class="tool-bar" v-if="school_id&&school_id!=0">
+            <h4>学校工作台</h4>
+            <ul>
+                <li @click="go_schoolnotice">
+                    <img src="../../images/notice.png" alt="">
+                    <h6>学校公告</h6>
+                </li>
+                <li @click="go_homepage">
+                    <img src="../../images/school.png" alt="">
+                    <h6>学校主页</h6>
+                </li>
+                <li @click="go_addresslist">
+                    <img src="../../images/phone.png" alt="">
+                    <h6>通讯录</h6>
+                </li>
+                <li @click="go_attendance">
+                    <img src="../../images/kaoqin.png" alt="">
+                    <h6>考勤</h6>
+                </li>
+                <li @click="go_wages">
+                    <img src="../../images/gongzi.png" alt="">
+                    <h6>工资条</h6>
+                </li>
+                <li @click="go_approval">
+                    <img src="../../images/shenpi.png" alt="">
+                    <h6>审批</h6>
+                </li>
+                <li @click="go_superform">
+                    <img src="../../images/biaodan.png" alt="">
+                    <h6>超级表单</h6>
+                </li>
+            </ul>
+        </div>
+        <!-- 未加入学校状态 -->
+        <div class="tool-bar" v-if="!school_id || school_id==0">
+            <h4>学校工作台</h4>
+            <div class="empty">
+                <img src="../../images/empty.png" height="126" width="100" alt="">
+                <h5>暂无学校</h5>
+                <h6>尝试添加你的学校，将会获得校务办工系统等多项服务</h6>
+                <a @click="addSchool">加入学校</a>
+            </div>
+        </div>
+        <div class="class-bar">
+            <h4>我的班级</h4>
+            <!-- 未添加班级状态 -->
+            <div class="empty b-dashed" v-if="!realname">
+                <img src="../../images/empty.png" height="126" width="100" alt="">
+                <h5>暂无班级</h5>
+                <h6>添加班级解锁更多功能哦～</h6>
+                <a @click="addClass">添加班级</a>
+            </div>
+            <!-- 有班级状态 -->
+            <div v-for="classItem in classList">
+                <a v-if="classItem.school_id == school_id" class="class-box" :style="{ backgroundImage: 'url('+classItem.photo_url+')' }" v-if="realname" @click="myclass(classItem)">
+                    <center>
+                        <h2>{{classItem.name}}</h2>
+                        <h3>{{classItem.student_count}}人</h3>
+                    </center>
+                </a>
+            </div>
+            <a @click="addClass" class="add-class">
+                <i class="iconfont icon-xinzeng"></i>
+            </a>
+            <div class="bbox"></div>
+        </div>
+    </div>
+    <script src="../../js/mui.min.js"></script>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            realname: '',
+            headimgurl: '',
+            teacherClass: '',
+            student_count: '',
+            school: getCookie("school_name"),
+            user_id: getCookie("user_id"),
+            school_id: getCookie("school_id"),
+            class_id: '',
+            classList: [],
+            photo_url: '../../images/banner.png',
+            site_url: site_url
+        },
+        created: function() {
+            this.getData();
+        },
+        methods: {
+            getData: function() {
+
+                $.ajax({
+                    url: site_url + '/peony/wx/user/getuserinfo',
+                    data: {
+                        token: getCookie("token"),
+                        user_id: getCookie("user_id"),
+                        come_from: 2,
+                    },
+                    type: "get",
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            app.realname = obj.data.result.realname;
+                            app.headimgurl = obj.data.result.headimgurl;
+                        } else {
+
+                        }
+                    }
+                });
+                $.ajax({
+                    url: site_url + '/peony/wx/teacher/getteacherclass',
+                    data: {
+                        token: getCookie("token"),
+                        teacher_id: getCookie("user_id"),
+                        school_id: getCookie('school_id') ? getCookie('school_id') : 0,
+                    },
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            app.classList = obj.data.list;
+
+                            app.classList.forEach(function(item, index) {
+                                var photo_url = item.photo != '' ? site_url + item.photo[0].photo_url : app.photo_url;
+                                Vue.set(item, 'photo_url', photo_url);
+                            });
+
+                        } else {
+
+                        }
+                    }
+                })
+            },
+            go_schoolnotice:function(){
+            	location.href = goto_url + "/view/html/schoolnotice/school-notice.html";
+            },
+            go_attendance: function() {
+                location.href = goto_url + "/view/html/attendance/attendance-clock.html";
+            },
+            go_addresslist: function() {
+                location.href = goto_url + "/view/html/addresslist/address-list.html?school_id=" + this.school_id;
+            },
+            go_wages: function() {
+                location.href = goto_url + "/view/html/wages/wages-index.html";
+            },
+            toBack: function() {
+                window.location = goto_url + '/view/html/workbench/goodteacher.html';
+            },
+            myclass: function(classItem) {
+                var class_id = getCookie("class_id");
+                console.log(class_id);
+                var url = goto_url + "/view/html/myclass/index.html?class_id=" + classItem.id;
+                location.href = url;
+
+            },
+            toChangeschool: function() {
+                //location.href = goto_url + "/view/html/user/change-school.html";
+            	var url = goto_url + "/view/html/teachersay/coming.html";
+            	location.href = url;
+            },
+            go_homepage: function(){
+            	var url = goto_url + "/view/html/teachersay/coming.html";
+            	location.href = url;
+            },
+            go_approval: function(){
+            	var url = goto_url + "/view/html/approve/approve-index.html";
+            	location.href = url;
+            },
+            go_superform: function(){
+            	var url = goto_url + "/view/html/teachersay/coming.html";
+            	location.href = url;
+            },
+            addClass : function(){
+            	//var url = goto_url + "/view/html/joinclass/jionclass-code.html";
+            	var url = goto_url + "/view/html/teachersay/coming.html";
+            	location.href = url;
+            },
+            addSchool: function(){
+            	//var url = goto_url + "/view/html/joinclass/joinclass-select-shi.html";
+            	var url = goto_url + "/view/html/teachersay/coming.html";
+            	location.href = url;
+            }
+        }
+    })
+    </script>
+</body>
+
+</html>

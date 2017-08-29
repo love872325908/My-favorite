@@ -1,0 +1,252 @@
+ <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>发布公告</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/nav.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/component.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/jssdkwx.js"></script>
+    <script src="../../js/cssrem.js"></script>
+</head>
+
+<body class="bg-light-gray">
+    <div id="content_box">
+        <div v-if="mainhtml == 1">
+            <div class="input-bar">
+                <input type="text" placeholder="标题：字数限制4-20字" v-model="title"><i class="iconfont icon-yulan blue" @click="preview"></i></div>
+            <div class="textarea-bar">
+                <textarea id="textarea" rows="5" placeholder="输入内容正文，限定字数4-2000字" v-model="content"></textarea>
+            </div>
+            <div class="img-bar">
+                <ul>
+                    <li v-for="img in imgs">
+                        <a v-bind:style="{backgroundImage:'url(' + img + ')'}"></a>
+                    </li>
+                    <li id="img_button"><a class="add-img" href="javascript:void(0);" id="img_button"><i class="iconfont icon-xiangji"></i><h6>添加图片</h6></a></li>
+                </ul>
+            </div>
+            <div class="url-bar mt10">
+                <a href="javascript:;" @click="choose">
+                    <h5>发送范围</h5>
+                    <div>{{classText}}</div>
+                    <i class="iconfont icon-zhishi cl-light-gray"></i>
+                </a>
+            </div>
+            <div class="m15 bottom"><a @touchstart="touchstart" @touchend="touchend" :class="{'btnLight':isLight}" href="javascript:void(0);" class="btn cl-white" @click="addNotice">发布</a></div>
+        </div>
+        <div v-else-if="mainhtml == 2">
+            <main class="detail_main" style="border:none">
+            	<div class="index_main_title">
+            		<img :src="teacherHeader" alt="" />
+            		<div>
+            			<h3>{{teacherName}}</h3>
+            			<span class="index_main_time">{{currentTime}}</span>
+            			<span class="index_main_type">班级公告</span>
+            		</div>
+            	</div>
+                <div class="index_main_content img-bar">
+                	<h4>{{title}}</h4>
+                	<p>{{content}}</p>
+                    <ul>
+                        <li v-for="img in imgs">
+                            <a @click='imgPreview(img,imgs)' :style="{backgroundImage:'url(' + img + ')'}"></a>
+                        </li>
+                    </ul>
+                </div>
+            </main>
+            <div class="m15 bottom"><a href="javascript:void(0);" class="btn cl-white" @click="choose">关闭</a></div>
+        </div>
+        <div v-else>
+            <div class="people-list" id="content_box">
+                <ul>
+                    <li class="wei-input-box" v-for="(val,key) in classes">
+                        <h5>{{val}}</h5>
+                        <input type="checkbox" :value="key" v-model="classArr">
+                    </li>
+                </ul>
+            </div>
+            <div class="m15 bottom"><a @touchstart="touchstart" @touchend="touchend" :class="{'btnLight':isLight}" href="javascript:void(0);" class="btn cl-white" @click="choose">确定</a></div>
+        </div>
+        <!-- loading -->
+        <full-mask :mask-show="maskShow"></full-mask>
+    	<loading :loading-show="maskShow" :loading-text="loadText"></loading>
+    </div>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            isLight: true, //点击btn,有效果
+            class_url: "/peony/wx/teacher/getteacherclass",
+            task_url: "/peony/wx/classnotice/add",
+            token: getCookie('user_id'),
+            user_id: getCookie('user_id'),
+            school_id : GetQueryString("school_id"),
+            class_id : GetQueryString("class_id"),
+            title: '',
+            content: '', //内容
+            classes: {}, //班级列表
+            class_json: [], //发布范围id数组 
+            classArr: [], //发布范围arr      
+            classText: '', //发布范围tex
+            mainhtml: 1,
+            imgs: [],
+            upload_type: 0, // 0 不及时上传  1 及时上传
+            img_count: 9, // 总共上传总数
+            img_upload_count: 9, // 还能上传总数 
+            currentTime:new Date(),
+            maskShow: false,
+            loadText:"正在发送"
+        },
+        created: function() {
+            var self = this;
+            self.currentTime=self.currentTime.getFullYear() + '-' + (self.currentTime.getMonth()+1) + '-' + self.currentTime.getDate()+' '+self.currentTime.getHours()+':'+self.currentTime.getMinutes()+ ':' +self.currentTime.getSeconds();
+            self.getclass(); //获取班级
+            $.get(site_url+'/peony/wx/user/getuserinfo',{token:self.token,user_id:self.user_id},function(obj){
+            	if(obj.code==0){
+            		self.teacherName=obj.data.result.realname;
+            		self.teacherHeader=obj.data.result.artvar_img;
+            	}
+            	
+            })
+        },
+        methods: {
+            touchstart: function() {
+                this.isLight = true;
+            },
+            touchend: function() {
+                this.isLight = true;
+            },
+            preview: function() {
+                var self = this;
+                if (self.title == null || self.title == '') {
+                    mui.toast('标题不能为空');
+                    return false;
+                }
+                if (self.title.length < 4 || self.title.length >= 20) {
+                    mui.toast('标题长度不正确');
+                    return false;
+                }
+                if (self.content == null || self.content == '') {
+                    mui.toast('内容不能为空');
+                    return false;
+                }
+                if (self.content.length < 4 || self.content.length >= 2000) {
+                    mui.toast('内容长度不正确');
+                    return false;
+                }
+                self.mainhtml = self.mainhtml == 1 ? 2 : 1;
+            },
+            getclass: function() {
+                var self = this;
+                var url = site_url + self.class_url;
+                var class_data = {
+                    "token": getCookie("token"),
+                    "teacher_id": self.user_id
+                };
+                self.httpurl(url, class_data, 'get', function(obj) {
+                    var getclas = obj.data.list;
+                    for (var clas in getclas) {
+                        self.classes[getclas[clas].id] = getclas[clas].name;
+                        console.log(self.class_id);
+                        console.log(getclas[clas].id);
+                        if(self.class_id == getclas[clas].id)
+                        {
+                        	self.classArr[0] = getclas[clas].id;
+                        	self.classText = getclas[clas].name;
+                        }
+                    }
+                    // console.log(self.classes);
+                });
+            },
+            addNotice: function() {
+                var self = this;
+                var url = site_url + self.task_url;
+                if (self.title == null || self.title == '') {
+                    mui.toast('标题不能为空');
+                    return false;
+                }
+                if (self.title.length < 4 || self.title.length >= 20) {
+                    mui.toast('标题长度不正确');
+                    return false;
+                }
+                if (self.content == null || self.content == '') {
+                    mui.toast('内容不能为空');
+                    return false;
+                }
+                if (self.content.length < 4 || self.content.length >= 2000) {
+                    mui.toast('内容长度不正确');
+                    return false;
+                }
+                if (isEmpty(this.classArr)) {
+                    mui.toast('请选择班级');
+                    return false;
+                }
+                var self = this;
+                var task_data = {
+                    "token": getCookie("token"),
+                    "author_id": self.user_id,
+                    "title": self.title,
+                    "content": self.content,
+                    "class_id": JSON.stringify(self.classArr),
+                    "serverId" : images.serverId,
+                    "come_from" : 2
+                };
+                self.loadText = "正在发送";
+                self.maskShow = true;
+                self.httpurl(url, task_data, 'post', function(obj) {
+                    if (obj.code == 0) {
+                        location.href = goto_url + "/view/html/myclass/index.html?class_id=" + GetQueryString("class_id");
+                		self.maskShow = false;
+                    } else{
+                    	mui.toast(obj.msg);
+                		self.maskShow = false;
+                    }
+                });
+            },
+            choose: function() {
+                var self = this;
+                self.mainhtml = self.mainhtml == 1 ? 3 : 1;
+                var newArr = self.classArr.map(function(item, index) {
+                    return self.classes[item];
+                });
+                self.classText = newArr.join(',');
+            },
+            imgPreview: function(img, arr) { //预览图片
+	            app.current_url = img;
+	            app.previewImgs = arr;
+	            previewImg();
+	        },
+            httpurl: function(url, data, type, closure) {
+                $.ajax({
+                    url: url,
+                    data: data,
+                    type: type,
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            closure(obj);
+                        } else {
+                            mui.toast(obj.msg);
+                        }
+                    },
+                    error: function(e) {
+                        console.log(e);
+                    }
+                });
+            }
+        }
+    })
+    </script>
+</body>
+
+</html>

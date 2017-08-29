@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>绑定手机号</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/common.js"></script>
+</head>
+
+<body>
+    <div class="padding20" id="content_box">
+        <span class="fs-smaller cn-flex fuzhu">设置您在微智校园的专享通道</span>
+        <div class="wei-cell margin20">
+            <div>
+                <i class="iconfont icon-shouji"></i>
+                <input type="tel" id="tel" v-model="tel" @input="telValExist" placeholder="请输入手机号" />
+            </div>
+            <i class="iconfont icon-shanchu clear" v-show="isDel"></i>
+        </div>
+        <div class="wei-cell margin20">
+            <div>
+                <i class="iconfont icon-yanzhengma"></i>
+                <input type="tel" @input="telValExist" v-model="code" placeholder="请输入6位验证码" />
+            </div>
+            <input type="button" class="vcode-btn" :class="[codeActiveClass]" @click="setCode" :value="codeButtonValue" v-bind:disabled="isAble" />
+        </div>
+        <div class="mt100 align-c">
+            <a href="javascript:;" class="btn" :class="btnClass" @click="next">下一步</a>
+            <span class="fs-small agreement" id="xieyi" v-on:click="toggle">
+            <i class="iconfont icon-xuanze pr10" v-bind:class="{'fuzhu':isA}"></i>
+            <a href="javascript:void(0);"> 用户协议</a>
+        </span>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+var app = new Vue({
+    el: '#content_box',
+    data: {
+        isA: false, // 用户协议是否有class:fuzhu 灰色
+        isDel: false, // 手机号输入框删除按钮是否出现
+        isAble: false, // 获取验证码 button 是否可以点击
+        codeActiveClass: "blue", // 获取验证码 button 动态class   blue:蓝色 fuzhu:灰色
+        codeButtonValue: "获取验证码", //获取验证码 button 内容
+        countinit: 60, //验证码倒计时初始值
+        countdown: 60, //验证码倒计时动态秒数
+        tel: "", // 手机号
+        code: "", // 验证码
+        btnClass: "light-blue"
+    },
+    methods: {
+        toggle: function() {
+            this.isA = !this.isA;
+        },
+        next: function() {
+            if (isEmpty(this.tel)) {
+                mui.toast("手机号不可为空");
+                return;
+            }
+            if (isEmpty(this.code)) {
+                mui.toast("验证码不可为空");
+                return;
+            }
+            if (this.isA == true) {
+                mui.toast("请仔细阅读用户协议并勾选");
+                return;
+            }
+            var _data = {};
+            _data.phone = this.tel;
+            _data.valcode = this.code;
+            _data.token = GetQueryString('token');
+            _data.come_from = 2;
+
+            $.ajax({
+                url: site_url + '/peony/wx/user/userbindphone',
+                data: _data,
+                type: "POST",
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                    	
+                    	var user_id = obj.data.list[0].id;
+                    	var yunxin_token = obj.data.list[0].yunxin_token;
+                        setCookie('user_id', user_id, 3600 * 7 * 24);
+                        setCookie('token', GetQueryString('token'), 3600 * 7 * 24);
+						setCookie('yunxin_token', yunxin_token, 3600 * 7 * 24);
+						
+                    	var teacher_data = {};
+                    	teacher_data.token = GetQueryString('token');
+                    	teacher_data.teacher_id = user_id;
+                    	var school_id = 0;
+                    	var school_name = '';
+                    	$.ajax({
+			                url: site_url + '/peony/wx/teacher/get-teacher-school',
+			                data: teacher_data,
+			                type: "GET",
+			                dataType: "JSON",
+			                success: function(obj) {
+			                    if (obj.code == 0) {
+			                    	var schools = [];
+			                    	schools = obj.data.list;
+			                    	if(schools.length > 0){ 
+			                    		school_id = schools[0].id;
+			                    		school_name = schools[0].name;
+			                    	}
+                        			setCookie('school_id', school_id, 3600 * 7 * 24);
+                        			setCookie('school_name', school_name, 3600 * 7 * 24);
+                        			
+									if(obj.data.list[0].realname == ''){
+			                        	var url = goto_url + "/view/html/register/profile.html?&phone=" + _data.phone + "&user_id=" + obj.data.list[0].id;
+			                        	location.href = url;
+									}else{
+			                            var url = goto_url + "/view/html/workbench/goodteacher.html";
+			                            location.href = url;
+									}
+			                    }
+			                }
+			            });
+                    } else {
+                        mui.toast(obj.msg);
+                    }
+                }
+            });
+        },
+        telValExist: function() {
+            this.isDel = isEmpty(this.tel) ? false : true;
+            this.btnClass = isEmpty(this.tel) || isEmpty(this.code) ? "light-blue" : "cl-white";
+        },
+        setCode: function() {
+            this.codeActiveClass = "fuzhu";
+            this.countdown = this.countinit;
+            this.countFunc();
+            var tel = this.tel;
+            var self = this;
+            $.ajax({
+                url: site_url + '/loginsms',
+                data: {
+                    'to': tel
+                },
+                type: "POST",
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        mui.toast("发送成功" + obj.data.result);
+                    } else {
+                        mui.toast("已发送，请等待");
+                        this.countdown = obj.data.result;
+                    }
+                }
+            });
+        },
+        countFunc: function() { // 60s 跳转器
+            if (this.countdown == 0) {
+                this.codeActiveClass = "blue";
+                this.codeButtonValue = "重新获取";
+                this.isAble = false;
+            } else {
+                this.codeButtonValue = this.countdown + "s";
+                this.isAble = true;
+                this.countdown--;
+                setTimeout(this.countFunc, 1000);
+            }
+        }
+    }
+})
+</script>

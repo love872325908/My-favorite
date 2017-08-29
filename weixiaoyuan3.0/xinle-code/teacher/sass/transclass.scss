@@ -1,0 +1,68 @@
+/*
+* @Author: zxl
+* @Date:   2017-06-27 10:21:10
+* @Last Modified by:   zxl
+* @Last Modified time: 2017-06-27 10:58:28
+*/
+
+@import "../css/common2.css";
+@import "../fonts/iconfont.css";
+$c1:#fff;
+$c2:#32B7F0;
+$c3:#333;
+.branch-list {
+    width: 100%;
+    height: 60px;
+    background-color: #FFFFFF;
+    li {
+        display: flex;
+        justify-content: space-between;
+        margin-left: 16px;
+        height: 60px;
+        line-height: 60px;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-color: rgba(184, 193, 206, 0.4);
+        padding-right: 16px;
+        span:first-child {
+            font-size: 16px;
+            color: #333333;
+            flex: 1;
+            // line-height: 16px;
+        }
+        .iconfont {
+            font-size: 13px;
+            color: #96A2A8;
+        }
+    }
+}
+
+.teacher-list {
+    width: 100%;
+    height: 60px;
+    background-color: #FFFFFF;
+    li {
+        display: flex;
+        justify-content: space-between;
+        margin-left: 16px;
+        height: 60px;
+        line-height: 60px;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-color: rgba(184, 193, 206, 0.4);
+        padding-right: 16px;
+        img {
+            width: 40px;
+            height: 40px;
+            margin-top: 10px;
+            // line-height: 16px;
+        }
+        span:last-child {
+            font-size: 16px;
+            color: #333333;
+            line-height: 60px;
+            flex: 1;
+            margin-left: 8px;
+        }
+    }
+}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>加入学校</title>
+
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" type="text/css" href="../../css/searchbar.css">
+    
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    
+
+</head>
+<body>
+<div id="content_box">
+<div class="wei-content">
+    <div class="search-bar" id="searchBar">
+        <form class="search-bar_form">
+            <div class="search-bar_box">
+                <i class="iconfont icon-sousuo icon-search"></i>
+                <input type="search" class="search-bar_input"  v-model="school_name" v-on:keyup.enter="search_school"   id="searchInput" placeholder="搜索" required="">
+                <a href="javascript:" class="icon-clear" id="searchClear"></a>
+            </div>
+            <label class="search-bar_label" id="searchText" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
+                <i class="iconfont icon-sousuo icon-search"></i>
+                <span>搜索</span>
+            </label>
+        </form>
+        <a href="javascript:void();" class="search-bar_cancel-btn"  v-on:click="search_school"  id="searchCancel">确定</a>
+    </div>
+    <div class="table-title">欢迎来到微智校园！请选择您的学校</div>
+</div>
+
+<ul class="table-view" style="margin-top:88px;">
+    <template v-for="s in school_list">
+       <li><a :href="code_url+s.id+'&school_name='+s.name+'&class_id='+class_id"><span>{{s.name}}</span></a></li>
+    </template>
+</ul>
+
+</div>
+</body>
+</html>
+
+
+
+<script>  
+
+    var area_id = GetQueryString('area_id'); 
+    var app = new Vue({
+        el:'#content_box',
+
+        created: function () {
+            this.class_id = GetQueryString("class_id");
+            var _data = {};
+            
+            var url =  site_url + "/peony/wx/organize/getschools?token="+ getCookie("token")+"&parent_id=&area_id="+area_id;
+            var _self =  this;
+            $.ajax({
+                url : url,
+                    type : "get",
+                    dataType : "JSON",
+                    success : function(obj){
+
+                        _self.school_list = obj.data.list;
+
+                    }
+                });         
+        },
+        data: {
+                school_list : [],
+                school_name : '',
+                class_id : 0,
+                code_url : goto_url + "/view/html/joinclass/code.html?school_id=",
+               
+        },
+        methods: {
+            search_school: function () {
+
+                if(isEmpty(this.school_name))
+                {
+                    mui.toast("请选择学校");
+                    return;
+                }
+
+                var url =  site_url + "/peony/wx/organize/getschools?token="+ getCookie("token")+"&parent_id=&area_id="+area_id+"&name="+this.school_name; 
+
+                var _self =  this;
+                $.ajax({
+                    url : url,
+                    type : "get",
+                    dataType : "JSON",
+                    success : function(obj){
+
+                        if(obj.code!=0)
+                        {
+                            mui.toast(obj.msg);
+                            return;
+                        }
+                        else
+                            _self.school_list = obj.data.list;
+
+                    }
+                });      
+                
+                     
+            },
+             
+        }
+        
+    });
+
+</script> 
+

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+		<title></title>
+		<script src="../js/jquery-1.8.3.min.js"></script>
+		<script>
+			var site_url = "http://dev-lumen.jcweixiaoyuan.cn";
+			var cookie_prefix = "jc_teacher_";
+			
+			function isEmpty(keyVal) {
+				if(keyVal == undefined || keyVal == "undefined" || keyVal == "" || keyVal == null || keyVal == 0){
+					return true;
+				}
+				return false;
+			}
+
+			function setCookie(key, value, t) {
+				var cookie_key = cookie_prefix + key;
+				var oDate = new Date();
+				oDate.setDate(oDate.getDate() + t);
+				document.cookie = cookie_key + '=' + value + ';expires=' + oDate.toGMTString() + ';path=/';
+			}
+
+			function getCookie(key) {
+				var cookie_key = cookie_prefix + key;
+				var arr1 = document.cookie.split('; ');
+				for(var i = 0; i < arr1.length; i++) {
+					var arr2 = arr1[i].split('=');
+					if(arr2[0] == cookie_key) {
+						return decodeURI(arr2[1]);
+					}
+				}
+			}
+
+			function removeCookie(key) {
+				key = cookie_prefix + key;
+				document.cookie = key + '= ;expires=-1; path=/view';
+			}
+
+			/** 获取url参数
+			 * @param name  参数名 
+			 * by wuyi
+			 **/
+			function GetQueryString(name) {
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+				var r = window.location.search.substr(1).match(reg);
+				if(r != null)
+					return decodeURIComponent(r[2]);
+				return null;
+
+			}
+			
+			var target_url = GetQueryString("target_url");
+			var token = GetQueryString("token");
+			var user_id = GetQueryString("user_id");
+			var yunxin_token = GetQueryString("yunxin_token");
+
+			setCookie('token', token, 3600 * 7 * 24);
+			setCookie('user_id', user_id, 3600 * 7 * 24);
+			setCookie('yunxin_token', yunxin_token, 3600 * 7 * 24);
+
+			if(isEmpty(getCookie("school_id"))) {//判断当前是否有存学校id
+				$.get(site_url + '/peony/wx/teacher/get-teacher-school', {
+					token: token,
+					teacher_id: user_id,
+				}, function(obj) {
+					if(obj.data.list && obj.data.list.length > 0) {
+						var school_id = obj.data.list[0].id;
+						var school_name = obj.data.list[0].name;
+						setCookie('school_id', school_id, 3600 * 7 * 24);
+						setCookie('school_name', school_name, 3600 * 7 * 24);
+					}
+					location.href = target_url;
+				})
+			} else {
+				location.href = target_url;
+			}
+			//  else{
+			//      setCookie('school_id','0', 3600 * 7 * 24);
+			//      setCookie('school_name','其他学校', 3600 * 7 * 24);
+			//      location.href = target_url;
+			//  }
+		</script>
+		<style type="text/css">
+			.loding{
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+			}
+			.loding p{
+				font-size: 18px;
+				color: #D8D8D8;
+				text-align: center;
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="loding">
+			<img src="../images/loadingss.gif" alt="" />
+			<p>正在载入..</p>
+		</div>
+	</body>
+
+</html>

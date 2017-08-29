@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>栏目详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/mystyle.css">
+    <link rel="stylesheet" type="text/css" href="../../css/teachersay.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/component.js"></script>
+    <script src="../../js/vue-scroller.min.js"></script>
+</head>
+
+<body>
+    <div id="content_box">
+        <scroller :on-refresh="onRefresh" :on-infinite="onInfinite">
+            <div class="article_top" :style="{ backgroundImage: 'url(' +site_url+columns.attach_url+')' }">
+                <center class="shadebox">
+                    <h5>{{columns.name}}</h5>
+                    <p>{{columns.introduction}}</p>
+                </center>
+            </div>
+            <div v-for="item in list">
+                <div class="teaching_bottom" v-if="item.model_type == 'Article'">
+                    <div class="teachingexperience_img">
+                        <div @click="toDetail(item)">
+                            <div class="img" :style="{backgroundImage:'url('+ site_url + item.model.attach_url +')'}"></div>
+                            <h3 class="h3">{{item.model.title}}</h3>
+                            <p class="p" v-html="item.model.content"></p>
+                        </div>
+                        <div class="ofthethumbup">
+                            <div class="Headportrait">
+                                <div class="minimg">
+                                    <img :src="item.model.users ? item.model.users.headimgurl : '../../images/a8.jpg'">
+                                    <i class="icon iconfont icon_padding icon-jiavcopy"></i>
+                                </div>
+                                <p>{{item.model.users ? item.model.users.realname : '未知'}}</p>
+                            </div>
+                            <div class="applicationicon">
+                                <i @click="dellog(item)" class="icon iconfont icon-shanchu3" v-if="user_id == item.model.create_id"></i>
+                                <i class="icon iconfont" :class="{ 'icon-wodeshoucang' : item.model.is_collection , 'icon-shoucang1' : !item.model.is_collection}" @click="addCollection(item)"></i>
+                                <i class="icon iconfont icon-fenxiang1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="teaching_bottom" v-if="item.model_type == 'Resource'">
+                    <div class="teaching_content" @click="toDetail(item)">
+                        <div class="teaching_content_left"><img :src="getFileType(item.model.attach_url)"></div>
+                        <div class="teaching_content_right">
+                            <h3>{{item.model.title}}</h3>
+                        </div>
+                    </div>
+                    <div class="ofthethumbup">
+                        <div class="Headportrait">
+                            <div class="minimg">
+                                <img :src="item.model.users ? item.model.users.headimgurl : '../../images/a8.jpg'">
+                                <i class="icon iconfont icon_padding icon-jiavcopy"></i>
+                            </div>
+                            <p>{{item.model.users ? item.model.users.realname : '未知'}}</p>
+                        </div>
+                        <div class="applicationicon">
+                            <i @click="dellog(item)" class="icon iconfont icon-shanchu3" v-if="user_id == item.model.create_id"></i>
+                            <i class="icon iconfont" :class="{ 'icon-wodeshoucang' : item.model.is_collection , 'icon-shoucang1' : !item.model.is_collection}" @click="addCollection(item)"></i>
+                            <i class="icon iconfont icon-fenxiang1"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="teaching_bottom" v-if="item.model_type=='Problem'">
+                    <div class="askquestions">
+                        <div @click="toDetail(item)">
+                            <p><span class="content-tips"></span>{{item.model.content}}</p>
+                            <div class="problem-main" v-if="item.model.answers != '' ">
+                                <div v-for="answer in item.model.answers"><img :src="answer.users ? answer.users.headimgurl : '../../images/touxiang.jpg'" alt="">
+                                    <h4 style="background-color:#F8F9FB;padding:0px" class="problem-main-text">{{answer.content}}</h4></div>
+                            </div>
+                        </div>
+                        <div class="ofthethumbup">
+                            <div class="Headportrait">
+                                <div class="minimg">
+                                    <img :src="item.model.users ? item.model.users.headimgurl : '../../images/a8.jpg'">
+                                    <i class="icon iconfont icon_padding icon-jiavcopy"></i>
+                                </div>
+                                <p>{{item.model.users ? item.model.users.realname : '未知'}}</p>
+                            </div>
+                            <div class="applicationicon">
+                                <i @click="dellog(item)" class="icon iconfont icon-shanchu3" v-if="user_id == item.model.create_id"></i>
+                                <i class="icon iconfont" :class="{ 'icon-wodeshoucang' : item.model.is_collection , 'icon-shoucang1' : !item.model.is_collection}" @click="addCollection(item)"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="teaching_bottom" v-if="item.model_type=='Complaint'">
+                    <div class="tellmeabout">
+                        <!-- <h3>是什么让你们错过了彼此？</h3> -->
+                        <div @click="toDetail(item)">
+                            <p><span class="content-tips"></span>{{item.model.content}}</p>
+                            <div class="touploadpictures">
+                                <!--
+                            <img src="../../images/p_big2.jpg">
+                            <img src="../../images/p_big1.jpg">
+                            <img src="../../images/p_big3.jpg">
+                            -->
+                            </div>
+                        </div>
+                        <div class="ofthethumbup">
+                            <div class="Headportrait">
+                                <div class="minimg">
+                                    <img :src="item.model.users ? item.model.users.headimgurl : '../../images/a8.jpg'">
+                                    <i class="icon iconfont icon_padding icon-jiavcopy"></i>
+                                </div>
+                                <p>{{item.model.users ? item.model.users.realname : '未知'}}</p>
+                            </div>
+                            <div class="applicationicon">
+                                <i @click="dellog(item)" class="icon iconfont icon-shanchu3" v-if="user_id == item.model.create_id"></i>
+                                <i class="icon iconfont " :class="{ 'icon-wodeshoucang' : item.model.is_collection , 'icon-shoucang1' : !item.model.is_collection}" @click="addCollection(item)"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="teaching_bottom" v-if="item.model_type=='Vote'">
+                    <div class="tellmeabout">
+                        <div @click="toDetail(item)">
+                            <h3><span class="content-tips">#投票#&nbsp</span>{{item.model.content}}</h3>
+                            <div class="playsomething">
+                                <div class="playsomething_choose" v-for="option in item.model.options">
+                                    <div class="playsomething_img" v-if="option.attach_url">
+                                        <img :src="site_url + option.attach_url">
+                                    </div>
+                                    <div class="playsomething_text">
+                                        <p>{{option.content}}</p>
+                                    </div>
+                                    <div class="playsomething_i">
+                                        <i class="icon iconfont">&#xe73c;</i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ofthethumbup">
+                            <div class="Headportrait">
+                                <div class="minimg">
+                                    <img :src="item.model.users ? item.model.users.headimgurl : '../../images/a8.jpg'">
+                                    <i class="icon iconfont icon_padding icon-jiavcopy"></i>
+                                </div>
+                                <p>{{item.model.users ? item.model.users.realname : '未知'}}</p>
+                            </div>
+                            <div class="applicationicon">
+                                <i @click="dellog(item)" class="icon iconfont icon-shanchu3" v-if="user_id == item.model.create_id"></i>
+                                <i class="icon iconfont" :class="{ 'icon-wodeshoucang' : item.model.is_collection , 'icon-shoucang1' : !item.model.is_collection}" @click="addCollection(item)"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tellmeabout" v-if="item.model_type == 'Topic'">
+                    <div @click="toDetail(item)">
+                        <h3><span class="content-tips">#话题#&nbsp</span>{{item.model.title}}</h3>
+                        <p class="content">{{item.model.content}}</p>
+                        <div class="touploadpictures" v-if="item.model.attachs">
+                            <img :src="site_url + attach.attach_url" v-for="attach in item.model.attachs">
+                        </div>
+                    </div>
+                    <div class="ofthethumbup">
+                        <div class="Headportrait">
+                            <div class="minimg">
+                                <img :src="item.model.users ? item.model.users.headimgurl : '../../images/a8.jpg'">
+                                <i class="icon iconfont icon_padding icon-jiavcopy"></i>
+                            </div>
+                            <p>{{item.model.users ? item.model.users.realname : '未知'}}</p>
+                        </div>
+                        <div class="applicationicon">
+                            <i @click="dellog(item)" class="icon iconfont icon-shanchu3" v-if="user_id == item.model.create_id"></i>
+                            <i class="icon iconfont" :class="{ 'icon-wodeshoucang' : item.model.is_collection , 'icon-shoucang1' : !item.model.is_collection}" @click="addCollection(item)"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </scroller>
+        <!-- loading -->
+        <loading :loading-show="showLoading"></loading>
+    </div>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            columns: {},
+            page: 0,
+            pagesize: 5,
+            list: [],
+            site_url: site_url,
+            user_id: 0,
+            is_status: true,
+            is_new: true,
+            showLoading: false, //loading开关
+            load: false, //是否可以加载数据
+            
+        },
+        created: function() {
+            this.getVipUser();
+        },
+        methods: {
+            onRefresh: function(done) { //下拉刷新数据
+                window.location.reload();
+                done();
+            },
+            onInfinite: function(done) { //上拉加载数据
+                var _self = this;
+                this.page++;
+                this.getData(0, function() {
+                    done();
+                });
+            },
+            getData: function(type, callback) {
+                var self = this;
+                var _data = {};
+                _data.token = getCookie("token");
+                _data.type = type;
+                _data.column_id = GetQueryString("column_id");
+                _data.user_id = getCookie("user_id");
+                _data.page = self.page;
+                _data.pagesize = self.pagesize;
+                $.ajax({
+                    type: "GET",
+                    url: site_url + "/peony/wx/teachersay/getlog",
+                    data: _data,
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+
+                            if (self.page == 1 && obj.data.list.length < _data.pagesize) {
+                                self.list.push.apply(self.list, obj.data.list);
+                                self.$children[0].finishInfinite(true);
+                            } else if (((obj.data.list && obj.data.list.length < _data.pagesize) && self.page > 1) || !obj.data.list) {
+                                self.list.push.apply(self.list, obj.data.list);
+                                self.$children[0].finishInfinite(true);
+                            } else {
+                                self.list.push.apply(self.list, obj.data.list);
+                                callback && callback();
+                            }
+                            self.columns = self.list[0].model.column;
+                            self.list.forEach(function(item) {
+                                if (item.model_type == 'Article') {
+                                    var reg = new RegExp("<[^<]*>", "gi");
+                                    item.model.content = item.model.content.replace(reg, '');
+                                }
+                                Vue.set(item, "is_show", true);
+                                if (isEmpty(item.model.collection))
+                                    Vue.set(item.model, "is_collection", false);
+                                else
+                                    Vue.set(item.model, "is_collection", true);
+                            });
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+            },
+            getVipUser: function() {
+                var _data = {};
+                var _self = this;
+                _data.token = getCookie("token");
+                $.ajax({
+                    type: "GET",
+                    url: site_url + "/peony/wx/teachersay/getvipuser",
+                    data: _data,
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            _self.users = obj.data.list;
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+            },
+            addCollection: function(item) {
+                if (item.model.is_collection)
+                    return;
+
+                var _data = {};
+                var _self = this;
+                _data.token = getCookie("token");
+                _data.model_type = item.model_type;
+                _data.model_id = item.model_id;
+                _data.user_id = getCookie("user_id");
+                $.ajax({
+                    type: "POST",
+                    url: site_url + "/peony/wx/teachersay/addcollection",
+                    data: _data,
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            item.model.is_collection = true;
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+            },
+            dellog: function(item) {
+                var _data = {};
+                var _self = this;
+                _data.token = getCookie("token");
+                _data.model_type = item.model_type;
+                _data.model_id = item.model_id;
+                $.ajax({
+                    type: "POST",
+                    url: site_url + "/peony/wx/teachersay/dellog",
+                    data: _data,
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            item.is_show = false;
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+            },
+            getFileType: function(filename) {
+                var index1 = filename.lastIndexOf(".");
+                var index2 = filename.length;
+                var suffix = filename.substring(index1 + 1, index2);
+                if (suffix.toLowerCase() == 'xls' || suffix.toLowerCase() == 'xlsx')
+                    return "../../images/excel.png";
+                else if (suffix.toLowerCase() == 'doc' || suffix.toLowerCase() == 'docx')
+                    return "../../images/word.png";
+                else if (suffix.toLowerCase() == 'ppt' || suffix.toLowerCase() == 'pptx')
+                    return "../../images/ppt.png";
+                else if (suffix.toLowerCase() == 'pdf')
+                    return "../../images/pdf.png";
+                else if (suffix.toLowerCase() == 'jpg' || suffix.toLowerCase() == 'png')
+                    return "../../images/image.png";
+                else if (suffix.toLowerCase() == 'mp4' || suffix.toLowerCase() == 'avi')
+                    return "../../images/video.png";
+                else
+                    return "../../images/notype.png";
+            },
+            toDetail: function(item) {
+                var url = goto_url;
+                switch (item.model_type) {
+                    case 'Article':
+                        url += "/view/html/teachersay/article-detail.html?article_id=" + item.model_id;
+                        break;
+                    case 'Problem':
+                        url += "/view/html/teachersay/question-detail.html?problem_id=" + item.model_id;
+                        break;
+                    case 'Resource':
+                        url = site_url + item.model.attach_url;
+                        break;
+                    case 'Complaint':
+                        url += "/view/html/teachersay/speak-detail.html?complaint_id=" + item.model_id;
+                        break;
+                    case 'Vote':
+                        url += "/view/html/teachersay/vote-detail.html?vote_id=" + item.model_id;
+                        break;
+                    case 'Topic':
+                        url += "/view/html/teachersay/topic-detail.html?topic_id=" + item.model_id;
+                        break;
+                }
+                location.href = url;
+
+            },
+        }
+    });
+    </script>
+</body>
+
+</html>

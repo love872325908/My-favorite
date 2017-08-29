@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+	<title>加入班级</title>
+
+    <!--标准mui.css-->
+	<link rel="stylesheet" href="../../css/mui.css">
+	<link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/jquery-1.8.3.min.js"></script>
+	<script src="../../js/common.js"></script>
+
+</head>
+<body>
+
+<div id="content_box">
+<div class="class-box align-c">
+	<h3>请选择班级</h3>
+	<small>{{school_name}}</small>
+	<ul>
+	<template v-for="c in classlist">
+	
+	    <li class="bg-gray"  v-on:click="select_class(c)"><span>{{c.name}}</span></li>
+	</template>
+	    
+	 </ul>
+	
+</div>
+<div class="new-class" v-on:click="create_class(c)">
+   <a href="javascript:void()" ><i class="iconfont icon-xinzeng" ></i> 新建班级</a></div>
+
+ </div>
+</body>
+</html>
+
+
+
+<script>  
+  var app = new Vue({
+        el:'#content_box',
+
+        created: function () {
+        		this.school_name =  GetQueryString("school_name");
+    			var _data = {};
+    			_data.school_id = GetQueryString("school_id");
+    			_data.grade_id = GetQueryString("grade_id");
+    			_data.token = getCookie('token');
+			var url =  site_url+"/peony/wx/class/getclasslist";
+			var _self =  this;
+			$.ajax({
+				url : url,
+				data : _data,
+				type : "GET",
+				dataType : "JSON",
+				success : function(obj){
+					_self.classlist = obj.data.list;
+
+				}
+			});			
+  		},
+        data: {
+        		classlist:[],
+               selected_classid: 0,  
+        },
+        methods: {
+			select_class: function (item) {
+				 var  urlParam = window.location.search.substr(1);
+			     var url = goto_url+"/view/html/joinclass/select-subject.html?"+urlParam+"&class_id="+item.id+"&class_name="+item.name;
+			     location.href = url;
+		    },
+		    create_class :function (item) {
+				 var  urlParam = window.location.search.substr(1);
+			     var url = goto_url+"/view/html/joinclass/new-class.html?"+urlParam;
+			     location.href = url;
+		    }
+	    }
+        
+    });
+
+   
+
+</script> 

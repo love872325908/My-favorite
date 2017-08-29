@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>老师说</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telphone=no, email=no" />
+    <link rel="stylesheet" type="text/css" href="../../css/common2.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" type="text/css" href="../../css/nav.css">
+    <link rel="stylesheet" type="text/css" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/mystyle.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/vue-scroller.min.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/component.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/jssdkwx.js"></script>
+    <script src="../../js/timeago.js"></script>
+</head>
+
+<body style='background-color: #eff2f6;'>
+    <div class="tobehonest" id="content_box">
+        <scroller :on-refresh="onRefresh" :on-infinite="onInfinite">
+            <div class="tobehonest_head linear">
+                <div></div>
+                <ul>
+                    <li :class="{ onw : is_status }" v-on:click='changeStatus(1)'>精华</li>
+                    <li :class="{ onw : !is_status }" v-on:click='changeStatus(0)'>最新</li>
+                </ul>
+                <div class="iconfont icon-xiaoxi" @click="tomes"></div>
+                <span v-if="mes_count>0"></span>
+            </div>
+            <div class="tablebox">
+                <div class="tobehonest_01 taba1">
+                    <div class="teachingmethod">
+                        <div class="Carousel" v-show="is_new">
+                            <div class="Carousel-banner">
+                                <a :href="item.link" class="tables" :class="{ onshow : item.isSelected }" v-for="item in banners"><img :src="site_url+'/'+item.attach_url"></a>
+                            </div>
+                            <div class="shufflingfigure">
+                                <a href="javascript:void(0)" v-on:click="rollerbutton($event)" class="one"></a>
+                                <a href="javascript:void(0)" v-on:click="rollerbutton($event)"></a>
+                                <a href="javascript:void(0)" v-on:click="rollerbutton($event)"></a>
+                                <a href="javascript:void(0)" v-on:click="rollerbutton($event)"></a>
+                            </div>
+                        </div>
+                        <div class="teachingmethod_tou" v-show="is_new" @click="toTeacherton">
+                            <div class="teachingmethod_text">
+                                <div class="title_left">
+                                    <span class="lefttiao"></span>
+                                    <h3>名师堂</h3>
+                                </div>
+                                <div class="Prompt_right_01">
+                                    <span>查看更多</span><i class="icon iconfont icon_padding icon-jiantou"></i>
+                                </div>
+                            </div>
+                            <div class="theteacher">
+                                <div class="teacherdon">
+                                    <a href="javascript:void(0)" class="theuser" v-for="item in users">
+                                        <div class="theuser_img">
+                                            <img :src="item.headimgurl">
+                                            <i class="icon iconfont icon_padding">&#xe79f;</i>
+                                        </div>
+                                        <p class="thetitle">{{item.realname}}</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="teaching_bottom" v-for="(item,index) in list" v-show="item.is_show">
+                            <div class="teachingmethod_text" @click="toColumn(item)">
+                                <div class="title_left">
+                                    <span class="lefttiao"></span>
+                                    <h3 v-text="item.model.column ? item.model.column.name : ''"></h3>
+                                </div>
+                                <div class="Prompt_right">
+                                    <i class="icon iconfont  icon-jiantou"></i>
+                                </div>
+                            </div>
+                            <!--文章-->
+                            <div class="teachingexperience_img" v-if="item.model_type == 'Article'" @click="toDetail(item)">
+                                <div v-bind:style="{backgroundImage:'url(' + site_url + item.model.attach_url +')'}" class="img">
+                                    <center :class="{shadebox: item.model.isShow}">
+                                        <p>
+                                            {{ item.model.introduction }}
+                                        </p>
+                                    </center>
+                                </div>
+                                <h3 class="h3">{{item.model.title}}</h3>
+                                <p class="p" v-html="item.model.content"></p>
+                                <div class="ofthethumbup">
+                                    <div class="Headportrait" @click="toPerson(item)">
+                                        <div class="minimg">
+                                            <img :src="item.model.users ? item.model.users.headimgurl : '../../images/a8.jpg'">
+                                            <i v-if="item.model.users && item.model.users.is_vip" class="icon iconfont icon_padding icon-jiavcopy"></i>
+                                        </div>
+                                        <p>{{item.model.users ? item.model.users.realname : '未知'}}</p>
+                                    </div>
+                                    <div class="applicationicon">
+                                        <span v-if="timeShow">{{timeago.format(item.published_at, 'zh_CN')
+                                    }}</span>
+                                        <i @click="dellog(item,index)" class="icon iconfont icon-shanchu3" v-if="user_id == item.model.create_id"></i>
+                                        <i class="icon iconfont" :class="{ 'icon-wodeshoucang' : item.model.is_collection , 'icon-shoucang1' : !item.model.is_collection}" @click="addCollection(item)"></i>
+                                        <!-- <i class="icon iconfont">&#xe77b;</i> -->
+                                    </div>
+                                </div>
+                            </div>
+                            <!--资源-->
+                            <div class="teaching_content" v-if="item.model_type == 'Resource'" @click="toDetail(item)">
+                                <div class="teaching_content_left">
+                                    <img :src="getFileType(item.model.attach_url)">
+                                </div>
+                                <div class="teaching_content_right">
+                                    <h3>{{item.model.title}}</h3>
+                                    <div class="ofthethumbup">
+                                        <div class="Headportrait" @click="toPerson(item)">
+                                            <div class="minimg">
+                                                <img :src="item.model.users ? item.model.users.headimgurl : '../../images/a8.jpg'">
+                                                <i v-if="item.model.users && item.model.users.is_vip" class="icon iconfont icon_padding icon-jiavcopy"></i>
+                                            </div>
+                                            <p>{{item.model.users ? item.model.users.realname : '未知'}}</p>
+                                        </div>
+                                        <div class="applicationicon">
+                                            <span v-if="timeShow">{{timeago.format(item.published_at, 'zh_CN')
+                                    }}</span>
+                                            <i @click="dellog(item,index)" class="icon iconfont icon-shanchu3" v-if="user_id == item.model.create_id"></i>
+                                            <i class="icon iconfont" :class="{ 'icon-wodeshoucang' : item.model.is_collection , 'icon-shoucang1' : !item.model.is_collection}" @click="addCollection(item)"></i>
+                                            <!-- <i class="icon iconfont">&#xe77b;</i> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--提问-->
+                            <div class="askquestions" v-if="item.model_type=='Problem'" @click="toDetail(item)">
+                                <p><span class="content-tips">#提问#</span>{{item.model.content}}</p>
+                                <ul class="mg-box">
+                                    <li v-if="item.model.attachs" v-for="attach in item.model.attachs">
+                                        <a href="javascript:" v-bind:style="{backgroundImage:'url(' + site_url + attach.attach_url +')'}"></a>
+                                    </li>
+                                </ul>
+                                <div class="problem-main" v-if="item.model.answers != '' ">
+                                    <div v-for="answer in item.model.answers"><img :src="answer.users ? answer.users.headimgurl : '../../images/touxiang.jpg'" alt="">
+                                        <h4 class="problem-main-text">{{answer.content}}</h4></div>
+                                </div>
+                            </div>
+                            <!--碎碎念-->
+                            <div class="tellmeabout" v-if="item.model_type=='Complaint'" @click="toDetail(item)">
+                                <!-- <h3>是什么让你们错过了彼此？</h3> -->
+                                <p><span class="content-tips">#碎碎念#</span>{{item.model.content}}</p>
+                                <ul class="mg-box">
+                                    <li v-if="item.model.attachs" v-for="attach in item.model.attachs">
+                                        <a href="javascript:" v-bind:style="{backgroundImage:'url(' + site_url + attach.attach_url +')'}"></a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!--投票-->
+                            <div class="tellmeabout" v-if="item.model_type=='Vote'" @click="toDetail(item)">
+                                <h3><span class="content-tips">#投票#</span>{{item.model.content}}</h3>
+                                <div class="playsomething">
+                                    <div class="playsomething_choose" v-for="option in item.model.options">
+                                        <div class="playsomething_img" v-if="option.attach_url">
+                                            <img :src="site_url + option.attach_url">
+                                        </div>
+                                        <p class="playsomething_text">{{option.content}}</p>
+                                        <i class="icon iconfont playsomething_i">&#xe73c;</i>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--话题-->
+                            <div class="tellmeabout" v-if="item.model_type == 'Topic'" @click="toDetail(item)">
+                                <h3><span class="content-tips">#话题#</span>{{item.model.title}}</h3>
+                                <p class="content">{{item.model.content}}</p>
+                                <div class="touploadpictures" v-if="item.model.attachs">
+                                    <img :src="site_url + attach.attach_url" v-for="attach in item.model.attachs">
+                                </div>
+                            </div>
+                            <div class="ofthethumbup" v-if="item.model_type != 'Resource' && item.model_type != 'Article'">
+                                <div class="Headportrait" @click="toPerson(item)">
+                                    <div class="minimg">
+                                        <img :src="item.model.users ? item.model.users.headimgurl : '../../images/a8.jpg'">
+                                        <i v-if="item.model.users && item.model.users.is_vip" class="icon iconfont icon_padding icon-jiavcopy"></i>
+                                    </div>
+                                    <p>{{item.model.users ? item.model.users.realname : '未知'}}</p>
+                                </div>
+                                <div class="applicationicon">
+                                    <span v-if="timeShow">{{timeago.format(item.published_at, 'zh_CN')
+                                    }}</span>
+                                    <i @click="dellog(item,index)" class="icon iconfont icon-shanchu3" v-if="user_id == item.model.create_id"></i>
+                                    <i class="icon iconfont" :class="{ 'icon-wodeshoucang' : item.model.is_collection , 'icon-shoucang1' : !item.model.is_collection}" @click="addCollection(item)"></i>
+                                    <!-- <i class="icon iconfont">&#xe77b;</i> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="placeh">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </scroller>
+        <div class="release" v-on:click="bottomNav=true">
+            <i class="icon iconfont">&#xe73d;</i>
+        </div>
+        <div class="boxlayer" v-show="bottomNav">
+            <div class="foldinglayer"></div>
+            <div class="foldinglayer_bottom">
+                <div class="foldinglayer_top">
+                    <div class="toreleasea" @click="toNewArticle">
+                        <img src="../../images/wenz.png">
+                        <p>文章</p>
+                    </div>
+                    <div class="toreleaseb" @click="toNewQuestion">
+                        <img src="../../images/tiwen.png">
+                        <p>提问</p>
+                    </div>
+                    <div class="toreleasec" @click="toNewSpeak">
+                        <img src="../../images/suisui.png">
+                        <p>碎碎念</p>
+                    </div>
+                </div>
+                <div class="foldinglayer_deler">
+                    <i class="icon iconfont" v-on:click="bottomNav=false">&#xe73a;</i>
+                </div>
+            </div>
+        </div>
+        <menu-tab :footer-index="1"></menu-tab>
+        <!--     <div class="tobehonest_02">
+         <div class="teachingmethod">
+              <div class="teachingmethod_tou">
+                  <div class="title_left">
+                       <span class="lefttiao"></span>
+                       <h3>教学方法</h3>
+                  </div>  
+                   <div class="Prompt_right">
+                       <i class="icon iconfont icon-jiantou"></i>
+                  </div>  
+              </div>
+         </div>
+   </div> -->
+    </div>
+</body>
+
+</html>
+<script type="text/javascript">
+var app = new Vue({
+    el: '#content_box',
+    data: {
+        products: "",
+        bottomNav: false,
+        i: '',
+        p: 0,
+        type: 1,
+        list: [],
+        users: [],
+        banners: [],
+        user_id: 0,
+        site_url: site_url,
+        is_status: true,
+        is_new: true,
+        mes_count: '',
+        isShow: true,
+        timeShow: false,
+        timeago: new timeago(),
+        page: 0,
+    },
+    created: function() {
+        this.getVipUser();
+        this.getBanner();
+        this.getMes();
+        this.user_id = getCookie("user_id");
+    },
+    mounted: function() {
+        var ou = 0;
+        setInterval(function() {
+            ou++
+            if (ou > 3) {
+                ou = 0;
+            }
+            $('.tables').eq(ou).show().siblings().hide();
+            $('.shufflingfigure a').eq(ou).addClass('one').siblings().removeClass('one');
+        }, 2000)
+    },
+    methods: {
+        onRefresh: function(done) { //下拉刷新数据
+             window.location.reload();
+             done();
+        },
+        onInfinite: function(done) { //上拉加载数据
+            this.page++;
+            this.getData(function() {
+                done();
+            });
+        },
+        getMes: function() {
+            var self = this;
+            var data = {};
+            data.token = getCookie("token");
+            data.user_id = getCookie("user_id");
+            $.ajax({
+                url: site_url + "/peony/wx/teachersay/getnotread",
+                type: 'GET',
+                dataType: 'json',
+                data: data,
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        self.mes_count = obj.data.list.un_read_count;
+                    } else {
+                        mui.toast(JSON.stringify(obj.msg));
+                    }
+                }
+            })
+
+
+        },
+        getData: function(callback) {
+            var _self = this;
+            var _data = {};
+            _data.token = getCookie("token");
+            _data.type = _self.type;
+            _data.pagesize = 5;
+            _data.page = _self.page;
+            _data.user_id = getCookie("user_id");
+
+            _self.now = getNowFormatDate();
+            $.ajax({
+                type: "GET",
+                url: site_url + "/peony/wx/teachersay/getlog",
+                data: _data,
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        if (_self.page == 1 && obj.data.list.length < _data.pagesize) {
+                            _self.list.push.apply(_self.list, obj.data.list);
+                            _self.$children[0].finishInfinite(true);
+                        } else if (((obj.data.list && obj.data.list.length < _data.pagesize) && _self.page > 1) || !obj.data.list) {
+                            _self.list.push.apply(_self.list, obj.data.list);
+                            _self.$children[0].finishInfinite(true);
+                        } else {
+                            _self.list.push.apply(_self.list, obj.data.list);
+                            callback && callback();
+                        }
+                        _self.list = _self.list.map(function(item) { //提问和碎碎念的图片都只显示三条
+                            if (item.model.attachs) {
+                                item.model.attachs = item.model.attachs.slice(0, 3);
+                            }
+                            return item;
+                        })
+                        var reg = new RegExp("<[^<]*>", "gi");
+                        _self.list.forEach(function(item) {
+                            if (item.model_type == 'Article') {
+                                item.model.content = item.model.content.replace(reg, '');
+                                if (item.model.introduction) {
+                                    item.model.isShow = true;
+                                } else {
+                                    item.model.isShow = false;
+                                }
+                            }
+                            Vue.set(item, "is_show", true);
+                            if (isEmpty(item.model.collection)) {
+                                Vue.set(item.model, "is_collection", false);
+                            } else {
+                                Vue.set(item.model, "is_collection", true);
+                            }
+                        });
+                    } else {
+                        mui.toast(JSON.stringify(obj.msg));
+                    }
+                }
+            });
+        },
+        getVipUser: function() {
+            var _data = {};
+            var _self = this;
+            _data.token = getCookie("token");
+            $.ajax({
+                type: "GET",
+                url: site_url + "/peony/wx/teachersay/getvipuser",
+                data: _data,
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        _self.users = obj.data.list;
+                    } else {
+                        mui.toast(JSON.stringify(obj.msg));
+                    }
+                }
+            });
+        },
+        getBanner: function() {
+            var _data = {};
+            var _self = this;
+            _data.token = getCookie("token");
+            _data.banner_type = 1;
+            $.ajax({
+                type: "GET",
+                url: site_url + "/peony/wx/teachersay/getbanner",
+                data: _data,
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        _self.banners = obj.data.list;
+                        _self.banners.forEach(function(item, i) {
+                            if (i == 0) {
+                                Vue.set(item, 'isSelected', true);
+                            } else {
+                                Vue.set(item, 'isSelected', false);
+                            }
+                        });
+                    } else {
+                        mui.toast(JSON.stringify(obj.msg));
+                    }
+                }
+            });
+        },
+        changeStatus: function(type) {
+            this.is_status = type == 1 ? true : false;
+
+            if (this.is_status) {
+                this.is_new = true;
+            } else {
+                this.is_new = false;
+                this.timeShow = true;
+            }
+            this.getData(type);
+        },
+        addCollection: function(item) {
+            if (item.model.is_collection)
+                return;
+            var _data = {};
+            var _self = this;
+            _data.token = getCookie("token");
+            _data.model_type = item.model_type;
+            _data.model_id = item.model_id;
+            _data.user_id = getCookie("user_id");
+            $.ajax({
+                type: "POST",
+                url: site_url + "/peony/wx/teachersay/addcollection",
+                data: _data,
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        item.model.is_collection = true;
+                    } else {
+                        mui.toast(JSON.stringify(obj.msg));
+                    }
+                }
+            });
+        },
+        dellog: function(item, index) {
+            var _self = this;
+            mui.confirm('是否删除此条记录？', function(e) {
+                if (e.index == 1) {
+                    var _data = {};
+                    _data.token = getCookie("token");
+                    _data.model_type = item.model_type;
+                    _data.model_id = item.model_id;
+                    $.ajax({
+                        type: "POST",
+                        url: site_url + "/peony/wx/teachersay/dellog",
+                        data: _data,
+                        dataType: "JSON",
+                        success: function(obj) {
+                            if (obj.code == 0) {
+                                _self.list.splice(index, 1);
+                                // item.is_show = false;
+                            } else {
+                                mui.toast(JSON.stringify(obj.msg));
+                            }
+                        }
+                    });
+                } else {
+                    return;
+                }
+            })
+        },
+        getFileType: function(filename) {
+            var index1 = filename.lastIndexOf(".");
+            var index2 = filename.length;
+            var suffix = filename.substring(index1 + 1, index2);
+            if (suffix.toLowerCase() == 'xls' || suffix.toLowerCase() == 'xlsx')
+                return "../../images/excel.png";
+            else if (suffix.toLowerCase() == 'doc' || suffix.toLowerCase() == 'docx')
+                return "../../images/word.png";
+            else if (suffix.toLowerCase() == 'ppt' || suffix.toLowerCase() == 'pptx')
+                return "../../images/ppt.png";
+            else if (suffix.toLowerCase() == 'pdf')
+                return "../../images/pdf.png";
+            else if (suffix.toLowerCase() == 'jpg' || suffix.toLowerCase() == 'png')
+                return "../../images/image.png";
+            else if (suffix.toLowerCase() == 'mp4' || suffix.toLowerCase() == 'avi')
+                return "../../images/video.png";
+            else
+                return "../../images/notype.png";
+        },
+        rollerbutton: function(event) {
+            this.i = $(event.target).index();
+            $(event.target).addClass('one').siblings().removeClass('one');
+            $('.tables').eq(this.i).show().siblings().hide();
+        },
+        roller: function() {
+
+        },
+
+        // toResorce : function(){
+        //    location.href = goto_url + "/view/html/teachersay/index.html"
+        // },
+        // toQuestion : function(){
+        //    location.href = goto_url + "/view/html/teachersay/question-detail.html"
+        // },
+        // toSpeak : function(){
+        //    location.href = goto_url + "/view/html/teachersay/speak-detail.html"
+        // },
+        // toVote : function(){
+        //    location.href = goto_url + "/view/html/teachersay/vote-detail.html"
+        // },
+        toNewArticle: function() {
+            //location.href = goto_url + "/view/html/teachersay/new-article.html"
+            var url = goto_url + "/view/html/teachersay/coming.html";
+            location.href = url;
+        },
+        toNewQuestion: function() {
+            location.href = goto_url + "/view/html/teachersay/new-answer.html"
+        },
+        toNewSpeak: function() {
+            location.href = goto_url + "/view/html/teachersay/new-speak.html"
+        },
+        toTeacherton: function() {
+            location.href = goto_url + "/view/html/teachersay/teacherdon.html"
+        },
+        toColumn: function(item) {
+            location.href = goto_url + "/view/html/teachersay/column-detail.html?column_id=" + item.model.column.id;
+        },
+        tomes: function(item) {
+            location.href = goto_url + "/view/html/teachersay/newmessage.html?";
+        },
+        toPerson: function(item) {
+            location.href = goto_url + "/view/html/workbench/teacher-index.html?teacher_id=" + item.model.users.id + "&target_url=" + goto_url + "/view/html/teachersay/index.html";
+            // location.href = goto_url + "/view/html/workbench/teacher-index.html?teacher_id=" + item.id + "&target_url=" 
+            //            + goto_url + "/view/html/teachersay/teacherdon.html" 
+        },
+
+        toDetail: function(item) {
+            var url = goto_url;
+            switch (item.model_type) {
+                case 'Article':
+                    url += "/view/html/teachersay/article-detail.html?article_id=" + item.model_id;
+                    break;
+                case 'Problem':
+                    url += "/view/html/teachersay/question-detail.html?problem_id=" + item.model_id;
+                    break;
+                case 'Resource':
+                    url = site_url + item.model.attach_url;
+                    break;
+                case 'Complaint':
+                    url += "/view/html/teachersay/speak-detail.html?complaint_id=" + item.model_id;
+                    break;
+                case 'Vote':
+                    url += "/view/html/teachersay/vote-detail.html?vote_id=" + item.model_id;
+                    break;
+                case 'Topic':
+                    url += "/view/html/teachersay/topic-detail.html?topic_id=" + item.model_id;
+                    break;
+            }
+            location.href = url;
+
+        },
+
+    }
+})
+</script>

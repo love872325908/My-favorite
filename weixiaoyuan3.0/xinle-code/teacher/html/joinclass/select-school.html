@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>我的学校</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/my.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/component.js"></script>
+</head>
+
+<body>
+    <div class="people-list" id="content_box">
+        <div class="top-title">
+            <i class="iconfont icon-fanhui1" @click="historys"></i>
+            <h3>我的学校</h3>
+            <button @click="change_school()">确定</button>
+        </div>
+        <ul>
+            <li class="wei-input-box" v-for="item in schools" @click="select_school(item)">
+                <h5>{{item.name}}</h5>
+                <input name="radio1" value="Item 3" type="radio">
+            </li>
+        </ul>
+        <a href="javascript:void(0);" @click="joinSchool" class="addclass">选择其他学校</a>
+        <loading :loading-show='isLoadShow'></loading>
+    </div>
+    <script src="../../js/mui.min.js"></script>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            isLoadShow: false, //loading默认隐藏
+            isBtnLight: false, //点击btn,有效果
+            isFlag: false, //只能提交一次
+            schools: [{
+                name: ''
+            }],
+            selected_school: [],
+            class_id: 0,
+
+        },
+        created: function() {
+            var _self = this;
+            _self.class_id = GetQueryString("class_id");
+            var _data = {};
+            _data.token = getCookie("token");
+            _data.teacher_id = getCookie("user_id");
+
+            $.get(site_url + "/peony/wx/teacher/get-teacher-school", _data, function(obj) {
+
+                if (obj.code == 0) {
+
+                    _self.schools = obj.data.list;
+
+                }
+            })
+        },
+        methods: {
+            historys: function() {
+                history.back();
+            },
+            change_school: function() {
+                var _self = this;
+                if (!isEmpty(_self.selected_school.id)) {
+                    var school_data = {
+                        "token": getCookie("token"),
+                        "id": _self.selected_school.id
+                    };
+                    var school_code = "";
+                    $.get(site_url + '/peony/wx/foundation/organize/find-school', school_data, function(obj) {
+                        if (obj.code == 0) {
+                            school_code = obj.data.list.business_code;
+
+                            var _data = {};
+                            _data.token = getCookie("token");
+                            _data.id = _self.class_id;
+                            _data.school_id = _self.selected_school.id;
+                            _data.school_code = school_code;
+                            console.log(_data);
+                            $.ajax({
+                                url: site_url + '/peony/wx/teacher/updateclass',
+                                data: _data,
+                                type: "POST",
+                                dataType: "JSON",
+                                success: function(obj) {
+                                    if (obj.code == 0) {
+                                        var url = goto_url + "/view/html/myclass/index.html?class_id=" + _self.class_id;
+                                        location.href = url;
+                                    } else {
+                                        mui.toast(JSON.stringify(obj.msg));
+                                    }
+                                }
+                            });
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    });
+
+
+                } else
+                    mui.toast("请选择学校！");
+            },
+            select_school: function(item) {
+                this.selected_school = item;
+            },
+            joinSchool: function() {
+                var _self = this;
+                location.href = goto_url + "/view/html/joinclass/joinclass-select-shi.html?class_id=" + _self.class_id;
+            }
+
+        }
+
+    })
+    </script>
+</body>
+
+</html>

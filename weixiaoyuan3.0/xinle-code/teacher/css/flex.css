@@ -1,0 +1,423 @@
+.heade-nav{
+	background: linear-gradient(to bottom right,#0AC3F8,#3287DB);
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 44px;
+	text-align: center;
+}
+.heade-nav_name{
+	font-size: 18px;
+	color: #FFFFFF;
+}
+.heade-nav_btn{
+	padding: 0 16px;
+	font-size: 16px;
+	color: #fff;
+}
+.heade-nav_btn>img{
+	width: 20px;
+	vertical-align: middle;
+}
+/*margin样式*/
+.mt5{margin-top: 5px;}
+.mb5{margin-bottom: 5px;}
+.ml5{margin-left: 5px;}
+.mr5{margin-right: 5px;}
+
+.mt10{margin-top: 10px;}
+.mb10{margin-bottom: 10px;}
+.ml10{margin-left: 10px;}
+.mr10{margin-right: 10px;}
+
+.mt15{margin-top: 15px;}
+.mb15{margin-bottom: 15px;}
+.ml15{margin-left: 15px;}
+.mr15{margin-right: 15px;}
+
+.mt20{margin-top: 20px;}
+.mb20{margin-bottom: 20px;}
+.ml20{margin-left: 20px;}
+.mr20{margin-right: 20px;}
+
+.mt25{margin-top: 0.25rem;}
+.mb25{margin-bottom: 0.25rem;}
+.ml25{margin-left: 0.25rem;}
+.mr25{margin-right: 0.25rem;}
+
+.mt30{margin-top: 30px;}
+.mb30{margin-bottom: 30px;}
+.ml30{margin-left: 30px;}
+.mr30{margin-right: 30px;}
+
+.mt35{margin-top: 0.35rem;}
+.mb35{margin-bottom: 0.35rem;}
+.ml35{margin-left: 0.35rem;}
+.mr35{margin-right: 0.35rem;}
+
+.mt40{margin-top: 0.4rem;}
+.mb40{margin-bottom: 0.4rem;}
+.ml40{margin-left: 0.4rem;}
+.mr40{margin-right: 0.4rem;}
+
+.mt45{margin-top: 0.45rem;}
+.mb45{margin-bottom: 0.45rem;}
+.ml45{margin-left: 0.45rem;}
+.mr45{margin-right: 0.45rem;}
+
+.mt50{margin-top: 0.5rem;}
+.mb50{margin-bottom: 0.5rem;}
+.ml50{margin-left: 0.5rem;}
+.mr50{margin-right: 0.5rem;}
+
+.mt55{margin-top: 0.5rem;}
+.mb55{margin-bottom: 0.5rem;}
+.ml55{margin-left: 0.5rem;}
+.mr55{margin-right: 0.5rem;}
+
+.mt60{margin-top: 0.6rem;}
+.mb60{margin-bottom: 0.6rem;}
+.ml60{margin-left: 0.6rem;}
+.mr60{margin-right: 0.6rem;}
+
+.mt65{margin-top: 0.65rem;}
+.mb65{margin-bottom: 0.65rem;}
+.ml65{margin-left: 0.65rem;}
+.mr65{margin-right: 0.65rem;}
+
+.mt70{margin-top: 0.7rem;}
+.mb70{margin-bottom: 0.7rem;}
+.ml70{margin-left: 0.7rem;}
+.mr70{margin-right: 0.7rem;}
+
+.mt75{margin-top: 0.75rem;}
+.mb75{margin-bottom: 0.75rem;}
+.ml75{margin-left: 0.75rem;}
+.mr75{margin-right: 0.75rem;}
+
+.mt80{margin-top: 0.8rem;}
+.mb80{margin-bottom: 0.8rem;}
+.ml80{margin-left: 0.8rem;}
+.mr80{margin-right: 0.8rem;}
+
+.mt88{margin-top: 0.88rem;}
+
+.mt112{margin-top: 1.12rem;}
+.mb112{margin-bottom: 1.12rem;}
+.ml112{margin-left: 1.12rem;}
+.mr112{margin-right: 1.12rem;}
+
+
+.flex-1{
+	flex:1;
+	-moz-box-flex: 1;
+	-webkit-box-flex: 1;
+	-webkit-flex: 1;
+	-ms-flex: 1;
+}
+/*1-1向左浮动+向上对齐+换行*/
+.left-float-top-br {
+  -webkit-flex-wrap: wrap;
+  -moz-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  -o-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+/*1-1向左浮动+向上对齐+换行*/
+.left-float-top {
+    display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+    display: flex;
+}
+/*1-2居中浮动+向上对齐+不换行*/
+.center-float-top {
+  display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+  display: flex;
+  	
+	-webkit-justify-content: center;
+	-moz-justify-content: center;
+	-ms-justify-content: center;
+	-o-justify-content: center;
+	justify-content: center;
+}
+
+/*1-3向右浮动+向上对齐+不换行*/
+.right-float-top{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+  display: flex;
+  	
+	-webkit-justify-content: flex-end;
+	-moz-justify-content: flex-end;
+	-ms-justify-content: flex-end;
+	-o-justify-content: flex-end;
+	justify-content: flex-end;
+}
+
+/*2-1居中浮动+左对齐+不换行*/
+.center-float-left{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+  display: flex;
+  	
+	-webkit-align-items: center;
+	-moz-align-items: center;
+	-ms-align-items: center;
+	-o-align-items: center;
+	align-items: center;
+}
+
+/*2-2居中浮动+居中对齐+不换行*/
+.center-float-center{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+  display: flex;
+  	
+  -webkit-justify-content: center;
+	-moz-justify-content: center;
+	-ms-justify-content: center;
+	-o-justify-content: center;
+	justify-content: center;
+	
+	-webkit-align-items: center;
+	-moz-align-items: center;
+	-ms-align-items: center;
+	-o-align-items: center;
+	align-items: center;
+}
+/*2-3居中浮动+右对齐+不换行*/
+.center-float-right{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+  display: flex;
+  	
+	-webkit-justify-content: flex-end;
+	-moz-justify-content: flex-end;
+	-ms-justify-content: flex-end;
+	-o-justify-content: flex-end;
+	justify-content: flex-end;
+	
+	-webkit-align-items: center;
+	-moz-align-items: center;
+	-ms-align-items: center;
+	-o-align-items: center;
+	align-items: center;
+}
+
+/*3-1向下浮动+向左对齐+不换行*/
+.bottom-float-left{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+  display: flex;
+  	
+	-webkit-align-items: flex-end;
+	-moz-align-items: flex-end;
+	-ms-align-items: flex-end;
+	-o-align-items: flex-end;
+	align-items: flex-end;
+}
+
+/*3-2向下浮动+居中对齐+不换行*/
+.bottom-float-center{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+  display: flex;
+  	
+	-webkit-justify-content: center;
+	-moz-justify-content: center;
+	-ms-justify-content: center;
+	-o-justify-content: center;
+	justify-content: center;
+	
+	-webkit-align-items: flex-end;
+	-moz-align-items: flex-end;
+	-ms-align-items: flex-end;
+	-o-align-items: flex-end;
+	align-items: flex-end;
+}
+
+/*3-3向下浮动+向右对齐+不换行*/
+.bottom-float-right{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+  display: flex;
+  	
+  -webkit-justify-content: flex-end;
+	-moz-justify-content: flex-end;
+	-ms-justify-content: flex-end;
+	-o-justify-content: flex-end;
+	justify-content: flex-end;
+	
+	-webkit-align-items: flex-end;
+	-moz-align-items: flex-end;
+	-ms-align-items: flex-end;
+	-o-align-items: flex-end;
+	align-items: flex-end;
+}
+
+/*4-1向上左右分布*/
+.top-lr-scatter{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+  display: flex;
+  	
+	-webkit-justify-content: space-between;
+	-moz-justify-content: space-between;
+	-ms-justify-content: space-between;
+	-o-justify-content: space-between;
+	justify-content: space-between;
+}
+
+/*4-2上下居中左右分布*/
+.tbc-lr-scatter {
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+ 	display: flex;
+
+	-webkit-justify-content: space-around;
+	-moz-justify-content: space-around;
+	-ms-justify-content: space-around;
+	-o-justify-content: space-around;
+	justify-content: space-around;
+	
+	-webkit-align-items: center;
+	-moz-align-items: center;
+	-ms-align-items: center;
+	-o-align-items: center;
+	align-items: center;
+  }
+
+/*4-3向下左右分布*/
+.bottom-lr-scatter{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+ 	display: flex;
+  	
+  -webkit-align-items: flex-end;
+	-moz-align-items: flex-end;
+	-ms-align-items: flex-end;
+	-o-align-items: flex-end;
+	align-items: flex-end;
+  	
+  	-webkit-justify-content: space-between;
+	-moz-justify-content: space-between;
+	-ms-justify-content: space-between;
+	-o-justify-content: space-between;
+	justify-content: space-between;
+}
+
+/*5-1向左上下分布*/
+.left-tb-scatter{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+  display: flex;
+  	
+	-webkit-flex-direction: column;
+	-moz-flex-direction: column;
+	-ms-flex-direction: column;
+	-o-flex-direction: column;
+	flex-direction: column;
+	
+	-webkit-justify-content: space-between;
+	-moz-justify-content: space-between;
+	-ms-justify-content: space-between;
+	-o-justify-content: space-between;
+	justify-content: space-between;
+}
+
+/*5-2居中上下分布*/
+.center-tb-scatter{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+  display: flex;
+  	
+  -webkit-flex-direction: column;
+	-moz-flex-direction: column;
+	-ms-flex-direction: column;
+	-o-flex-direction: column;
+	flex-direction: column;
+	
+	-webkit-justify-content: space-between;
+	-moz-justify-content: space-between;
+	-ms-justify-content: space-between;
+	-o-justify-content: space-between;
+	justify-content: space-between;
+	
+	-webkit-align-items: center;
+	-moz-align-items: center;
+	-ms-align-items: center;
+	-o-align-items: center;
+	align-items: center;
+}
+
+/*5-3向右上下分布*/
+.right-tb-scatter{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: -o-flex;
+  display: flex;
+  	
+	-webkit-flex-direction: column;
+	-moz-flex-direction: column;
+	-ms-flex-direction: column;
+	-o-flex-direction: column;
+	flex-direction: column;
+	
+	-webkit-justify-content: space-between;
+	-moz-justify-content: space-between;
+	-ms-justify-content: space-between;
+	-o-justify-content: space-between;
+	justify-content: space-between;
+	
+	-webkit-align-items: flex-end;
+	-moz-align-items: flex-end;
+	-ms-align-items: flex-end;
+	-o-align-items: flex-end;
+	align-items: flex-end;
+}

@@ -1,0 +1,250 @@
+@charset "UTF-8";
+@import url(../css/common2.css);
+@import url(../fonts/iconfont.css);
+/*文章列表*/
+.article-bar {
+  padding: 0px 10px; }
+  .article-bar h5 {
+    font-size: 14px;
+    color: #96A2A8;
+    line-height: 36px; }
+  .article-bar a {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+       -moz-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    background-color: #fff; }
+    .article-bar a div.left {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+         -moz-box-flex: 1;
+          -ms-flex: 1;
+              flex: 1;
+      padding: 15px; }
+      .article-bar a div.left h6 {
+        font-size: 12px;
+        word-wrap: break-word; }
+      .article-bar a div.left p {
+        height: 70px;
+        font-size: 16px;
+        color: #333;
+        line-height: 24px;
+        margin: 10px 0px;
+        word-wrap: break-word;
+        word-break: break-all;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical; }
+      .article-bar a div.left span {
+        font-size: 12px;
+        color: #708FCC;
+        margin-top: 60px; }
+    .article-bar a div.right {
+      width: 167px;
+      height: 135px;
+      min-width: 167px;
+      background-repeat: no-repeat;
+      overflow-y: hidden;
+      background-position: center center;
+      background-size: cover;
+      margin: 10px 10px 0px 0px; }
+
+.zaobao {
+  color: #1896D6; }
+
+.zhiyu {
+  color: #44B272; }
+
+.jiezhao {
+  color: #E8561F; }
+
+.fengmian img {
+  width: 100%;
+  height: 300px; }
+
+/*文章详情*/
+.article-detail {
+  margin: 15px; }
+  .article-detail h2 {
+    font-size: 24px;
+    color: #333333;
+    margin-bottom: 15px; }
+  .article-detail p {
+    font-size: 16px;
+    color: #535A5E;
+    line-height: 26px;
+    margin-bottom: 15px; }
+  .article-detail img {
+    width: 100%;
+    margin-bottom: 15px; }
+  .article-detail iframe {
+    width: 100% !important;
+    height: 240px !important; }
+  .article-detail video {
+    width: 100% !important;
+    height: 240px !important; }
+
+.article-footer {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+     -moz-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-top: 1px solid #ccc;
+  padding: 15px;
+  background-color: #fff;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100; }
+  .article-footer a.fanhui {
+    color: #B8C1CE; }
+  .article-footer div a.pinglun {
+    color: #B8C1CE; }
+  .article-footer div span {
+    margin: 0px 20px; }
+    .article-footer div span .icolor {
+      color: green; }
+  .article-footer div a.fenxiang {
+    color: #B8C1CE; }
+
+.a-narmal {
+  color: #B8C1CE; }
+
+.a-active {
+  color: #31B3EF; }
+
+.a-like {
+  color: #FF6767; }
+
+/*文章评论列表*/
+.comment-bar {
+  position: absolute;
+  overflow-y: auto;
+  width: 100%;
+  top: 0;
+  bottom: 54px;
+  -webkit-overflow-scrolling: touch;
+  /* -webkit-overflow-scrolling:touch;
+   position: fixed;top:0;bottom: 0; width: 100%; overflow-y: auto;  */ }
+  .comment-bar h6 {
+    font-size: 14px;
+    color: #96A2A8;
+    background-color: #fff;
+    padding: 10px; }
+  .comment-bar ul li {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    background-color: #fff;
+    margin-bottom: 1px;
+    padding: 15px; }
+    .comment-bar ul li .avatar {
+      margin-right: 10px; }
+      .comment-bar ul li .avatar img {
+        width: 44px;
+        height: 44px; }
+    .comment-bar ul li .right {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+         -moz-box-flex: 1;
+          -ms-flex: 1;
+              flex: 1; }
+      .comment-bar ul li .right .tit {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: justify;
+        -webkit-justify-content: space-between;
+           -moz-box-pack: justify;
+            -ms-flex-pack: justify;
+                justify-content: space-between; }
+        .comment-bar ul li .right .tit a {
+          font-size: 14px;
+          color: #708FCC; }
+        .comment-bar ul li .right .tit span {
+          font-size: 12px;
+          color: #B8C1CE; }
+      .comment-bar ul li .right p {
+        line-height: 24px; }
+      .comment-bar ul li .right span {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: end;
+        -webkit-justify-content: flex-end;
+           -moz-box-pack: end;
+            -ms-flex-pack: end;
+                justify-content: flex-end;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+           -moz-box-align: center;
+            -ms-flex-align: center;
+                align-items: center;
+        color: #B8C1CE;
+        margin-top: 5px; }
+        .comment-bar ul li .right span i {
+          padding: 0px 3px 0px 20px; }
+
+/*输入评论*/
+.write-comment {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  /* position: fixed; width: 100%;  left:0; bottom: 0;  */
+  background-color: #ECF0F6;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 10px; }
+  .write-comment input {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+       -moz-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    height: 34px;
+    line-height: 30px;
+    background: #FFFFFF;
+    border-radius: 4px;
+    padding-left: 10px; }
+  .write-comment button {
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 70px;
+       -moz-box-flex: 0;
+        -ms-flex: 0 0 70px;
+            flex: 0 0 70px;
+    background: #419DE8;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 18px;
+    margin-left: 10px; }

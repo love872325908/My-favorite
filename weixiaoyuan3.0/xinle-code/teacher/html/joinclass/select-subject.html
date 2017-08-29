@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>选择科目</title>
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/common.js"></script>
+</head>
+
+<body>
+    <div id="content_box">
+        <div class="subject-box">
+            <span class="title">您所教授{{name}}的科目(可多选)</span>
+            <ul class="moren">
+                <li class="bg-gray" :class="{'select-subject': item.selected }" @click="selectSubject(item)" v-for="item in subjects"><span>{{item.name}}</span></li>
+                <li @click="toCustom"><i class="iconfont icon-xinzeng"></i></li>
+            </ul>
+        </div>
+        <div class="mlr15">
+            <a href="javascript:void(0);" @click="queren" class="btn light-blue">确认加入</a>
+        </div>
+    </div>
+    <script src="../../js/mui.min.js"></script>
+    <script>
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            subjects: {},
+            subjectId: [],
+            name: ""
+        },
+        created: function() {
+            var create_id = getCookie("user_id");
+            this.name = GetQueryString("class_name");
+            var url = site_url + "/peony/wx/subject/get-all?token=" + getCookie('token') + "&create_id=" + getCookie("user_id");
+            var _self = this;
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "JSON",
+                success: function(obj) {
+                    _self.subjects = obj.data.list;
+                    _self.subjects.forEach(function(item) {　　　　　　　　　　
+                        Vue.set(item, 'selected', false);　　　　　　　　　　
+                    });
+                }
+            });
+        },
+        methods: {
+            selectSubject: function(item) {
+                if (this.subjectId.length == 6) {
+                    mui.toast("科目不能超过6科");
+                    return;
+                }
+                item.selected = !item.selected;
+                if (item.selected) {
+                    this.subjectId.push(item.id);
+                } else {
+                    for (var i = 0; i < this.subjectId.length; i++) {
+                        if (this.subjectId[i] == item.id) {
+                            this.subjectId.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+            },
+            toCustom: function() {
+                var urlParam = window.location.search.substr(1);
+                var url = goto_url + "/view/html/joinclass/joinclass-subject.html?" + urlParam;
+                location.href = url;
+            },
+            queren: function() {
+                var _data = {};
+                _data.teacher_id = getCookie("user_id");
+                _data.class_id = GetQueryString("class_id");
+                _data.token = getCookie("token");
+                if (this.subjectId.length < 1) {
+                    mui.toast("请选择至少一个科目");
+                    return;
+                }
+                _data.subject_id = this.subjectId.join("|");
+                $.ajax({
+                    url: site_url + "/peony/wx/teacher_subject/build",
+                    data: _data,
+                    type: "POST",
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            mui.toast("加入班级成功");
+                            var url = goto_url + "/view/html/workbench/goodteacher.html";
+                            location.href = url;
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

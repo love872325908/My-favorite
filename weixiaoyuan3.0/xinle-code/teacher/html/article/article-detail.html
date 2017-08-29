@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+	<title>文章详情</title>
+  <link rel="stylesheet" href="../../css/mui.css">
+  <link rel="stylesheet" type="text/css" href="../../css/article.css">
+  <link rel="stylesheet" type="text/css" href="../../css/base.css">
+  
+  <script src="../../js/cssrem.js"></script>
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/jquery-1.8.3.min.js"></script>
+	<script src="../../js/common.js"></script>
+    <script src="../../js/mui.min.js"></script>
+
+</head>
+<body>
+<div id="content_box" v-cloak>
+    <!--<div class="fengmian"><img src="../../images/muwu.jpg" alt=""></div>-->
+    <div class="article-detail" v-html=list.content>
+        <!--<h2>抱歉，我从未非常努力</h2>
+        <p>文章正文：支持图文混排；内容展示上限暂无上限；即后台创建 多少即显示多少；顶部为文章内容的第一图片；它也将是文章列表的封面图；如果文章无图片则直接内容上移显示。</p>
+        <p>文章正文：支持图文混排；内容展示上限暂无上限；即后台创建 多少即显示多少；顶部为文章内容的第一图片；它也将是文章列表的封面图；如果文章无图片则直接内容上移显示。  </p>
+        <img src="../../images/muwu.jpg" alt="">-->
+        
+    </div>
+    <div class="article-footer">
+       <a class="fanhui" href=""><i class="iconfont icon-fanhui"></i></a>
+       <div>
+         <a class="pinglun" :href="'./comment-detail.html?article_id='+articleId+'&model_type='+modelType+'&model_id='+modelId"><i class="iconfont icon-pinglun"></i>{{list.comment_count}}</a>
+         <span @click="addcollection"><i class="iconfont icon-shoucang a-narmal"  ref="collect" :class="{'icolor':list.is_collection}"></i></span>
+         <a class="fenxiang" ><i class="iconfont icon-fenxiang"></i></a>
+       </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+	var app = new Vue({
+        el:'#content_box',
+        data: {
+           list:'',
+           articleId:GetQueryString("article_id"),
+           modelType:GetQueryString("model_type"),
+           modelId:GetQueryString("model_id")
+        },
+        methods: {
+            isaddread(){
+            var _data={},
+                _self=this,
+                url=site_url+"/peony/wx/teachersay/addread";
+                _data.token=getCookie("token");
+                _data.model_id=GetQueryString("model_id");
+                _data.user_id=getCookie("user_id");
+                _data.model_type=GetQueryString("model_type");
+                $.post(url,_data,function(obj){
+                    if(obj.code==0){
+                    }else{
+                    mui.toast(JSON.stringify(obj.msg));
+                    }
+                },'json')
+
+            },
+           getarticle(){
+               var _data={},
+                   _self=this,
+                   url=site_url+"/peony/wx/teachersay/getarticle";
+                   _data.token=getCookie("token");
+                   _data.article_id=GetQueryString("article_id");
+               $.get(url,_data,function(obj){
+                    if(obj.code==0){
+                    _self.list=obj.data.list[0];
+                    }else{
+                    mui.toast(JSON.stringify(obj.msg));
+                    }
+                },'json')              
+            },
+            addcollection(){
+                var _data={},
+                   _self=this,
+                   url=site_url+"/peony/wx/teachersay/addcollection";
+                   _data.token=getCookie("token");
+                   _data.user_id=getCookie("user_id");
+                   _data.model_type=GetQueryString("model_type");
+                   _data.model_id=GetQueryString("model_id");
+               $.post(url,_data,function(obj){
+                    if(obj.code==0){
+                    }else{
+                    mui.toast(JSON.stringify(obj.msg));
+                    }
+                },'json')
+                    this.$refs.collect.style.color='green';
+            }
+       },
+        created () {
+            this.isaddread();
+            this.getarticle();
+        },
+        mounted () {
+
+        }
+
+    })
+</script>
+</body>
+</html>

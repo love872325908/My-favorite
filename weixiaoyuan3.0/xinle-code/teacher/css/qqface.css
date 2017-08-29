@@ -1,0 +1,188 @@
+/*qqfacebox*/
+
+#facebox {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    background-color: #f4f4f6;
+    padding: 15px 0;
+}
+
+#facebox ul {
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+}
+
+#facebox li {
+    width: calc(100%/7);
+    list-style: none;
+    float: left;
+    margin: 5px 0;
+}
+
+#facebox li i.icon {
+    text-align: left;
+    font-size: 22px;
+    color: #858585;
+}
+
+#facebox .swiper-pagination-fraction,
+.swiper-pagination-custom,
+.swiper-container-horizontal > .swiper-pagination-bullets {
+    bottom: 5px;
+}
+
+#facebox .swiper-pagination-bullet {
+    width: 6px;
+    height: 6px;
+}
+
+#facebox .swiper-pagination-bullet-active {
+    background-color: #8a8a8c;
+}
+
+.weui_dialog_bd {
+    position: relative;
+}
+
+i.comment_emotion {
+    font-size: 20px;
+    position: absolute;
+    bottom: 0;
+    right: 20px;
+}
+
+.swiper-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.swiper-container .swiper-wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    -webkit-transition-property: -webkit-transform;
+    transition-property: -webkit-transform;
+    transition-property: transform;
+    transition-property: transform, -webkit-transform;
+}
+
+.swiper-container .swiper-wrapper .swiper-slide {
+    -webkit-flex-shrink: 0;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    padding-left: 15px;
+}
+
+.swiper-container .swiper-wrapper .swiper-slide img {
+    display: block;
+}
+
+.swiper-container .swiper-pagination {
+    position: absolute;
+    bottom: 10px;
+    z-index: 10;
+    left: 0px;
+    width: 100%;
+    text-align: center;
+}
+
+.swiper-container .swiper-pagination .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    opacity: 0.2;
+    border-radius: 100%;
+    background-color: #000;
+    margin: 0 5px;
+}
+
+.swiper-container .swiper-pagination .swiper-pagination-bullet-active {
+    opacity: 1;
+    background-color: #04BE02;
+}
+
+
+/* //遮罩，弹窗 */
+
+.comment-box {
+    transition: all .3s;
+}
+.mask{
+    display:block;
+    position: fixed;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index:99;
+}
+.popup {
+    position: absolute;
+    width: 80%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+.popup textarea {
+    padding: 15px;
+    width: 100%;
+    line-height: 24px;
+}
+
+.popup a {
+    display: block;
+    width: 44px;
+    width: 44px;
+    line-height: 44px;
+    float: right;
+    color: #7F8389;
+}
+
+.popup a i {
+    font-size:24px;
+}
+
+.popup_btn {
+    clear: both;
+    border-top: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+}
+
+.popup_btn button {
+    border-right: 1px solid #ddd;
+    height: 44px;
+    line-height: 44px;
+    flex: 1;
+    font-size: 16px;
+}
+
+.popup_btn button &:last-child {
+    border-right: none;
+}
+
+.noshow {
+    display: none;
+}

@@ -1,0 +1,147 @@
+@import "../css/flex.css";
+@import "../css/common2.css";
+@import "../fonts/iconfont.css";
+
+body{background:#f2f2f2;}
+//遮罩，弹窗
+.mask{
+	display:none;
+	position: absolute;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index:99;
+}
+.popup{
+	display:none;
+	position:absolute;
+	width:80%;
+	text-align:center;
+	left:50%;
+	top:50%;
+	transform: translate(-50%, -50%);
+	z-index:999;
+	.popup_con{
+		border-radius: 4px;
+		background:#fff;
+		min-height:220px;
+		padding:0 10px;
+		box-sizing:border-box;
+		.popup_con-text{
+			font-size: 14px;
+			color: #666666;
+		}
+	}
+	.popup_btn{
+		width:36px;
+		margin:44px auto 0;
+		img{
+			width:100%;
+		}
+	}
+}
+//挑战
+.index-con{
+	width:100%;
+	background:#fff;
+	.banner{
+		width:100%;
+		font-size: 0;
+		position:relative;
+		img{width:100%;}
+		.text{}
+		.btn{}
+	}
+	.box{
+		padding:0 15px;
+		box-sizing:border-box;
+		overflow:hidden;
+		.title{
+			font-size:14px;
+		}
+		.text{
+			font-size: 14px;
+			color: #888888;
+			line-height: 20px;
+			margin-bottom:16px;
+		}
+		.btn{
+			width:100%;
+			text-align: center;
+			line-height:44px;
+			font-size: 18px;
+			color: #FFFFFF;
+			background: #50BF60;
+			border-radius: 4px;
+			margin-bottom:20px;
+
+			  
+		}
+	}
+}
+//挑战动态
+#pullrefresh{
+	position: absolute;
+    z-index: 2;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    width: 100%;
+}
+.dynamic-con{
+	overflow: hidden;
+	padding:0 15px;
+	box-sizing: border-box;
+	width: 100%;
+	.box{
+		width: 100%;
+		overflow: hidden;
+		text-align: center;
+		padding: 10px 0;
+		.con{
+			text-align: left;
+			background: #fff;
+			padding:0 15px;
+			.text{
+				overflow: hidden;
+				margin-bottom: 10px;
+				.tit{
+					color: #333;
+					font-size: 16px;
+					font-weight: bold;
+					margin: 10px 0;
+				}
+				p{
+					color: #999;
+					font-size: 14px;
+				}
+			}
+		}
+		.time{
+			background: #B4BCC8;
+			border-radius: 4px;
+			display: inline-block;
+			padding: 3px 6px;
+			font-size: 12px;
+			color: #fff;
+			margin-bottom: 10px;
+			opacity: 0.5;
+		}
+		.btn{
+			border-top: 1px solid #DEDFE0;
+			line-height: 48px;
+			font-size: 14px;
+			color: #999;
+			position: relative;
+			img{
+				width: 12px;
+				position: absolute;
+				top: 18px;
+				right: 10px;
+			}
+		}
+	}
+}

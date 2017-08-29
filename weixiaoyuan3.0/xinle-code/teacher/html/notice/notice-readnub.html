@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+	<title>阅读详情</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/jquery-1.8.3.min.js"></script>
+	<script src="../../js/common.js"></script>
+<style type="text/css">
+    .tab-bar .active{
+        color: #31B3EF;
+        border-bottom: 2px solid #31B3EF;
+    }
+    .unactive{
+        color: #B8C1CE;
+        border-bottom: 2px solid #fff;
+    }
+</style>
+</head>
+<body class="bg-light-gray">
+<div id="content_box">
+    <div class="tab-bar">
+        <a @click="toggle(index,tab.view)" v-for="(tab,index) in tabs" :class="{'active':tab.view==currentView}" href="javascript:;">{{tab.type}}</a>
+    </div>
+    <ul class="peoplelist-bar mt10">
+        <component :is="currentView" :list="readlist"></component>
+    </ul>
+
+</div>
+
+<script src="../../js/mui.min.js"></script>
+<script type="text/javascript">
+  Vue.component('child1',{
+    props:['list'],
+    template:"<div><li v-for='item in list'><img :src='item.headimgurl' alt=''><h5>{{item.realname}}</h5></li></div>"
+  })
+  Vue.component('child2',{
+    props:['list'],
+    template:"<div><li v-for='item in list'><img :src='item.headimgurl' alt=''><h5>{{item.realname}}</h5></li></div>",
+  })
+	var app = new Vue({
+        el:'#content_box',
+        data: {
+            read_url:"/peony/wx/classnotice/readdetail",
+            token:getCookie('token'),
+            task_id:GetQueryString('id'),
+            class_id:GetQueryString('class_id'),
+            active:0, 
+            currentView: 'child1',
+            noread:[],
+            hasread:[],
+            readlist:[],
+            msg:'hahah',
+            tabs: [   
+                  {       
+                   type: '已读列表',   
+                   view: 'child1'  
+                  },{       
+                   type: '未读列表',    
+                   view: 'child2'    
+                  }  
+               ],  
+        },
+        created : function(){
+            var self = this;
+            self.getread();
+        },
+        methods: {  
+            getread:function(){
+                var self = this;
+                var url = site_url+self.read_url;
+                var read_data = {
+                    'token':self.token,
+                    'notice_id':self.task_id,
+                    'class_id':self.class_id,
+                }
+                $.get(url , read_data , function(res){
+                    if(res.code==0){
+                    	self.noread=res.data.list.notReadList;
+                    	self.hasread=res.data.list.readList;
+                    	self.readlist=self.hasread;
+                    }
+                },'json');
+            },
+          toggle:function(i, v){    
+            var self = this;
+             self.active = i;
+             self.currentView = v;
+             if(i == 1){
+                self.readlist = self.noread;
+             }else{
+                self.readlist = self.hasread;
+             }
+          } 
+       }
+    })
+</script>
+</body>
+</html>

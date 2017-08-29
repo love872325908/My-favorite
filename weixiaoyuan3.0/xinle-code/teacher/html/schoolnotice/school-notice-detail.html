@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+	<title>公告详情</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/schoolnotice.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/jquery-1.8.3.min.js"></script>
+	<script src="../../js/common.js"></script>
+</head>
+<body>
+<div id="content_box" v-cloak>
+  <div class="school-notice-box">
+    <h4>{{notice.title}}</h4>
+    <div class="noticeinfo-bar">
+      <span>{{timeago.format(notice.created_at,'zh_CN')}}</span>
+      <span>来自：{{notice.author_name}}</span>
+      <span class="blue">阅读 {{notice.read_num}}</span>
+    </div>
+    <div class="notice-content" v-html="notice.content"></div>
+  </div>
+</div>
+<script src="../../js/mui.min.js"></script>
+<script src="../../js/timeago.js"></script>
+<script type="text/javascript">
+	var app = new Vue({
+        el:'#content_box',
+        data: {
+           detail_url:"/peony/wx/schoolnotice/getdetail",
+           notice_id:GetQueryString("id"),
+           notice:{},
+           timeago : null,
+        },
+        created : function(){
+            var self = this;
+            self.timeago = new timeago();
+            self.getdetail();
+        },
+        methods: {
+            getdetail:function(){
+                var self = this;
+                var url = site_url+self.detail_url;
+                var data = {
+                    'token':getCookie("token"),
+                    'notice_id':self.notice_id,
+                    'user_id':getCookie("user_id"),
+                }
+                console.log(url)
+                console.log(data)
+                $.get(url,data,function(res){
+                    console.log(res)
+                    if( res.code == 0){
+                        self.notice = res.data.list;
+                    }else{
+                        mui.toast(res.msg);
+                    }
+                },'json')
+            }
+        }
+
+    })
+</script>
+</body>
+</html>

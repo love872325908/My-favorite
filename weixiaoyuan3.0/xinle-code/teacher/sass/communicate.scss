@@ -1,0 +1,299 @@
+/*
+* @Author: zxl
+* @Date:   2017-06-01 15:00:08
+* @Last Modified by:   wangxiujuan
+* @Last Modified time: 2017-07-08 09:13:26
+*/
+
+// --------------communicate-client--------------
+.client-box{
+    .client-list{
+        .client-check{
+            // background-color: red;
+            width: 100%;
+            height: 43px;
+            padding: 10px 8px;
+            .client-check-inner{
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-flow:row nowrap;
+                justify-fontent:center;
+                align-items:center;
+                border: 1px solid  #50BF60;
+                border-radius: 2px;
+                div{
+                    display: inline-block;
+                    width: 50%;
+                    height: 100%;
+                    font-size: 13px;
+                    text-align: center;
+                    letter-spacing: -0.08px;
+                    &.active{background-color: #50BF60;}
+                }
+            }
+            
+        }
+    }
+}
+
+.client-search{
+  width: 100%;
+  height: 44px;
+  padding: 7px 8px;
+}
+
+.join-class-from{
+    width: 100%;
+    height: 100%;
+    position: relative;
+    font-size: 0
+}
+input::-webkit-input-placeholder{
+  font-size: 14px;
+  color: #A7B0B1;
+  letter-spacing: 0;
+  line-height: 14px;
+}
+.join-class-lebal{
+    position: absolute;
+    top: 50%;
+    margin-top: -4px;
+  }
+.from-init{
+  input::-webkit-input-placeholder{
+    text-align: center;
+  }
+  .join-class-lebal{
+    left: 50%;
+    margin-left: -18px;
+  }
+}
+.from-focus{
+  input::-webkit-input-placeholder{
+    text-align: left;
+  }
+  .join-class-lebal{
+    left: 18px;
+  }
+}
+.join-class-input{
+    width: 100%;
+    outline:none;
+    border: 0;
+    background: #fff;
+    padding:8px 0px 8px 42px;
+    font-size: 18px;
+    color: #333333;
+}
+
+// --------------communicate-remark--------------
+.remark-name{
+    font-size: 13px;
+    color: #96A2A8;
+    line-height: 13px;
+    padding:22px 0px 14px 16px;
+}
+.remark-from{
+    width: 100%;
+    height: 52px;
+    position: relative;
+    font-size: 0
+}
+.remark-input{
+    width: 100%;
+    height:52px;
+    outline:none;
+    border: 0;
+    background: #fff;
+    padding:2.5% 0 2.5% 4.3%;
+    font-size: 18px;
+color: #333333;
+}
+.input-del{
+    position: absolute;
+    right: 18px;
+    top: 20px;
+    color: #D2DADC
+}
+.chat-box{
+  width: 100%;
+  height: 44px;
+  padding: 0 20px;
+  margin-top: 36px;
+  .chat-box-inner{
+    line-height: 44px;
+    text-align: center;
+    font-size: 18px;
+    color: #FFFFFF;
+    background: #50BF60;
+    border-radius: 4px;
+  }
+}
+
+// --------------communicateGroupMassage--------------
+.members{
+    width:100%;
+    background-color: white;
+  }
+  .members ul{
+    display: flex;
+    flex-flow:row wrap;
+    width: 100%;
+    padding: 18px 22px;
+  }
+  .members li{
+    display: flex;
+    flex-flow:column wrap;
+    justify-fontent:center;
+    align-items:center;
+    width: 20%;
+    text-align: center;
+  }
+  .members img{
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+  .members span{
+    display: block;
+    width: 100%;
+    height: 18px;
+    line-height:18px;
+    text-align: center;
+    font-family: PingFangSC-Regular;
+    font-size: 12px;
+    color: #535A5E;
+    text-align: center;
+    white-space:nowrap; 
+    overflow:hidden; 
+    text-overflow:ellipsis;
+  }
+.members-more{
+    width: 100%;
+    height: 45px;
+    background-color: white;
+    display: flex;
+    flex-direction:row;
+    justify-content:center;
+    align-items:center;
+    span{
+        font-family: PingFangSC-Regular;
+        font-size: 15px;
+        color: #535A5E;
+    }
+}
+.group-box{
+    width: 100%;
+    margin-top: 10px;
+    padding:11px 16px 11px 12px;
+    background: white;
+    ul{
+        width: 100%;
+        li{
+            width: 100%;
+            height: 46px;
+            display: flex;
+            flex:row wrap;
+            justify-content:space-between;
+            align-items:center;
+            .group-box-title{
+                font-family: PingFangSC-Regular;
+                font-size: 16px;
+                color: #333333;
+                line-height: 24px;
+            };
+            .group-box-content{
+                font-family: PingFangSC-Regular;
+                font-size: 16px;
+                color: #96A2A8;
+                line-height: 17px;
+                span{
+                    padding-right: 10px;
+                }
+            }
+        }
+    }
+}
+
+.massage-switch{
+    display: flex;
+    display: flex;
+    flex:row wrap;
+    justify-content:space-between;
+    align-items:center;
+    width: 100%;
+    height: 45px;
+    margin-top: 10px;
+    padding:11px 16px 11px 12px;
+    background: white;
+    font-family: PingFangSC-Regular;
+    font-size: 16px;
+    color: #333333;
+    line-height: 24px;
+}
+
+// ------------------------------------------------
+.communicate-index {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 74px;
+    background-color: #FFFFFF;
+    padding-left: 12px;
+    padding-top: 12px;
+    .communicate-index_img {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        img{
+            width: 100%;
+    height: 100%;
+        }
+    }
+    .communicate-index_text {
+        padding-right: 12px;
+        margin-left: 10px;
+        flex: 1;
+        height: 62px;
+        border-bottom: 0.5px solid #DEDFE0;
+        .communicate-index_text_title {
+            display: flex;
+            justify-content: space-between;
+            h3 {
+                font-size: 17px;
+                color: #333333;
+                line-height: 17px;
+                margin-top: 7px;
+            }
+            span {
+                font-size: 12px;
+                color: #96A2A8;
+                line-height: 17px;
+            }
+        }
+        .communicate-index_text_content {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+            p {
+                font-size: 13px;
+                color: #96A2A8;
+                line-height: 17px;
+            }
+            span {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background-color: #F74C31;
+                text-align: center;
+                font-size: 14px;
+                color: #FFFFFF;
+                line-height: 20px;
+            }
+        }
+    }
+    
+}

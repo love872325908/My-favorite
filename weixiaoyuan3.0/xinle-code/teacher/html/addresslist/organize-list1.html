@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"   content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>组织架构</title>
+  <link rel="stylesheet" type="text/css" href="../../css/mui.css">
+  <link rel="stylesheet" type="text/css" href="../../css/base.css">
+  <link rel="stylesheet" type="text/css" href="../../css/searchbar.css">
+  <link rel="stylesheet" type="text/css" href="../../css/addresslist.css">
+
+  <script src="../../js/vue.js"></script>
+  <script src="../../js/jquery-1.8.3.min.js"></script>
+  <script src="../../js/mui.min.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../js/jquery.charfirst.pinyin.js"></script>
+</head>
+<body>
+   <div id="app">
+      <div class="address-trun">
+         <!--搜索开始-->
+         <div class="search-bar" id="searchBar">
+             <div class="search-bar_form">
+                <div class="search-bar_box">
+                    <i class="iconfont icon-sousuo icon-search" @click="search"></i>
+                    <input v-model="keywords" type="search" class="search-bar_input" id="searchInput" placeholder="搜索" required="">
+                    <a href="javascript:" class="icon-clear" id="searchClear"></a>
+                </div>
+                <label class="search-bar_label" id="searchText" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
+                    <i class="iconfont icon-sousuo icon-search" @click="search"></i>
+                    <span >搜索</span>
+                </label>
+             </div>
+             <a href="javascript:" class="search-bar_cancel-btn" id="searchCancel">取消</a>
+         </div>
+         <!--搜索结束-->
+
+         <div class="organize-tips"><a class="blue">aaa</a><i class="iconfont icon-zhishi cl-light-gray"></i><span>校长室</span><i class="iconfont icon-zhishi cl-light-gray"></i><span>校长室</span></div>
+         
+         <div class="organize-box">
+             <div class="organize-section" v-for="item in organize" v-if = "orgindex == 1 && item.org_type == 1" @click="clickDepartment(item)">
+                  <h5>{{item.name}}</h5>
+                  <i class="iconfont icon-zhishi cl-light-gray"></i>
+             </div>
+
+             <div v-for="item in organize" v-if = "orgindex == 2">
+               <div v-if="item.org_type==1" class="organize-section" @click="clickDepartment(item)">
+                  <h5>{{item.name}}</h5>
+                  <i class="iconfont icon-zhishi cl-light-gray"></i>
+               </div>
+               <div v-else="item.org_type==2" class="organize-peo" @click="clickPersonal">
+                  <label>
+                      <div><img :src="site_url + item.artvar_img"  alt=""></div>
+                      <h5>{{item.realname}}</h5>
+                  </label>
+                  <a @click="call(data)"><i class="iconfont icon-dianhua1"></i></a>
+               </div>
+             </div>
+
+             <div class="organize-peo"  v-for="peo in organize" v-if = "orgindex == 3 && peo.org_type==2">
+                  <label>
+                      <div><img :src="site_url + peo.artvar_img"  alt=""></div>
+                      <h5>{{peo.realname}}</h5>
+                  </label>
+                  <a @click="call(data)"><i class="iconfont icon-dianhua1"></i></a>
+             </div>
+         </div>
+      </div>
+      <!--电话弹窗-->
+      <div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+         <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+               <a href="#">私信</a>
+            </li>
+            <li class="mui-table-view-cell">
+               <a :href="'tel:' + phone">打电话：{{phone}}</a>
+            </li>
+         </ul>
+         <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+               <a class="cl-gray" href="#picture">取消</a>
+            </li>
+         </ul>
+      </div>
+   </div>
+   <script type="text/javascript">
+        var app = new Vue({
+          el:'#app',
+          data:{
+            orgindex:1,
+            keywords : '',          
+            organize : {} ,
+            phone:"",
+            site_url : site_url
+          },
+          created : function(){
+            var _self = this;
+            var _data = {};
+             _data.token = getCookie("token");
+             _data.id = GetQueryString("school_id");
+             _data.type = 1;
+             $.ajax({
+                 url : site_url+'/peony/wx/department/get-organizational',
+                 data : _data,
+                 type : "GET",
+                 dataType : "JSON",
+                 success:function(obj){
+                   if(obj.code == 0){
+                         _self.organize = obj.data.list;
+                         console.log(obj);
+
+                   }else{
+                         mui.toast(JSON.stringify(obj.msg));
+                   }
+                 }
+             }) 
+          },
+          methods: {
+            search:function(){
+               
+            },
+            clickDepartment:function(item){
+               var _self = this;
+               var _data = {};
+                _data.token = getCookie("token");
+                _data.id = item.id;
+                _data.type = 2;
+                $.ajax({
+                    url : site_url+'/peony/wx/department/get-organizational',
+                    data : _data,
+                    type : "GET",
+                    dataType : "JSON",
+                    success:function(obj){
+
+                      if(obj.code == 0){
+                            _self.organize = obj.data.list;
+                            _self.organize = obj.data.list;
+
+                           if(this.orgindex == 1)
+                              this.orgindex = 2;
+                      }else{
+                            mui.toast(JSON.stringify(obj.msg));
+                      }
+                    }
+                })
+
+            },
+            clickPersonal:function(){
+               var url = goto + 'view/html/myclass/teacher-card.html';
+               location.href = url;
+            },
+            call:function(data){
+               mui('#picture').popover('show');
+               this.phone = data.phone;
+               console.log(data);
+            }
+         } 
+        });
+        $(function(){
+        var $searchBar = $('#searchBar'),
+            $searchResult = $('#searchResult'),
+            $searchText = $('#searchText'),
+            $searchInput = $('#searchInput'),
+            $searchClear = $('#searchClear'),
+            $searchCancel = $('#searchCancel');
+
+        function hideSearchResult(){
+            $searchResult.hide();
+            $searchInput.val('');
+        }
+        function cancelSearch(){
+            hideSearchResult();
+            $searchBar.removeClass('search-bar_focusing');
+            $searchText.show();
+        }
+
+        $searchText.on('click', function(){
+            $searchBar.addClass('search-bar_focusing');
+            $searchInput.focus();
+        });
+        $searchInput
+            .on('blur', function () {
+                if(!this.value.length) cancelSearch();
+            })
+            .on('input', function(){
+                if(this.value.length) {
+                    $searchResult.show();
+                } else {
+                    $searchResult.hide();
+                }
+            })
+        ;
+        $searchClear.on('click', function(){
+            hideSearchResult();
+            $searchInput.focus();
+        });
+        $searchCancel.on('click', function(){
+            cancelSearch();
+            $searchInput.blur();
+        });
+    });
+   </script>
+</body>
+</html>

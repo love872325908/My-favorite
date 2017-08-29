@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+	<title>家长主页</title>
+  <link rel="stylesheet" href="../../css/mui.css">
+  <link rel="stylesheet" type="text/css" href="../../css/child.css">
+  <link rel="stylesheet" type="text/css" href="../../css/base.css">
+  
+  <script src="../../js/cssrem.js"></script>
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/jquery-1.8.3.min.js"></script>
+	<script src="../../js/common.js"></script>
+  <script src="../../js/mui.min.js"></script>
+</head>
+<body class="bg-light-gray">
+  <div id="content_box" v-cloak>
+    <div class="child-header">
+      <div class="index-top space-flex"><i class="iconfont icon-fanhui1"></i></div>
+      <div class="index-bottom">
+        <h3>{{users.realname}} <span></span></h3>
+        <small>
+          <span>职业: {{users.job ? users.job : '未知'}}</span>    
+          <span>学历：{{users.edu ? users.job : '未知'}}</span>    
+        </small>
+      </div>
+    </div>
+
+    <div class="mychild-bar">
+      <h5 class="line">我的孩子</h5>
+      <!-- 未添加孩子 -->
+      <!-- <small>家长暂未添加孩子信息</small> -->
+      <div>
+        <a href="javascript:void(0);" v-for="item in childs" 
+        @click="toStudent(item)">
+            <img :src="site_url+item.avatar_url"><span>{{item.name}}</span>
+        </a>
+      </div>
+    </div>
+    
+    <main class="mt10">
+      <h5 class="line">挑战日志</h5>
+      <!-- 挑战日志为空 -->
+      <!--
+      <div class="empty">
+         <img src="../../images/empty.png" height="126" width="100" alt="">
+         <h6>去参与挑战</h6>
+      </div>
+      -->
+      <ul>
+          <li class="mb15" v-for="item in tasklist">
+          <p class="mt30 mb15" v-if="nowYear > item.years">{{item.years}}年</p>
+            <div class="grow-box">
+              <div class="left">
+                <h1>{{item.strDate}}</h1>
+                <h6>{{item.month}}月</h6>
+              </div>
+              <div class="right">
+                  <h6><span>参与<a href="">#{{item.task_name}}</a></span><span>{{item.hours+':'+item.minutes}}</span></h6>
+                  <p>{{item.content}}</p>
+                  <ul class="imgbox" v-if="item.punch_pic">
+                      <li><a href="" ><img :src="site_url+item.punch_pic"></a></li>
+                  </ul>
+                  <div class="tip">
+                    <span>评论{{item.comment_count}}</span>
+                    <span @click="comeon(item)"><i class="iconfont icon-dianzan"></i>{{item.comeon_count}}</span>
+                  </div>
+              </div>
+            </div>
+          </li>
+      </ul>
+      
+    </main>
+    <div class="spinner" v-show="bottomLoding">
+            
+            <img src="../../images/loading.gif" height="200" width="200" alt="" class="double-bounce1">
+            <div class="double-bounce2">{{bottomText}}</div>
+     </div>
+  </div>
+</body>
+<script>
+    window.onscroll = function() {
+  var downTrigger = document.documentElement.scrollHeight -
+
+      (document.documentElement.scrollTop + document.body.scrollTop) -
+
+      document.documentElement.clientHeight;
+
+  if (downTrigger < 1) {
+      setTimeout(pageCallback, 600);
+  }
+};
+
+
+var pageCallback = function() {
+    if (!app.load) {
+        app.load = true;
+        app.bottomLoding = true;
+        app.page++;
+        app.getData(2);
+    } else {
+        app.bottomText = "加载完毕 ...";
+        app.bottomLoding = true;
+        setTimeout(function(){
+           app.bottomLoding = false;
+        }, 600);
+    }
+}
+
+
+    var app = new Vue({
+      el: '#content_box',
+      data: {
+          users : {},
+          user_id : 0,
+          childs : [],
+          tasklist : [],
+          nowYear : "",
+          bottomLoding : false,
+          load : false,
+          bottomText : "正在加载 ...",
+          page : 1,
+          pageSize : 6,
+          loadData : [],
+          site_url : site_url
+      },
+      created : function(){
+            this.user_id = getCookie("user_id");
+            this.nowYear = new Date().getFullYear();
+            var _user_data = {};
+            _user_data.token = getCookie("token");
+            _user_data.user_id = getCookie("user_id");
+            _user_data.come_from = 1;
+            var _self = this;
+            $.ajax({
+                url : site_url + '/peony/wx/user/getuserinfo',
+                data : _user_data,
+                type : "GET",
+                dataType : "JSON",
+                success : function(obj){
+                  if(obj.code == 0){
+                     _self.users = obj.data.result;
+                  }else{
+                      mui.toast(JSON.stringify(obj.msg));
+                  }
+                }
+            });
+            var _child_data = {};
+            _child_data.token = getCookie("token");
+            _child_data.parent_id = getCookie("user_id");
+            var _self = this;
+            $.ajax({
+                url : site_url + '/peony/wx/student/getstudentsbyparentid',
+                data : _child_data,
+                type : "GET",
+                dataType : "JSON",
+                success : function(obj){
+                  if(obj.code == 0){
+                     _self.childs = obj.data.list;
+                  }else{
+                      mui.toast(JSON.stringify(obj.msg));
+                  }
+                }
+            });
+
+            _self.getData(1);
+            
+      },
+
+      methods : {
+          comeon : function(item){
+              var _self = this;
+              var _good_data = {};
+              _good_data.token = getCookie("token");
+              _good_data.user_id =   getCookie("user_id");
+              _good_data.punch_card_id = item.id;
+              $.ajax({
+                  url : site_url + '/peony/wx/parenttask/punchcardcomeon',
+                  data : _good_data,
+                type : "POST",
+                dataType : "JSON",
+                success : function(obj){
+                  if(obj.code == 0){
+                     //item.is_good = 1;
+                     item.comeon_count ++;
+                  }else{
+                      mui.toast(JSON.stringify(obj.msg));
+                  }
+                }
+            });
+          },
+          getData : function(type){
+              var _self = this;
+              var _task_data = {};
+              _task_data.token = getCookie("token");
+              _task_data.user_id = 1;
+              _task_data.page = _self.page;
+              _task_data.pageSize = _self.pageSize;
+              $.ajax({
+                url : site_url + '/peony/wx/parenttask/tasklist',
+                data : _task_data,
+                type : "GET",
+                dataType : "JSON",
+                success : function(obj){
+                  /*alert(obj.code);
+                  if(obj.code == 0){*/
+                      _self.load = false;
+                      if(type == 2){
+                          if (isEmpty(obj.data.list)) {
+                              _self.bottomText = "加载完毕 ...";
+                              setTimeout(function(){
+                                  _self.bottomLoding  =  false;
+                              },600);
+                          } else {
+                              _self.loadData = obj.data.list;
+                              _self.loadData.forEach(function(item){
+                                _self.resetData(item);
+                                 _self.tasklist.push(item);
+                              });
+                          }
+                      }else{
+                         _self.tasklist = obj.data.list;
+                         _self.tasklist.forEach(function(item){
+                              _self.resetData(item);
+                         });
+                      }
+                    
+                 /* }else{
+                      mui.toast(JSON.stringify(obj.msg));
+                  }*/
+                  }
+              });
+          },
+          resetData : function(item){
+              var date = new Date(item.created_at);
+              var month = date.getMonth() + 1;
+              var strDate = date.getDate();
+              strDate = strDate < 10 ? "0"+strDate : strDate;
+              var hours = date.getHours();
+              hours = hours < 10 ? "0"+hours : hours;
+              var minutes = date.getMinutes();
+              minutes = minutes < 10 ? "0"+minutes : minutes;
+              var years = date.getFullYear();
+              Vue.set(item,"month",month);
+              Vue.set(item,"strDate",strDate);
+              Vue.set(item,"hours",hours);
+              Vue.set(item,"minutes",minutes);
+              Vue.set(item,"years",years);
+          },
+           toStudent : function(item){
+              var url = goto_url+"/view/html/students/students-index.html?student_id="+item.id;
+              location.href = url;
+          },
+        }
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,488 @@
+/*
+* @Author: zhangjiayuan
+* @Date:   2017-06-22 14:05:05
+* @Last Modified by:   zhangjiayuan
+* @Last Modified time: 2017-07-04 16:04:37
+*/
+.chatting {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+     -moz-box-orient: vertical;
+     -moz-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  width: 100%;
+  height: 100vh; }
+  .chatting .chatting-header {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+       -moz-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+       -moz-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    height: 44px;
+    width: 100%;
+    background-color: #FFFFFF;
+    color: white;
+    padding-left: 15px;
+    padding-right: 15px; }
+    .chatting .chatting-header .chatting-back {
+      width: 32px;
+      height: 32px;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+         -moz-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+         -moz-box-align: center;
+          -ms-flex-align: center;
+              align-items: center; }
+      .chatting .chatting-header .chatting-back i {
+        font-size: 26px;
+        color: #99A7AA; }
+    .chatting .chatting-header .chatting-title .chatting-title-inner {
+      font-size: 18px;
+      color: #333333;
+      letter-spacing: 0; }
+    .chatting .chatting-header .chatting-title i.icon-group {
+      vertical-align: top;
+      width: 30px;
+      height: 30px;
+      margin-right: 3px; }
+    .chatting .chatting-header .chatting-menu {
+      width: 30px;
+      height: 30px;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+         -moz-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+         -moz-box-align: center;
+          -ms-flex-align: center;
+              align-items: center; }
+      .chatting .chatting-header .chatting-menu i {
+        font-size: 26px;
+        color: #99A7AA; }
+  .chatting .chatting-content {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+       -moz-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    width: 100%;
+    background: #F2F4F7;
+    overflow: auto; }
+    .chatting .chatting-content .chatting-item {
+      padding: 10px;
+      width: 100%; }
+      .chatting .chatting-content .chatting-item .msg-date {
+        text-align: center;
+        color: gray;
+        font-size: 13px;
+        margin-bottom: 21px; }
+      .chatting .chatting-content .chatting-item .message-list {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -webkit-flex-flow: row nowrap;
+           -moz-box-orient: horizontal;
+           -moz-box-direction: normal;
+            -ms-flex-flow: row nowrap;
+                flex-flow: row nowrap;
+        -webkit-box-pack: start;
+        -webkit-justify-content: flex-start;
+           -moz-box-pack: start;
+            -ms-flex-pack: start;
+                justify-content: flex-start;
+        -webkit-box-align: start;
+        -webkit-align-items: flex-start;
+           -moz-box-align: start;
+            -ms-flex-align: start;
+                align-items: flex-start; }
+        .chatting .chatting-content .chatting-item .message-list img {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%; }
+        .chatting .chatting-content .chatting-item .message-list .message-list-r {
+          display: -webkit-box;
+          display: -webkit-flex;
+          display: -moz-box;
+          display: -ms-flexbox;
+          display: flex;
+          -webkit-box-orient: vertical;
+          -webkit-box-direction: normal;
+          -webkit-flex-flow: column nowrap;
+             -moz-box-orient: vertical;
+             -moz-box-direction: normal;
+              -ms-flex-flow: column nowrap;
+                  flex-flow: column nowrap;
+          -webkit-box-pack: start;
+          -webkit-justify-content: flex-start;
+             -moz-box-pack: start;
+              -ms-flex-pack: start;
+                  justify-content: flex-start;
+          -webkit-box-align: start;
+          -webkit-align-items: flex-start;
+             -moz-box-align: start;
+              -ms-flex-align: start;
+                  align-items: flex-start;
+          padding-left: 16px; }
+          .chatting .chatting-content .chatting-item .message-list .message-list-r .msg-author {
+            font-size: 12px;
+            color: #777777;
+            line-height: 12px; }
+          .chatting .chatting-content .chatting-item .message-list .message-list-r .msg-content {
+            margin-top: 5px;
+            max-width: 270px;
+            min-width: 130px;
+            width: auto;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 16px;
+            color: #000000;
+            letter-spacing: -0.26px;
+            line-height: 22px;
+            background: #FFFFFF;
+            border-radius: 10px 10px 0 0 0 10px 10px;
+            position: relative; }
+            .chatting .chatting-content .chatting-item .message-list .message-list-r .msg-content:after {
+              content: '';
+              position: absolute;
+              left: -10px;
+              top: 13px;
+              width: 0;
+              height: 0;
+              border-style: solid dashed dashed;
+              border-color: #FFFFFF transparent transparent;
+              overflow: hidden;
+              border-width: 10px; }
+      .chatting .chatting-content .chatting-item.other .message-list {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: reverse;
+        -webkit-flex-flow: row-reverse nowrap;
+           -moz-box-orient: horizontal;
+           -moz-box-direction: reverse;
+            -ms-flex-flow: row-reverse nowrap;
+                flex-flow: row-reverse nowrap;
+        -webkit-box-pack: start;
+        -webkit-justify-content: flex-start;
+           -moz-box-pack: start;
+            -ms-flex-pack: start;
+                justify-content: flex-start;
+        -webkit-box-align: start;
+        -webkit-align-items: flex-start;
+           -moz-box-align: start;
+            -ms-flex-align: start;
+                align-items: flex-start; }
+        .chatting .chatting-content .chatting-item.other .message-list .message-list-r {
+          display: -webkit-box;
+          display: -webkit-flex;
+          display: -moz-box;
+          display: -ms-flexbox;
+          display: flex;
+          -webkit-box-orient: vertical;
+          -webkit-box-direction: normal;
+          -webkit-flex-flow: column nowrap;
+             -moz-box-orient: vertical;
+             -moz-box-direction: normal;
+              -ms-flex-flow: column nowrap;
+                  flex-flow: column nowrap;
+          -webkit-box-pack: start;
+          -webkit-justify-content: flex-start;
+             -moz-box-pack: start;
+              -ms-flex-pack: start;
+                  justify-content: flex-start;
+          -webkit-box-align: end;
+          -webkit-align-items: flex-end;
+             -moz-box-align: end;
+              -ms-flex-align: end;
+                  align-items: flex-end;
+          padding-right: 16px; }
+          .chatting .chatting-content .chatting-item.other .message-list .message-list-r .msg-content {
+            background: #50BF60;
+            color: #FFFFFF;
+            position: relative; }
+            .chatting .chatting-content .chatting-item.other .message-list .message-list-r .msg-content:after {
+              content: '';
+              position: absolute;
+              top: 13px;
+              width: 0;
+              height: 0;
+              border-style: solid dashed dashed;
+              border-color: #50BF60 transparent transparent;
+              overflow: hidden;
+              border-width: 10px;
+              left: auto;
+              right: -10px; }
+  .chatting .chatting-input {
+    position: relative;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    height: 60px;
+    width: 100%;
+    border-top: 1px solid rgba(184, 193, 206, 0.3);
+    border-opacity: 0.5;
+    padding: 11px 10px 11px 12px;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+       -moz-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-box-align: end;
+    -webkit-align-items: flex-end;
+       -moz-box-align: end;
+        -ms-flex-align: end;
+            align-items: flex-end;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-flow: row nowrap;
+       -moz-box-orient: horizontal;
+       -moz-box-direction: normal;
+        -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+    background: #F2F4F7; }
+    .chatting .chatting-input textarea {
+      display: inline-block;
+      width: 5.62rem;
+      height: 100%;
+      resize: none;
+      padding: 3px;
+      font-size: 16px;
+      line-height: 30px;
+      background: #FFFFFF;
+      border-radius: 4px;
+      word-break: break-all;
+      overflow-y: auto; }
+    .chatting .chatting-input .face-icon {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+         -moz-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      -webkit-box-align: end;
+      -webkit-align-items: flex-end;
+         -moz-box-align: end;
+          -ms-flex-align: end;
+              align-items: flex-end;
+      width: 0.52rem;
+      height: 0.52rem;
+      margin-bottom: 6px; }
+      .chatting .chatting-input .face-icon i {
+        font-size: 26px;
+        color: #99A7AA; }
+    .chatting .chatting-input .add-pic {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+         -moz-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      -webkit-box-align: end;
+      -webkit-align-items: flex-end;
+         -moz-box-align: end;
+          -ms-flex-align: end;
+              align-items: flex-end;
+      margin-bottom: 6px; }
+      .chatting .chatting-input .add-pic .send {
+        border-radius: 5px;
+        background: #16af17;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+           -moz-box-pack: center;
+            -ms-flex-pack: center;
+                justify-content: center;
+        -webkit-box-align: end;
+        -webkit-align-items: flex-end;
+           -moz-box-align: end;
+            -ms-flex-align: end;
+                align-items: flex-end;
+        width: 0.8rem;
+        height: 0.52rem; }
+        .chatting .chatting-input .add-pic .send span {
+          display: block;
+          font-size: 16px;
+          color: #fff; }
+      .chatting .chatting-input .add-pic .add {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+           -moz-box-pack: center;
+            -ms-flex-pack: center;
+                justify-content: center;
+        -webkit-box-align: end;
+        -webkit-align-items: flex-end;
+           -moz-box-align: end;
+            -ms-flex-align: end;
+                align-items: flex-end;
+        width: 0.52rem;
+        height: 0.52rem; }
+      .chatting .chatting-input .add-pic i {
+        font-size: 26px;
+        color: #99A7AA; }
+
+.foot_img {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+     -moz-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+  height: 2rem; }
+  .foot_img .photo {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-flow: column nowrap;
+       -moz-box-orient: vertical;
+       -moz-box-direction: normal;
+        -ms-flex-flow: column nowrap;
+            flex-flow: column nowrap;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+       -moz-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+       -moz-box-align: center;
+        -ms-flex-align: center;
+            align-items: center; }
+    .foot_img .photo i {
+      width: 30px;
+      height: 26px;
+      font-size: 30px;
+      color: #69CE77; }
+    .foot_img .photo span {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #999999;
+      letter-spacing: 0;
+      line-height: 12px; }
+
+.foot_emoji {
+  width: 100%;
+  height: auto;
+  max-height: 3.68rem;
+  padding: 20px 10px;
+  overflow-y: auto; }
+  .foot_emoji .emoji-display ul {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-flow: row wrap;
+       -moz-box-orient: horizontal;
+       -moz-box-direction: normal;
+        -ms-flex-flow: row wrap;
+            flex-flow: row wrap;
+    -webkit-box-pack: flex-strat;
+    -webkit-justify-content: flex-strat;
+       -moz-box-pack: flex-strat;
+        -ms-flex-pack: flex-strat;
+            justify-content: flex-strat;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+       -moz-box-align: center;
+        -ms-flex-align: center;
+            align-items: center; }
+    .foot_emoji .emoji-display ul li {
+      font-size: 30px;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+         -moz-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+         -moz-box-align: center;
+          -ms-flex-align: center;
+              align-items: center; }
+      .foot_emoji .emoji-display ul li img {
+        width: 24px;
+        height: 24px; }
+
+.footshow {
+  display: none;
+  -webkit-transition: all .2s;
+  transition: all .2s; }

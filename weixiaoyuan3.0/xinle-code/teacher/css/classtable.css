@@ -1,0 +1,176 @@
+/*
+* @Author: zxl
+* @Date:   2017-06-15 11:11:46
+* @Last Modified by:   wangxiujuan
+* @Last Modified time: 2017-07-28 14:24:50
+*/
+@import url(../css/common2.css);
+@import url(../fonts/iconfont.css);
+.classtable_main {
+  width: 100%;
+  height: 70px;
+  padding: 14px;
+  padding-left: 0;
+  padding-right: 28px;
+  margin-left: 14px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+     -moz-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  border-bottom: 1px solid #C7C7CC;
+  overflow: hidden; }
+  .classtable_main .classtable_contain {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+       -moz-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1; }
+    .classtable_main .classtable_contain h3 {
+      width: 100%;
+      height: 14px;
+      color: #333333;
+      font-size: 14px;
+      margin-top: 2px;
+      line-height: 14px; }
+    .classtable_main .classtable_contain p {
+      width: 100%;
+      height: 12px;
+      color: #999999;
+      font-size: 12px;
+      margin-top: 12px;
+      line-height: 12px; }
+  .classtable_main span {
+    line-height: 42px;
+    color: #C7C7CC;
+    font-size: 12px; }
+
+.list {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+     -moz-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding: 16px 10px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #F2F4F7; }
+
+footer {
+  width: 80%;
+  height: 44px;
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  margin-left: -40%;
+  border-radius: 2px;
+  background-color: #40B9F0;
+  color: #FFFFFF;
+  font-size: 18px;
+  line-height: 44px;
+  text-align: center; }
+
+.classtable-box {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+     -moz-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  overflow: hidden;
+  height: 11.34rem; }
+  .classtable-box .classtable-bar {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+       -moz-box-orient: vertical;
+       -moz-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+       -moz-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+       -moz-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    background-color: #EEFBFA;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%; }
+    .classtable-box .classtable-bar img {
+      width: 80px; }
+    .classtable-box .classtable-bar h3 {
+      font-size: 20px;
+      color: #1FC86B; }
+  .classtable-box h4 {
+    font-size: 20px;
+    color: #B8C1CE; }
+  .classtable-box .classtable-img {
+    padding: 20px; }
+    .classtable-box .classtable-img img {
+      width: 100%;
+      height: 100%; }
+
+.top-title {
+  background-image: -webkit-gradient(linear, left top, right top, from(#0AC3F8), to(#3287DB));
+  background-image: -webkit-linear-gradient(left, #0AC3F8 0%, #3287DB 100%);
+  background-image: linear-gradient(90deg, #0AC3F8 0%, #3287DB 100%);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+     -moz-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+  height: 44px;
+  color: #fff;
+  padding: 0px 15px; }
+  .top-title i {
+    color: #fff; }
+  .top-title h3 {
+    font-size: 18px; }
+  .top-title button {
+    border: 0;
+    background-color: transparent;
+    font-size: 16px;
+    color: #fff; }

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>考勤打卡</title>
+    <link rel="stylesheet" type="text/css" href="../../css/attendance.css">
+    <link rel="stylesheet" type="text/css" href="../../css/mui.css">
+
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+</head>
+
+<body style="background:#f2f2f2;">
+    <div id="app">
+        <div class="attendance-clock-con">
+          <ul class="attendance-list">
+			<li class="center-float-center">
+				<div class="name">打卡时间</div>
+				<div class="value flex-1">{{ attendanceRecordDetails.record_time|mydate }}</div>
+			</li>
+			<li class="center-float-center">
+				<div class="name">打卡地点</div>
+				<div class="value flex-1">
+					<p>{{ attendance.attendance_place }}</p>
+					<span>{{ attendanceRecordDetails.area_name }}</span>
+				</div>
+			</li>
+			<li class="center-float-center" @click="jumpRemarks(attendanceRecordDetails.id)">
+				<div class="name">备注</div>
+				<div class="value flex-1">
+					{{ attendanceRecordDetails.remark }}
+					<div class="img" v-for="attach in attendanceRecordDetails.attendance_attachments">
+              <img :src="site_url+attach.attach_url" alt="">
+          </div>
+				</div>
+				<img src="../../images/forward.png" alt="">
+			</li>
+          </ul>
+        </div>
+    </div>
+    <script src="../../js/common.js"></script>
+    <script type="text/javascript">
+        Vue.filter('mydate', function(data){
+            return getNowFormatDate('H:i',data);
+        });
+        var app = new Vue({
+          el:'#app',
+          data:{
+            getAttendanceRecordDetail_url:site_url + '/peony/wx/attendance/getAttendanceRecordDetail',
+            token:'',
+            id:0,                        
+            attendance:{},                        
+            attendanceRecordDetails:{},                        
+            site_url:site_url,                        
+          },
+          mounted:function(){
+            _self = this;
+            _self.token = getCookie("token");
+            _self.id = GetQueryString('id');
+            _self.getAttendanceRecordDetail();
+          },
+          methods: {
+          	jumpRemarks:function(id){
+              location.href="./attendance-clock-remarks.html?attendance_record_details_id="+_self.id;
+            },
+            
+            getAttendanceRecordDetail:function(){
+                var _self = this;
+                var _url = _self.getAttendanceRecordDetail_url;
+                var _data = {
+                    "token" : _self.token,
+                    "attendance_record_details_id":_self.id,
+                };
+                _self.httpurl(_url , _data ,'GET' , true , 'JSON' , function(obj){
+                   if (obj.code === 0) {
+                        _self.attendanceRecordDetails = obj.data.list;
+                        _self.attendance = _self.attendanceRecordDetails.attendance;
+                        _self.record_time = _self.attendanceRecordDetails.record_time;
+                        // console.log(_self);
+                        
+                    } else {
+                        mui.toast(obj.msg);
+                    }
+                });
+            },
+            httpurl:function( url , data , type , async , datatype , closure ){
+               $.ajax({
+                   url : url,
+                   data : data,
+                   type : type,
+                   async : async, 
+                   dataType : datatype,
+                   success : function(obj){
+                       if(obj.code == 0){
+                           closure(obj);
+                       }else{
+                           mui.toast(obj.msg);
+                       }
+                   },
+                   error : function(e){
+                       console.log(e);
+                   }
+               });
+            }
+          }
+        })
+      </script>
+</body>
+</html>

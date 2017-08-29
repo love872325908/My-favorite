@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>学生表现</title>
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../../css/mui.css">
+    <!--App自定义的css-->
+    <link rel="stylesheet" type="text/css" href="../../css/app.css" />
+    <link href="../../css/mui.picker.css" rel="stylesheet" />
+    <link href="../../css/mui.poppicker.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="../../css/mui.picker.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" type="text/css" href="../../fonts/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../../css/common2.css">
+    <link rel="stylesheet" type="text/css" href="../../css/images.css">
+    <script src="../../js/common.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/mui.picker.min.js"></script>
+    <script src="../../js/mui.picker.js"></script>
+    <script src="../../js/mui.poppicker.js"></script>
+    <script src="../../js/mui.previewimage.js"></script>
+    <script src="../../js/mui.zoom.js"></script>
+</head>
+
+<body>
+    <main class="detail_main" style="border:none">
+        <div class="index_main_content">
+            <h4>关于端午节放假的通知</h4>
+            <p style="color:#B8C1CE ">来自：林文斌（班主任） 2017-5-18  17:20</p>
+            <p>各位同仁: 
+            端午节假期即将来临，根据国家法定节假日安排，现将相关放假事宜公告如下： 1、端午节放假共3天， 2、即6月20号（周六）、6月21号（周日）、6月22号（星期一）。 3、在节日期间，外出旅游、探亲访友等，请在旅途中注意财产和人身安全。 提前祝全体同仁：端午节快乐！ “粽”有好心情！ </p>
+            <ul>
+                <li><img src="../../images/yuantiao.jpg" height="90" width="90" alt="" data-preview-src="" data-preview-group="3"></li>
+                <li><img src="../../images/yuantiao.jpg" height="90" width="90" alt="" data-preview-src="" data-preview-group="3"></li>
+                <li><img src="../../images/yuantiao.jpg" height="90" width="90" alt="" data-preview-src="" data-preview-group="3"></li>
+                <li><img src="../../images/yuantiao.jpg" height="90" width="90" alt="" data-preview-src="" data-preview-group="3"></li>
+                <li><img src="../../images/yuantiao.jpg" height="90" width="90" alt="" data-preview-src="" data-preview-group="3"></li>
+                <li><img src="../../images/yuantiao.jpg" height="90" width="90" alt="" data-preview-src="" data-preview-group="3"></li>
+            </ul>
+        </div>
+    </main>
+</body>
+<script>
+mui.previewImage();
+</script>
+<script>
+$(function() {
+    $(".icon-dianzan").click(function() {
+        // console.log($(this));
+        $(this).toggleClass('liked');
+    })
+
+})
+</script>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>名师堂</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telphone=no, email=no" />
+    <link rel="stylesheet" type="text/css" href="../../css/mystyle.css">
+    <link rel="stylesheet" type="text/css" href="../../css/common2.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" type="text/css" href="../../css/teachersay.css">
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+</head>
+
+<body style='background-color: #fff;'>
+    <div class="tobehonest" id="app">
+        <div class="tablebox">
+            <div class="tobehonest_01 taba1">
+                <div class="top_nav">
+                    <span class="iconfont icon-fanhui1" @click="back"></span>
+                    <p>名师堂</p>
+                    <span class="cansubmit" @click="toTips">小贴士</span>
+                    <!-- 可以提交后加cansubmit类名 -->
+                    <!-- 不可以提交后加cannotsubmit类名 -->
+                </div>
+                <div class="teachingmethod" style="bottom:0;">
+                    <div class="teacherdondata">
+                        <div class="teacherdon" >
+                            <a href="javascript:void(0)" class="theuser" v-for="item in users" @click="toPerson(item)">
+                                <div class="theuser_img">
+                                    <img :src="item.headimgurl">
+                                    <i class="icon iconfont icon_padding">&#xe79f;</i>
+                                </div>
+                                <p class="thetitle">{{item.realname}}</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+var app = new Vue({
+    el: '#app',
+    data: {
+        users: [],
+    },
+    created: function() {
+
+        var _data = {};
+        var _self = this;
+        _data.token = getCookie("token");
+        $.ajax({
+            type: "GET",
+            url: site_url + "/peony/wx/teachersay/getvipuser",
+            data: _data,
+            dataType: "JSON",
+            success: function(obj) {
+                if (obj.code == 0) {
+                    _self.users = obj.data.list;
+                } else {
+                    mui.toast(JSON.stringify(obj.msg));
+                }
+            }
+        });
+    },
+    methods: {
+        back: function() {
+            location.href = goto_url + "/view/html/teachersay/index.html";
+        },
+        toPerson : function(item){
+            location.href = goto_url + "/view/html/workbench/teacher-index.html?teacher_id="+item.id;
+            // location.href = goto_url + "/view/html/workbench/teacher-index.html?teacher_id=" + item.id + "&target_url=" 
+            //             + goto_url + "/view/html/teachersay/teacherdon.html" 
+        },
+        toTips: function() {
+          location.href = goto_url + "/view/html/teachersay/tips.html";
+        }
+    }
+});
+</script>
+
+</html>

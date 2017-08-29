@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>文章详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/teachersay.css">
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../../js/jweixin-1.0.0.min.js"></script>
+    <script src="../../js/jssdkwx.js"></script>
+</head>
+
+<body>
+    <div id="content_box">
+        <div class="main-bar">
+            <div class="article_top" v-bind:style="{backgroundImage:'url(' + site_url + article.attach_url +')'}">
+                <center :class="{shadebox: article.isShow}">
+                    <p>
+                        {{ article.introduction }}
+                    </p>
+                </center>
+            </div>
+            <div class="article_title">
+                {{ article.title }}
+            </div>
+            <div class="personal-people">
+                <div class="personal-people-image">
+                    <img v-bind:src="article.create_user.headimgurl" alt="" @click="toPerson(article)">
+                    <span v-if="article.create_user && article.create_user.is_vip" class="iconfont icon-jiavcopy"></span>
+                </div>
+                <div class="personal-people-info">
+                    <h3>{{article.create_user.realname}}</h3>
+                    <span class="personal-people-center">{{article.school_name}}</span>
+                </div>
+                <p>
+                    <span class="personal-people-right">{{article.created_at}}</span>
+                </p>
+            </div>
+            <div class="article_text">
+                <p v-html="article.content"></p>
+            </div>
+            <!-- <div class="article_img">
+          <img src="../../images/yuantiao.jpg" alt="">
+        </div>
+        <div class="article_video">
+          <video src="../../images/yuantiao.jpg"></video>
+        </div>
+        <div class="article_time">2052年10月1日</div> -->
+            <!-- <footer class="answer_foot">
+          <div class="givemoney">打赏</div>
+          <p>{{article.reward_count}}人已打赏</p>
+        </footer> -->
+        </div>
+        <div class="article_bottom">
+            <div class="article_bottom_left" @click="fanHui"><span class="iconfont icon-fanhui"></span></div>
+            <div class="article_bottom_right">
+                <span @click="huiFu"> <i class="iconfont icon-huifu"></i><span>{{article.comment_count}}</span> </span>
+                <span class="iconfont" :class="{ 'icon-wodeshoucang' : article.is_collection , 'icon-shoucang1' : !article.is_collection}" @click="addCollection()"></span>
+                <span @click="shareShow" class="iconfont icon-fenxiang1"></span>
+            </div>
+        </div>
+        <!--分享弹窗-->
+        <div class="wei-backup" :class="{'wei-active':is_shareShow}" @click="closeShare"></div>
+        <div class="wei-actionsheet" :class="{'wei-actionsheet_toggle':is_shareShow}">
+            <a href="javascript:void(0)" @click="shareWeixin">
+                <img src="../../images/weixin.png">
+                <h5 class="fc-green">微信</h5>
+            </a>
+            <a href="javascript:void(0)" @click="shareCircle">
+                <img src="../../images/share.png">
+                <h5 class="fc-green">朋友圈</h5>
+            </a>
+        </div>
+    </div>
+    <script src="../../js/mui.min.js"></script>
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            article: {
+                create_user: {},
+                attach_url: {},
+                introduction: '',
+                isShow: false,
+                title: '',
+                content: '',
+            },
+            site_url: site_url,
+            is_shareShow: false
+        },
+        created: function() {
+
+            var _self = this;
+            var _data = {};
+
+            _data.token = getCookie("token");
+            _data.article_id = GetQueryString("article_id");
+            _data.user_id = getCookie("user_id");
+
+            $.ajax({
+                url: site_url + '/peony/wx/teachersay/getarticle',
+                type: "GET",
+                dataType: "JSON",
+                data: _data,
+                success: function(obj) {
+                    if (obj.code == 0) {
+                        _self.article = obj.data.list[0];
+                        jssdk_title = _self.article.title;
+                        jssdk_desc = _self.article.title;
+                        jssdk_link = goto_url + "/view/html/share/article-detail.html?article_id=" + _self.article.id;
+                        jssdk_imgUrl = site_url + _self.article.attach_url;
+                        if (_self.article.introduction) {
+                            _self.isShow = true;
+                        } else {
+                            _self.isShow = false;
+                        }
+                    }
+                }
+            })
+
+            var _read_data = {};
+            _read_data.token = getCookie("token");
+            _read_data.user_id = getCookie("user_id");
+            _read_data.model_id = GetQueryString("article_id");
+            _read_data.model_type = "Article";
+
+            $.ajax({
+                url: site_url + '/peony/wx/teachersay/addread',
+                type: "POST",
+                dataType: "JSON",
+                data: _read_data,
+                success: function(obj) {
+
+                }
+            })
+
+        },
+        methods: {
+            fanHui: function() {
+                location.href = goto_url + "/view/html/teachersay/index.html"
+            },
+            huiFu: function() {
+                location.href = goto_url + "/view/html/teachersay/commentlist.html?article_id=" + GetQueryString("article_id");
+            },
+            toPerson: function(item) {
+                location.href = goto_url + "/view/html/workbench/teacher-index.html?teacher_id=" + item.create_id;
+
+            },
+            addCollection: function() {
+                if (this.article.is_collection)
+                    return;
+
+                var _data = {};
+                var _self = this;
+                _data.token = getCookie("token");
+                _data.model_type = "Article";
+                _data.model_id = GetQueryString("article_id");
+                _data.user_id = getCookie("user_id");
+                $.ajax({
+                    type: "POST",
+                    url: site_url + "/peony/wx/teachersay/addcollection",
+                    data: _data,
+                    dataType: "JSON",
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            _self.article.is_collection = true;
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+            },
+            shareShow: function() {
+                this.is_shareShow = true;
+            },
+            closeShare: function() {
+                this.is_shareShow = false;
+            },
+            shareWeixin: function() {
+                WeixinJSBridge.invoke('sendAppMessage', {//发送给好友
+                    "img_url": jssdk_imgUrl,
+                    "link": jssdk_link,
+                    "desc": jssdk_desc,
+                    "title": jssdk_title
+                });
+            },
+            shareCircle: function() {
+                WeixinJSBridge.invoke('shareTimeline', {//分享到朋友圈
+                    "img_url": jssdk_imgUrl,
+                    "link": jssdk_link,
+                    "desc": jssdk_desc,
+                    "title": jssdk_title
+                });
+
+            },
+
+        }
+    });
+    </script>
+</body>
+
+</html>

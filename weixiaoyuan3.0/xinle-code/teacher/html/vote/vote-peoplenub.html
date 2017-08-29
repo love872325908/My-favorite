@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+	<title>选项人数详情</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/layout.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/jquery-1.8.3.min.js"></script>
+	<script src="../../js/common.js"></script>
+
+</head>
+<body class="bg-light-gray">
+<div id="app">
+    <div class="padding20">
+        <h5>选项：<span>1、{{ option_info.content }}</span></h5>
+        <h6 class="mt10">共有{{ detail_list.length }}人选此项</h6>
+    </div>
+        <ul class="vote-peoplelist-bar">
+            <li v-for="detail in detail_list"> 
+                <img :src="detail.userinfo.headimgurl" alt="">
+                <h5>{{detail.userinfo.realname}}</h5>
+                <h6>{{detail.created_at}}</h6>
+            </li>
+        </ul>
+</div>
+<script src="../../js/mui.min.js"></script>
+<script type="text/javascript">
+
+	new Vue({
+
+    el: '#app',
+    data: {
+		detail_list: {
+		
+		},
+		creator_info: {
+			name : '获取中'
+		},
+		option_info: {
+		}
+    },
+	created: function () {
+	
+		var _self = this;
+		
+		//获取投票选项信息
+		$.ajax({
+			type: "GET",
+			url: site_url+"/peony/wx/vote/get-option",
+			data: {
+				token			:getCookie("token"),
+				id				:GetQueryString('vote_option_id')
+			},
+			dataType: "JSON",
+			success: function(data){
+				
+				if(data.code == 0) {
+					_self.option_info = data.data.list[0];
+					console.log(data.data.list[0]);
+
+				} else {
+					alert(data.msg);
+				}
+			}
+        });		
+		
+		
+		//获取投票记录
+		$.ajax({
+			type: "GET",
+			url: site_url+"/peony/wx/vote/get-log-by-optionid",
+			data: {
+				token			:getCookie("token"),
+				vote_option_id	:GetQueryString('vote_option_id')
+			},
+			async : "false",
+			dataType: "json",
+			success: function(data){
+				
+				if(data.code == 0) {
+					_self.detail_list = data.data.list;
+				} else {
+					alert(data.msg);
+				}
+			}
+        });
+		
+		
+		
+		
+    },
+    methods: {
+		toOptionDetail : function(option_id){ 
+			location.href = site_url+"/view/html/vote/vote-peoplenub.html?vote_option_id="+option_id;   
+		}
+    }
+
+})
+</script>
+</body>
+</html>

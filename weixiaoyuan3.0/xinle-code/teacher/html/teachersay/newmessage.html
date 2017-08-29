@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <title>通知</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/teachersay.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+    <script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/vue.js"></script>
+    <script src="../../js/mui.min.js"></script>
+    <script src="../../js/cssrem.js"></script>
+    <script src="../../js/common.js"></script>
+</head>
+
+<body style="background-color: #F8F9FB;">
+    <div id="content_box">
+        <div v-for="item in list">
+            <div class="msg-time">
+                <div>{{item.created_at}}</div>
+            </div>
+            <div class="msg-box">
+                <a href="javascript:void(0)">
+                    <h5><strong>{{item.title}}</strong></h5>
+                    <p>{{item.content}}</p>
+                    <span @click="toDetail(item)">查看详情<i class="iconfont icon-jiantou"></i></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- <div v-if="" class="coming-box">
+    <img src="../../images/nocontent.png"  alt="" class="nocontent">
+    <span>暂无消息！</span>
+</div> -->
+    <script type="text/javascript">
+    var app = new Vue({
+        el: '#content_box',
+        data: {
+            list: [],
+            isEmpty: true,
+        },
+        created: function() {
+            this.getMes();
+            this.resetzero();
+        },
+        methods: {
+            getMes: function() {
+                var self = this;
+                var data = {};
+                data.token = getCookie('token');
+                data.user_id = getCookie('user_id');
+                $.ajax({
+                    url: site_url + "/peony/wx/teachersay/getmessage",
+                    type: 'GET',
+                    dataType: 'json',
+                    data: data,
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            self.list = obj.data.list;
+                            if (self.list.length > 0)
+                                self.isEmpty = false;
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                });
+
+            },
+            resetzero: function() {
+                var self = this;
+                var data = {};
+                data.token = getCookie('token');
+                data.user_id = getCookie('user_id');
+                $.ajax({
+                    url: site_url + "/peony/wx/teachersay/resetzero",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data,
+                    success: function(obj) {
+                        if (obj.code == 0) {
+                            //self.list = obj.data.list;
+                        } else {
+                            mui.toast(JSON.stringify(obj.msg));
+                        }
+                    }
+                })
+
+            },
+            toDetail: function(item) {
+                var url = goto_url;
+                switch (item.model_type) {
+                    case 'Article':
+                        url += "/view/html/teachersay/article-detail.html?article_id=" + item.model_id;
+                        break;
+                    case 'Problem':
+                        url += "/view/html/teachersay/question-detail.html?problem_id=" + item.model_id;
+                        break;
+                        // case 'Resorce' :  url +=  "/view/html/teachersay/resource-detail.html?article_id="+item.model_id;break;
+                    case 'Complaint':
+                        url += "/view/html/teachersay/speak-detail.html?complaint_id=" + item.model_id;
+                        break;
+                    case 'Vote':
+                        url += "/view/html/teachersay/vote-detail.html?vote_id=" + item.model_id;
+                        break;
+                    case 'Topic':
+                        url += "/view/html/teachersay/topic-detail.html?topic_id=" + item.model_id;
+                        break;
+                }
+                location.href = url;
+
+            },
+        },
+    })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=viewport content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no'>
+	<title>学校公告</title>
+    <link rel="stylesheet" href="../../css/mui.css">
+    <link rel="stylesheet" type="text/css" href="../../css/schoolnotice.css">
+    <link rel="stylesheet" type="text/css" href="../../css/base.css">
+
+	<script src="../../js/vue.js"></script>
+	<script src="../../js/jquery-1.8.3.min.js"></script>
+    <script src="../../js/mui.min.js"></script>
+	<script src="../../js/common.js"></script>
+    <script src="../../js/timeago.js"></script>
+</head>
+<body class="bg-light-gray">
+<div id="content_box" v-cloak>
+  <div class="school-notice-bar">
+    <ul v-if="list && list.length>0">
+      <li v-for="item in list" @click="getdetail(item.id)">
+         <h5>{{item.title}}</h5>
+         <div>
+           <p>{{item.content | removeHTMLTag}}</p>
+           <a href="javascript:;"  >查看详情</a>
+         </div>
+         <div class="space-flex">
+           <span>来自：{{item.author_name}}</span>
+           <span>{{timeago.format(item.created_at,'zh_CN')}}</span>
+         </div>
+       </li>
+    </ul>
+    <div v-else class="schoolnotice_empty">暂无学校公告</div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+	Vue.filter("removeHTMLTag", function(value) {   //全局方法 Vue.filter() 注册一个自定义过滤器,必须放在Vue实例化前面
+        value = value.replace(/<\/?[^>]*>/g,''); //去除HTML tag
+        value = value.replace(/[ | ]*\n/g,'\n'); //去除行尾空白
+        //str = str.replace(/\n[\s| | ]*\r/g,'\n'); //去除多余空行
+        value = value.replace(/&nbsp;/ig,'');//去掉&nbsp;
+        return value;
+    });
+	var app = new Vue({
+        el:'#content_box',
+        data: {
+           list: [],
+           timeago : {},
+           school_id: {},
+           page : 1,
+           timeago : new timeago(),
+        },
+        created :function(){
+            var _self = this;
+            var _data = {};
+            _data.token = getCookie("token");
+            _data.user_id = getCookie("user_id");
+            _data.page = _self.page;
+            _data.pageSize = 6;
+            
+            $.ajax({
+				url: site_url + "/peony/wx/schoolnotice/getlist",
+				type: "GET",
+				dataType: "JSON",
+				data: _data,
+				success: function(obj) {
+					_self.list = obj.data.list;
+				}
+            })
+            
+            
+        },
+        methods: {
+            
+            /*dayformat:function(str){
+              if(str==null){
+                  return "";
+                }else{
+                return  str.substr(5,5).replace(/-/g, "月")+"日";
+              }
+            },*/
+            getdetail : function(id){
+                var url = goto_url + "/view/html/schoolnotice/school-notice-detail.html?id="+id;
+                location.href = url;
+            }
+        }
+
+    })
+</script>
+</body>
+</html>
